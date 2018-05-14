@@ -1,4 +1,4 @@
-var wdInquiry = {};
+var emailInquiry = {};
 var path = "";
 var root = window.location.host;
 $(function(){
@@ -7,29 +7,29 @@ $(function(){
     if (path == "" || path.indexOf("index.jsp") != -1) //Home page
     {
         monkeyPane = $('<div class="home_grid_block3_cell" style="background-color: #ff5959;" ><h3>DB Monkey</h3></div>').prependTo(".home_grid_divrow");
-        wdInquiryButton = $('<a href="#">New Email Case</a>');
-        wdInquiryComment = $('<div style="display: inline-block; vertical-align: middle;" class="ui-state-default ui-corner-all" id="q_nav1_button"> <span class="ui-icon ui-icon-comment"></span>  </div>');
+        emailInquiryButton = $('<a href="#">New Email Case</a>');
+        emailInquiryComment = $('<div style="display: inline-block; vertical-align: middle;" class="ui-state-default ui-corner-all" id="q_nav1_button"> <span class="ui-icon ui-icon-comment"></span>  </div>');
         
-        $(monkeyPane).append(wdInquiryButton);
-        $(wdInquiryButton).after(wdInquiryComment);
-        $(wdInquiryComment).css({
+        $(monkeyPane).append(emailInquiryButton);
+        $(emailInquiryButton).after(emailInquiryComment);
+        $(emailInquiryComment).css({
             "margin-left":"5px"
         });
-        $(wdInquiryComment).click(function (){
+        $(emailInquiryComment).click(function (){
             alert('When you get a new case by email, send the "Got it" message as usual. Then, copy all the content of the "Got it" email you just sent (it contains the senders name and email). Click "New Email Case" and paste the email into the alert box. It will try and parse information from the email and apply it to a new case. Always double check the information before finalizing the case!');
             
         });
-        wdInquiryButton.click(function(){
+        emailInquiryButton.click(function(){
             wdPrompt = prompt("Paste the inquiry email here.");
             if (wdPrompt)
             {
-                wdInquiry.active = true;
+                emailInquiry.active = true;
                 //Try and find email
                 fromIndex = wdPrompt.indexOf("From:") + 6;
                 sentIndex= wdPrompt.indexOf(" Sent:");
                 if (wdPrompt.indexOf("WD Inquiry") != -1)  // Check if this a WD referral
                 {
-                    wdInquiry.wdReferral = true;
+                    emailInquiry.wdReferral = true;
                 }
                 if (fromIndex != -1 && sentIndex != -1) //Make sure the email contains valid from/sent text
                 {
@@ -66,24 +66,24 @@ $(function(){
                         }
                         firstName = $.trim(firstName);
                         lastName = $.trim(lastName);
-                        wdInquiry.firstName = firstName;
-                        wdInquiry.lastName = lastName;
+                        emailInquiry.firstName = firstName;
+                        emailInquiry.lastName = lastName;
                         console.log("First name: " + firstName + "\nLast name: " + lastName);
                     } 
                     email = fromText.substring(sepCharIndex + (sepChar == "<" ? 1 : 8), fromText.length - 1);
                     if (email)
                     {
                         console.log("Email: " + email);
-                        wdInquiry.email = email;
+                        emailInquiry.email = email;
                     }
                     subjectIndex = wdPrompt.indexOf("Subject:", fromIndex);
                     scenario = wdPrompt.substring(subjectIndex, wdPrompt.length);
-                    wdInquiry.scenario = scenario;
+                    emailInquiry.scenario = scenario;
 
                 }
                 
                 
-                GM_setValue("wdInquiry", wdInquiry);
+                GM_setValue("emailInquiry", emailInquiry);
                 window.location.href = ("/add_client_1.jsp");
             }
         });
@@ -92,13 +92,13 @@ $(function(){
 
     else if (path.indexOf("add_client" != -1)) //Add client page
     {
-        wdInquiry = GM_getValue("wdInquiry");
-        if (wdInquiry != undefined && wdInquiry.active)
+        emailInquiry = GM_getValue("emailInquiry");
+        if (emailInquiry != undefined && emailInquiry.active)
         {
             $("#client_type_input").val("individual").trigger("change");  //Change client type
-            if (wdInquiry.firstName && wdInquiry.lastName) //Add client's name 
+            if (emailInquiry.firstName && emailInquiry.lastName) //Add client's name 
             {
-                $("#company_input").val(wdInquiry.lastName + ", " + wdInquiry.firstName).trigger("change");
+                $("#company_input").val(emailInquiry.lastName + ", " + emailInquiry.firstName).trigger("change");
             }
             else
             {
@@ -107,9 +107,9 @@ $(function(){
 
             $("#phone1_input").val("0000000000").trigger("change");  // Set the phone number
 
-            if (wdInquiry.email) //Se the client's email
+            if (emailInquiry.email) //Se the client's email
             {
-                $("#email_input").val(wdInquiry.email).trigger("change");
+                $("#email_input").val(emailInquiry.email).trigger("change");
             }
             else
             {
@@ -118,24 +118,24 @@ $(function(){
             $("#city_input").val("need").trigger("change");  // Set the client's city
             $("#state_input").val("APO - AA").trigger("change"); //Set the client's state
             
-            $("#refer_by_input").val((wdInquiry.wdReferral ? "Western Digital" : "Google")).trigger("change");  // Set the referred by value
+            $("#refer_by_input").val((emailInquiry.wdReferral ? "Western Digital" : "Google")).trigger("change");  // Set the referred by value
             
-            wdInquiry.active = false;
-            GM_setValue("wdInquiry", wdInquiry);
+            emailInquiry.active = false;
+            GM_setValue("emailInquiry", emailInquiry);
         }
         $("#submit1").on("click", function(){ 
-            wdInquiry.active = true;
-            GM_setValue("wdInquiry", wdInquiry);
+            emailInquiry.active = true;
+            GM_setValue("emailInquiry", emailInquiry);
         });
     }
 
     else if (path.indexOf("add_client" != -1)) //Add client page
     {
-        wdInquiry = GM_getValue("wdInquiry");
-        if (wdInquiry != undefined && wdInquiry.active)
+        emailInquiry = GM_getValue("emailInquiry");
+        if (emailInquiry != undefined && emailInquiry.active)
         {
-            wdInquiry.active = false;
-            GM_setValue("wdInquiry", wdInquiry);
+            emailInquiry.active = false;
+            GM_setValue("emailInquiry", emailInquiry);
 
             $("#case_setup_method").val("email").trigger("change");  // Change the setup method
 
@@ -147,12 +147,12 @@ $(function(){
             $("#operating_system_id").val("Unknown").trigger("change");  // Change the OS to Uknown
             $("#return_media_id").val("Client Will Decide Later").trigger("change");  // Change RM
 
-            if (wdInquiry.scenario)
+            if (emailInquiry.scenario)
             {
-                $("#scen_id").val(wdInquiry.scenario).trigger("change");
+                $("#scen_id").val(emailInquiry.scenario).trigger("change");
             }
 
-            GM_delete
+            GM_deleteValue("emailInquiry");
         }
 
     }
