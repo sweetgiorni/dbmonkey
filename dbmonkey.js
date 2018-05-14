@@ -34,7 +34,6 @@ $(function(){
                 if (fromIndex != -1 && sentIndex != -1) //Make sure the email contains valid from/sent text
                 {
                     fromText = wdPrompt.substring(wdPrompt.indexOf("From:") + 6, wdPrompt.indexOf(" Sent:"));
-                    console.log(fromText);
                     var sepCharIndex = fromText.indexOf("<"); // Check to see if the email is enclosed in <>
                     var sepChar = "<";
                     if (sepCharIndex == -1)
@@ -48,7 +47,6 @@ $(function(){
                     }
                     if (fullName)  // Make sure a name was found
                     {
-                        console.log("Full name: " + fullName);
                         var commaIndex = fullName.indexOf(',');
                         if (commaIndex != -1) //Check if the name is in the format last, first
                         {
@@ -68,12 +66,10 @@ $(function(){
                         lastName = $.trim(lastName);
                         emailInquiry.firstName = firstName;
                         emailInquiry.lastName = lastName;
-                        console.log("First name: " + firstName + "\nLast name: " + lastName);
                     } 
                     email = fromText.substring(sepCharIndex + (sepChar == "<" ? 1 : 8), fromText.length - 1);
                     if (email)
                     {
-                        console.log("Email: " + email);
                         emailInquiry.email = email;
                     }
                     subjectIndex = wdPrompt.indexOf("Subject:", fromIndex);
@@ -90,7 +86,7 @@ $(function(){
     }
 
 
-    else if (path.indexOf("add_client" != -1)) //Add client page
+    else if (path.indexOf("add_client") != -1) //Add client page
     {
         emailInquiry = GM_getValue("emailInquiry");
         if (emailInquiry != undefined && emailInquiry.active)
@@ -129,7 +125,7 @@ $(function(){
         });
     }
 
-    else if (path.indexOf("add_client" != -1)) //Add client page
+    else if (path.indexOf("new_case" ) != -1) //Add client page
     {
         emailInquiry = GM_getValue("emailInquiry");
         if (emailInquiry != undefined && emailInquiry.active)
@@ -142,14 +138,14 @@ $(function(){
             //Service type will default to Standard Hard Drive
             $("#serv_pick_attr1").val("single hard drive").trigger("change");
             $("#serv_pick_price_structure").val("variable-eval").trigger("change");
-            $("#serv_pick_priority").val("standar").trigger("change");
-
+            $("#serv_pick_priority").val("standard").trigger("change");
+            $("#service_id").val("1").trigger("change");
             $("#operating_system_id").val("Unknown").trigger("change");  // Change the OS to Uknown
             $("#return_media_id").val("Client Will Decide Later").trigger("change");  // Change RM
 
             if (emailInquiry.scenario)
             {
-                $("#scen_id").val(emailInquiry.scenario).trigger("change");
+                $("#scen_id").val("emailInquiry.scenario").trigger("change");
             }
 
             GM_deleteValue("emailInquiry");
