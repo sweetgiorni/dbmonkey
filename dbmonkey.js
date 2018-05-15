@@ -111,6 +111,7 @@ $(function(){
             {
                 $("#email_input").val("need@need.need").trigger("change");
             }
+            $("country_input").val("USA").trigger("change"); // Set country to USA by default
             $("#city_input").val("need").trigger("change");  // Set the client's city
             $("#state_input").val("APO - AA").trigger("change"); //Set the client's state
             
