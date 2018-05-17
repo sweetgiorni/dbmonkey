@@ -1,3 +1,19 @@
+// ==UserScript==
+// @name         DB Monkey
+// @namespace    https://db.datarecovery.com
+// @version      0.1
+// @description  DB quality of life improvements!
+// @author       Alex Sweet
+// @match           https://db.datarecovery.com/*
+// @require         http://code.jquery.com/jquery-latest.js
+
+// @grant GM_setValue
+// @grant GM_getValue
+// @grant GM_deleteValue
+
+// ==/UserScript==
+
+
 var emailInquiry = {};
 var path = "";
 var root = window.location.host;
