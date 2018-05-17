@@ -51,7 +51,7 @@ $(function(){
                         if (commaIndex != -1) //Check if the name is in the format last, first
                         {
                             lastName = fullName.substring(0, commaIndex);
-                            firstName = fullName.substring(commaIndex, fullName.length);
+                            firstName = fullName.substring(commaIndex + 2, fullName.length);
                         }
                         else //No comma in the name
                         {
@@ -72,6 +72,12 @@ $(function(){
                     {
                         emailInquiry.email = email;
                     }
+
+                    if (email == fullName)
+                    {
+                        emailInquiry.firstName = "";
+                        emailInquiry.lastName = "";
+                    }
                     subjectIndex = wdPrompt.indexOf("Subject:", fromIndex);
                     scenario = wdPrompt.substring(subjectIndex, wdPrompt.length);
                     emailInquiry.scenario = scenario;
@@ -91,6 +97,7 @@ $(function(){
         emailInquiry = GM_getValue("emailInquiry");
         if (emailInquiry != undefined && emailInquiry.active)
         {
+            $("country_input").val("USA").trigger("change"); // Set country to USA by default
             $("#client_type_input").val("individual").trigger("change");  //Change client type
             if (emailInquiry.firstName && emailInquiry.lastName) //Add client's name 
             {
@@ -111,7 +118,7 @@ $(function(){
             {
                 $("#email_input").val("need@need.need").trigger("change");
             }
-            $("country_input").val("USA").trigger("change"); // Set country to USA by default
+            
             $("#city_input").val("need").trigger("change");  // Set the client's city
             $("#state_input").val("APO - AA").trigger("change"); //Set the client's state
             
@@ -120,37 +127,17 @@ $(function(){
             emailInquiry.active = false;
             GM_setValue("emailInquiry", emailInquiry);
         }
-        $("#submit1").on("click", function(){ 
-            emailInquiry.active = true;
-            GM_setValue("emailInquiry", emailInquiry);
-        });
     }
 
-    else if (path.indexOf("new_case" ) != -1) //Add client page
+    else if (path.indexOf("new_case" ) != -1) //Add case page
     {
-        emailInquiry = GM_getValue("emailInquiry");
-        if (emailInquiry != undefined && emailInquiry.active)
-        {
-            emailInquiry.active = false;
-            GM_setValue("emailInquiry", emailInquiry);
-
-            $("#case_setup_method").val("email").trigger("change");  // Change the setup method
-
-            //Service type will default to Standard Hard Drive
-            $("#serv_pick_attr1").val("single hard drive").trigger("change");
-            $("#serv_pick_price_structure").val("variable-eval").trigger("change");
-            $("#serv_pick_priority").val("standard").trigger("change");
-            $("#service_id").val("1").trigger("change");
-            $("#operating_system_id").val("Unknown").trigger("change");  // Change the OS to Uknown
-            $("#return_media_id").val("Client Will Decide Later").trigger("change");  // Change RM
-
-            if (emailInquiry.scenario)
-            {
-                $("#scen_id").val("emailInquiry.scenario").trigger("change");
-            }
-
-            GM_deleteValue("emailInquiry");
-        }
-
+        $("#case_setup_method").val("email").trigger("change");  // Change the setup method
+        //Service type will default to Standard Hard Drive
+        $("#serv_pick_attr1").val("single hard drive").trigger("change");
+        $("#serv_pick_price_structure").val("variable-eval").trigger("change");
+        $("#serv_pick_priority").val("standard").trigger("change");
+        $("#service_id").val("1").trigger("change");
+        $("#operating_system_id").val("Unknown").trigger("change");  // Change the OS to Uknown
+        $("#return_media_id").val("Client Will Decide Later").trigger("change");  // Change RM   
     }
 });
