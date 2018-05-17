@@ -6,7 +6,8 @@
 // @author       Alex Sweet
 // @match           https://db.datarecovery.com/*
 // @require         http://code.jquery.com/jquery-latest.js
-
+// @updateUrl    https://raw.githubusercontent.com/sweetgiorni/dbmonkey/master/dbmonkey.js
+// @downloadUrl  https://raw.githubusercontent.com/sweetgiorni/dbmonkey/master/dbmonkey.js
 // @grant GM_setValue
 // @grant GM_getValue
 // @grant GM_deleteValue
