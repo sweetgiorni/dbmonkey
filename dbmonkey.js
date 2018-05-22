@@ -39,10 +39,20 @@ $(function () {
         emailInquiryButton.click(function () {
             wdPrompt = prompt("Paste the inquiry email here.");
             if (wdPrompt) {
+                if (wdPrompt.toLowerCase().indexOf("got it") === -1)
+                {
+                    gotitPrompt = window.confirm('Didn\'t detect "Got it!" in your email; are you sure this is the "Got it!" email?')
+                    if (!gotitPrompt)
+                    {
+                        return;
+                    }
+                }
+
                 emailInquiry.active = true;
                 //Get phone number with RegEx pattern
                 phoneRegEx = /(?:\+?(\d{1,3}))?[- (]*(\d{3})[- )]*(\d{3})[- ]*(\d{4})(?: *x(\d+))?\b/;
                 phone = phoneRegEx.exec(wdPrompt);
+                validPhone = false;
                 if (phone != undefined && phone[0] != undefined)
                 {
                     validPhone = true;
