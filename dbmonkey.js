@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.2
+// @version      0.3
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match           https://db.datarecovery.com/*
@@ -40,6 +40,19 @@ $(function () {
             wdPrompt = prompt("Paste the inquiry email here.");
             if (wdPrompt) {
                 emailInquiry.active = true;
+                //Get phone number with RegEx pattern
+                phoneRegEx = /(?:\+?(\d{1,3}))?[- (]*(\d{3})[- )]*(\d{3})[- ]*(\d{4})(?: *x(\d+))?\b/;
+                phone = phoneRegEx.exec(wdPrompt);
+                if (phone != undefined && phone[0] != undefined)
+                {
+                    validPhone = true;
+                    phone = phone[0];
+                    phone = phone.replace(/\D/g,'');
+                }
+                if (validPhone)
+                {
+                    emailInquiry.phone = phone;
+                }
                 //Try and find email
                 fromIndex = wdPrompt.indexOf("From:") + 6;
                 sentIndex = wdPrompt.indexOf(" Sent:");
@@ -95,8 +108,6 @@ $(function () {
                     emailInquiry.scenario = scenario;
 
                 }
-
-
                 GM_setValue("emailInquiry", emailInquiry);
                 window.location.href = ("/add_client_1.jsp");
             }
@@ -118,7 +129,7 @@ $(function () {
                 $("#company_input").val("need, need").trigger("change");
             }
 
-            $("#phone1_input").val("0000000000").trigger("change");  // Set the phone number
+            
 
             if (emailInquiry.email) //Se the client's email
             {
@@ -127,7 +138,14 @@ $(function () {
             else {
                 $("#email_input").val("need@need.need").trigger("change");
             }
-
+            if (emailInquiry.phone)
+            {
+                $("#phone1_input").val(emailInquiry.phone).trigger("change");  // Set the phone number
+            }
+            else
+            {
+                $("#phone1_input").val("0000000000").trigger("change");  // Set the phone number
+            }
             $("#city_input").val("need").trigger("change");  // Set the client's city
             $("#state_input").val("APO - AA").trigger("change"); //Set the client's state
 
