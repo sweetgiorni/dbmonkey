@@ -167,14 +167,55 @@ $(function () {
     }
 
     else if (path.indexOf("new_case") != -1) //Add case page
-    {
-        $("#case_setup_method").val("email").trigger("change");  // Change the setup method
+    {     
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        function Reset()
+        {
+            $("#serv_pick_attr1").val("").trigger("change");
+            $("#serv_pick_attr2").val("").trigger("change");
+            $("#serv_pick_price_structure").val("").trigger("change");
+            $("#serv_pick_priority").val("").trigger("change");
+            $("#service_id").val("").trigger("change");
+        }
+        async function setService(service_id)
+        {
+            Reset();
+            await sleep(200);  // This is needed to let the page update the values from the server
+            $("#service_id").val(service_id).trigger("change");
+            return;
+        }
+        function setServiceHardDrive()
+        { 
+            setService("1");
+        }
+        function setServiceThumbDrive()
+        { 
+            setService("51");
+        }
+        function setServicePhone()
+        {
+            setService("70");
+        }
+        $("#case_setup_method").val("phone").trigger("change");  // Change the setup method
         //Service type will default to Standard Hard Drive
-        $("#serv_pick_attr1").val("single hard drive").trigger("change");
-        $("#serv_pick_price_structure").val("variable-eval").trigger("change");
-        $("#serv_pick_priority").val("standard").trigger("change");
-        $("#service_id").val("1").trigger("change");
         $("#operating_system_id").val("Unknown").trigger("change");  // Change the OS to Uknown
-        $("#return_media_id").val("Client Will Decide Later").trigger("change");  // Change RM   
+        $("#return_media_id").val("Client Will Decide Later").trigger("change");  // Change RM  
+        
+         //Service type shortcut buttons
+        shortcuts = $(`
+                <tr >
+                    <th style="display: flex; justify-content: space-between;">
+                        <button type="button" id="hardDriveButton">Single Hard Drive</button>
+                        <button type="button" id="thumbDriveButton">Thumb Drive</button>
+                        <button type="button" id="phoneButton">Mobile Phone</button>
+                    </th>
+                </tr>
+        `);
+        $("#new_case_form > table > tbody > tr:nth-child(1) > td > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(1)").after(shortcuts);
+        $("#hardDriveButton").on("click", setServiceHardDrive);
+        $("#thumbDriveButton").on("click", setServiceThumbDrive);
+        $("#phoneButton").on("click", setServicePhone);
     }
 });
