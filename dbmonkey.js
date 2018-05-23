@@ -21,7 +21,7 @@ var root = window.location.host;
 $(function () {
 
     path = window.location.pathname;
-    if (path == "" || path.indexOf("index.jsp") != -1) //Home page
+    if (path == "/" || path == "" || path.indexOf("index.jsp") != -1) //Home page
     {
         monkeyPane = $('<div class="home_grid_block3_cell" style="background-color: #ff5959;" ><h3>DB Monkey</h3></div>').prependTo(".home_grid_divrow");
         emailInquiryButton = $('<a href="#">New Email Case</a>');
