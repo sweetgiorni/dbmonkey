@@ -19,19 +19,15 @@ var emailInquiry = {};
 var path = "";
 var root = window.location.host;
 
-function AddCaseToWatchList(caseNumber, note)
-{
+function AddCaseToWatchList(caseNumber, note) {
     var watchedCases = GM_getValue("watchedCases");
-    if (watchedCases == undefined)
-    {
+    if (watchedCases == undefined) {
         watchedCases = []
     }
     newCase = {}
     // Make sure this case isn't in the list already
-    for (i = 0; i < watchedCases.length; i++)
-    {
-        if (watchedCases[i].caseNumber == caseNumber)
-        {
+    for (i = 0; i < watchedCases.length; i++) {
+        if (watchedCases[i].caseNumber == caseNumber) {
             return;
         }
     }
@@ -41,17 +37,13 @@ function AddCaseToWatchList(caseNumber, note)
     GM_setValue("watchedCases", watchedCases);
 }
 
-function RemoveCaseFromWatchList(caseNumber)
-{
+function RemoveCaseFromWatchList(caseNumber) {
     var watchedCases = GM_getValue("watchedCases");
-    if (watchedCases == undefined)
-    {
+    if (watchedCases == undefined) {
         return;
     }
-    for (i = 0; i < watchedCases.length; i++)
-    {
-        if (watchedCases[i].caseNumber == caseNumber)
-        {
+    for (i = 0; i < watchedCases.length; i++) {
+        if (watchedCases[i].caseNumber == caseNumber) {
             watchedCases.splice(i, 1);
         }
     }
@@ -78,11 +70,9 @@ $(function () {
         emailInquiryButton.click(function () {
             wdPrompt = prompt("Paste the inquiry email here.");
             if (wdPrompt) {
-                if (wdPrompt.toLowerCase().indexOf("got it") === -1)
-                {
+                if (wdPrompt.toLowerCase().indexOf("got it") === -1) {
                     gotitPrompt = window.confirm('Didn\'t detect "Got it!" in your email; are you sure this is the "Got it!" email?')
-                    if (!gotitPrompt)
-                    {
+                    if (!gotitPrompt) {
                         return;
                     }
                 }
@@ -92,20 +82,18 @@ $(function () {
                 phoneRegEx = /(?:\+?(\d{1,3}))?[- (]*(\d{3})[- )]*(\d{3})[- ]*(\d{4})(?: *x(\d+))?\b/;
                 phone = phoneRegEx.exec(wdPrompt);
                 validPhone = false;
-                if (phone != undefined && phone[0] != undefined)
-                {
+                if (phone != undefined && phone[0] != undefined) {
                     validPhone = true;
                     phone = phone[0];
-                    phone = phone.replace(/\D/g,'');
+                    phone = phone.replace(/\D/g, '');
                 }
-                if (validPhone)
-                {
+                if (validPhone) {
                     emailInquiry.phone = phone;
                 }
                 //Try and find email
                 fromIndex = wdPrompt.indexOf("From:") + 6;
                 sentIndex = wdPrompt.indexOf(" Sent:");
-                if (wdPrompt.indexOf("WD Inquiry") != -1)  // Check if this a WD referral
+                if (wdPrompt.indexOf("WD Inquiry") != -1) // Check if this a WD referral
                 {
                     emailInquiry.wdReferral = true;
                 }
@@ -122,15 +110,14 @@ $(function () {
                     {
                         fullName = fromText.substring(0, sepCharIndex);
                     }
-                    if (fullName)  // Make sure a name was found
+                    if (fullName) // Make sure a name was found
                     {
                         var commaIndex = fullName.indexOf(',');
                         if (commaIndex != -1) //Check if the name is in the format last, first
                         {
                             lastName = fullName.substring(0, commaIndex);
                             firstName = fullName.substring(commaIndex + 2, fullName.length);
-                        }
-                        else //No comma in the name
+                        } else //No comma in the name
                         {
                             spaceIndex = fullName.indexOf(' ');
                             if (spaceIndex != -1) {
@@ -161,88 +148,77 @@ $(function () {
                 window.location.href = ("/add_client_1.jsp");
             }
         });
-    }
-
-
-    else if (path.indexOf("add_client") != -1) //Add client page
+    } else if (path.indexOf("add_client") != -1) //Add client page
     {
         emailInquiry = GM_getValue("emailInquiry");
         if (emailInquiry != undefined && emailInquiry.active) {
             $("country_input").val("USA").trigger("change"); // Set country to USA by default
-            $("#client_type_input").val("individual").trigger("change");  //Change client type
+            $("#client_type_input").val("individual").trigger("change"); //Change client type
             if (emailInquiry.firstName && emailInquiry.lastName) //Add client's name 
             {
                 $("#company_input").val(emailInquiry.lastName + ", " + emailInquiry.firstName).trigger("change");
-            }
-            else {
+            } else {
                 $("#company_input").val("need, need").trigger("change");
             }
 
-            
+
 
             if (emailInquiry.email) //Se the client's email
             {
                 $("#email_input").val(emailInquiry.email).trigger("change");
-            }
-            else {
+            } else {
                 $("#email_input").val("need@need.need").trigger("change");
             }
-            if (emailInquiry.phone)
-            {
-                $("#phone1_input").val(emailInquiry.phone).trigger("change");  // Set the phone number
+            if (emailInquiry.phone) {
+                $("#phone1_input").val(emailInquiry.phone).trigger("change"); // Set the phone number
+            } else {
+                $("#phone1_input").val("0000000000").trigger("change"); // Set the phone number
             }
-            else
-            {
-                $("#phone1_input").val("0000000000").trigger("change");  // Set the phone number
-            }
-            $("#city_input").val("need").trigger("change");  // Set the client's city
+            $("#city_input").val("need").trigger("change"); // Set the client's city
             $("#state_input").val("APO - AA").trigger("change"); //Set the client's state
 
-            $("#refer_by_input").val((emailInquiry.wdReferral ? "Western Digital" : "Google")).trigger("change");  // Set the referred by value
+            $("#refer_by_input").val((emailInquiry.wdReferral ? "Western Digital" : "Google")).trigger("change"); // Set the referred by value
 
             emailInquiry.active = false;
             GM_setValue("emailInquiry", emailInquiry);
         }
-    }
-
-    else if (path.indexOf("new_case") != -1) //Add case page
-    {     
+    } else if (path.indexOf("new_case") != -1) //Add case page
+    {
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
-        function Reset()
-        {
+
+        function Reset() {
             $("#serv_pick_attr1").val("").trigger("change");
             $("#serv_pick_attr2").val("").trigger("change");
             $("#serv_pick_price_structure").val("").trigger("change");
             $("#serv_pick_priority").val("").trigger("change");
             $("#service_id").val("").trigger("change");
         }
-        async function setService(service_id)
-        {
+        async function setService(service_id) {
             Reset();
-            await sleep(200);  // This is needed to let the page update the values from the server
+            await sleep(200); // This is needed to let the page update the values from the server
             $("#service_id").val(service_id).trigger("change");
             return;
         }
-        function setServiceHardDrive()
-        { 
+
+        function setServiceHardDrive() {
             setService("1");
         }
-        function setServiceThumbDrive()
-        { 
+
+        function setServiceThumbDrive() {
             setService("51");
         }
-        function setServicePhone()
-        {
+
+        function setServicePhone() {
             setService("70");
         }
-        $("#case_setup_method").val("phone").trigger("change");  // Change the setup method
+        $("#case_setup_method").val("phone").trigger("change"); // Change the setup method
         //Service type will default to Standard Hard Drive
-        $("#operating_system_id").val("Unknown").trigger("change");  // Change the OS to Uknown
-        $("#return_media_id").val("Client Will Decide Later").trigger("change");  // Change RM  
-        
-         //Service type shortcut buttons
+        $("#operating_system_id").val("Unknown").trigger("change"); // Change the OS to Uknown
+        $("#return_media_id").val("Client Will Decide Later").trigger("change"); // Change RM  
+
+        //Service type shortcut buttons
         shortcuts = $(`
                 <tr >
                     <th style="display: flex; justify-content: space-between;">
@@ -256,32 +232,30 @@ $(function () {
         $("#hardDriveButton").on("click", setServiceHardDrive);
         $("#thumbDriveButton").on("click", setServiceThumbDrive);
         $("#phoneButton").on("click", setServicePhone);
-    }
-
-    else if (path.indexOf("view_case") != -1)  // View case page
+    } else if (path.indexOf("view_case") != -1) // View case page
     {
-        var caseNumber = $('#nav1_case > table > tbody > tr > td:nth-child(1) > a').text().replace(/\s/g,'');
+        var caseNumber = $('#nav1_case > table > tbody > tr > td:nth-child(1) > a').text().replace(/\s/g, '');
         watchCaseButton = $(`
         <div>
             <button type="button" style="">Watch this case</button>
             </div>
         `)
 
-       $('#flagColorRadioGroup').append(watchCaseButton);
-       caseWatchNote = $(`<textarea style="width: 140px; height: 80px" id="caseWatchNote"></textarea>`);
-       watchCaseButton.before(caseWatchNote);
-   
-       watchCaseButton.click(function(){
-        $("body > div:nth-child(12) > div.ui-dialog-titlebar.ui-widget-header.ui-corner-all.ui-helper-clearfix > button").trigger("click");
-           AddCaseToWatchList(caseNumber, caseWatchNote.val());
-      });
+        $('#flagColorRadioGroup').append(watchCaseButton);
+        caseWatchNote = $(`<textarea style="width: 140px; height: 80px" id="caseWatchNote"></textarea>`);
+        watchCaseButton.before(caseWatchNote);
+
+        watchCaseButton.click(function () {
+            $("body > div:nth-child(12) > div.ui-dialog-titlebar.ui-widget-header.ui-corner-all.ui-helper-clearfix > button").trigger("click");
+            AddCaseToWatchList(caseNumber, caseWatchNote.val());
+        });
     }
-    
-    
+
+
 
     //  Case Watcher
     var watchDialogVals = GM_getValue("watchDialogVals");
-    
+
     watchButton = $(`
     <td style="vertical-align: inherit;">
         <button type="button">Case Watch</button>
@@ -298,51 +272,42 @@ $(function () {
         autoOpen: false,
         title: "Case Watch",
         width: 166
-      });
+    });
     $(".nav1left").after(watchButton);
-    $(watchDialog).on("dialogclose", function (event, ui)
-    {
-        dialogPos = watchDialog.dialog( "option", "position" );
-        dialogSize = [ watchDialog.dialog( "option", "width" ),  watchDialog.dialog( "option", "height" )]
+    $(watchDialog).on("dialogclose", function (event, ui) {
+        dialogPos = watchDialog.dialog("option", "position");
+        dialogSize = [watchDialog.dialog("option", "width"), watchDialog.dialog("option", "height")]
         GM_setValue("dialogPos", dialogPos);
         GM_setValue("dialogSize", dialogSize);
     });
 
-    openWatch = (function(){
-        if (watchDialog.dialog("isOpen") == true)
-        {
+    openWatch = (function () {
+        if (watchDialog.dialog("isOpen") == true) {
             return;
         }
-        $(watchDialog).css("width", "auto");//////////////////
+        $(watchDialog).css("width", "auto"); //////////////////
         $("#caseWatchList").empty();
         watchedCases = GM_getValue("watchedCases");
         watchDialog.dialog('open');
         $(watchDialog.prev().children()[1]).blur();
         dialogPos = GM_getValue("dialogPos");
-        if (dialogPos == undefined)
-        {
+        if (dialogPos == undefined) {
             dialogPos = [0, 0];
         }
         watchDialog.dialog("option", "position", dialogPos);
         dialogSize = GM_getValue("dialogSize");
-        if (dialogSize == undefined)
-        {
+        if (dialogSize == undefined) {
             dialogSize = [280, 150];
         }
-        watchDialog.dialog( "option", "width", dialogSize[0]);
-        watchDialog.dialog( "option", "height", dialogSize[1]);
-        if (watchedCases == undefined)
-        {
+        watchDialog.dialog("option", "width", dialogSize[0]);
+        watchDialog.dialog("option", "height", dialogSize[1]);
+        if (watchedCases == undefined) {
             watchedCases = []
         }
-        if (watchedCases.length == 0)
-        {
+        if (watchedCases.length == 0) {
             $("#caseWatchList").append('<li style="margin: 0;">No cases being watched!</li>');
-        }
-        else
-        {
-            for (i = 0; i < watchedCases.length; i++)
-            {
+        } else {
+            for (i = 0; i < watchedCases.length; i++) {
                 deleteButton = $('<span style="display:inline-flex" class="ui-icon ui-icon-closethick"></span>');
                 var listItem = $(`
                     <li style="margin: 0; white-space: nowrap">
@@ -351,7 +316,7 @@ $(function () {
                     </li>
                 `)
                 listItem.prepend(deleteButton);
-                deleteButton.click(function(e){
+                deleteButton.click(function (e) {
                     var toDelete = ($(this).next().text());
                     RemoveCaseFromWatchList(toDelete);
                     $(e.target).parent().remove();
@@ -362,7 +327,7 @@ $(function () {
                 $("#caseWatchList").append(listItem);
             }
         }
-        
+
     });
     watchButton.click(openWatch);
 });
