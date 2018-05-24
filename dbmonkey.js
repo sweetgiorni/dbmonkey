@@ -4,8 +4,7 @@
 // @version      0.4
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
-// @match           https://db.datarecovery.com/*
-// @require         http://code.jquery.com/jquery-latest.js
+// @match        https://db.datarecovery.com/*
 // @updateUrl    https://raw.githubusercontent.com/sweetgiorni/dbmonkey/master/dbmonkey.js
 // @downloadUrl  https://raw.githubusercontent.com/sweetgiorni/dbmonkey/master/dbmonkey.js
 // @grant GM_setValue
@@ -14,16 +13,56 @@
 
 // ==/UserScript==
 
+salmon = '#ff7070';
 
 var emailInquiry = {};
 var path = "";
 var root = window.location.host;
+
+function AddCaseToWatchList(caseNumber, note)
+{
+    var watchedCases = GM_getValue("watchedCases");
+    if (watchedCases == undefined)
+    {
+        watchedCases = []
+    }
+    newCase = {}
+    // Make sure this case isn't in the list already
+    for (i = 0; i < watchedCases.length; i++)
+    {
+        if (watchedCases[i].caseNumber == caseNumber)
+        {
+            return;
+        }
+    }
+    newCase.caseNumber = caseNumber;
+    newCase.note = note;
+    watchedCases.push(newCase);
+    GM_setValue("watchedCases", watchedCases);
+}
+
+function RemoveCaseFromWatchList(caseNumber)
+{
+    var watchedCases = GM_getValue("watchedCases");
+    if (watchedCases == undefined)
+    {
+        return;
+    }
+    for (i = 0; i < watchedCases.length; i++)
+    {
+        if (watchedCases[i].caseNumber == caseNumber)
+        {
+            watchedCases.splice(i, 1);
+        }
+    }
+    GM_setValue("watchedCases", watchedCases);
+}
 $(function () {
 
     path = window.location.pathname;
     if (path == "/" || path == "" || path.indexOf("index.jsp") != -1) //Home page
     {
-        monkeyPane = $('<div class="home_grid_block3_cell" style="background-color: #ff5959;" ><h3>DB Monkey</h3></div>').prependTo(".home_grid_divrow");
+        monkeyPane = $('<div class="home_grid_block3_cell" style="background-color: #ff7070;" ><h3>DB Monkey</h3></div>').prependTo(".home_grid_divrow");
         emailInquiryButton = $('<a href="#">New Email Case</a>');
         emailInquiryComment = $('<div style="display: inline-block; vertical-align: middle;" class="ui-state-default ui-corner-all" id="q_nav1_button"> <span class="ui-icon ui-icon-comment"></span>  </div>');
 
@@ -218,4 +257,112 @@ $(function () {
         $("#thumbDriveButton").on("click", setServiceThumbDrive);
         $("#phoneButton").on("click", setServicePhone);
     }
+
+    else if (path.indexOf("view_case") != -1)  // View case page
+    {
+        var caseNumber = $('#nav1_case > table > tbody > tr > td:nth-child(1) > a').text().replace(/\s/g,'');
+        watchCaseButton = $(`
+        <div>
+            <button type="button" style="">Watch this case</button>
+            </div>
+        `)
+
+       $('#flagColorRadioGroup').append(watchCaseButton);
+       caseWatchNote = $(`<textarea style="width: 140px; height: 80px" id="caseWatchNote"></textarea>`);
+       watchCaseButton.before(caseWatchNote);
+   
+       watchCaseButton.click(function(){
+        $("body > div:nth-child(12) > div.ui-dialog-titlebar.ui-widget-header.ui-corner-all.ui-helper-clearfix > button").trigger("click");
+           AddCaseToWatchList(caseNumber, caseWatchNote.val());
+      });
+    }
+    
+    
+
+    //  Case Watcher
+    var watchDialogVals = GM_getValue("watchDialogVals");
+    
+    watchButton = $(`
+    <td style="vertical-align: inherit;">
+        <button type="button">Case Watch</button>
+    </td>
+        
+    `);
+    watchDialog = $(`
+        <div id="watchDialog">
+            <ul style="list-style-type: none; padding: 0;display: flex; flex-direction: column;flex-wrap: wrap;" id="caseWatchList">
+            </ul>
+        </div>
+    `);
+    $(watchDialog).dialog({
+        autoOpen: false,
+        title: "Case Watch",
+        width: 166
+      });
+    $(".nav1left").after(watchButton);
+    $(watchDialog).on("dialogclose", function (event, ui)
+    {
+        dialogPos = watchDialog.dialog( "option", "position" );
+        dialogSize = [ watchDialog.dialog( "option", "width" ),  watchDialog.dialog( "option", "height" )]
+        GM_setValue("dialogPos", dialogPos);
+        GM_setValue("dialogSize", dialogSize);
+    });
+
+    openWatch = (function(){
+        if (watchDialog.dialog("isOpen") == true)
+        {
+            return;
+        }
+        $(watchDialog).css("width", "auto");//////////////////
+        $("#caseWatchList").empty();
+        watchedCases = GM_getValue("watchedCases");
+        watchDialog.dialog('open');
+        $(watchDialog.prev().children()[1]).blur();
+        dialogPos = GM_getValue("dialogPos");
+        if (dialogPos == undefined)
+        {
+            dialogPos = [0, 0];
+        }
+        watchDialog.dialog("option", "position", dialogPos);
+        dialogSize = GM_getValue("dialogSize");
+        if (dialogSize == undefined)
+        {
+            dialogSize = [280, 150];
+        }
+        watchDialog.dialog( "option", "width", dialogSize[0]);
+        watchDialog.dialog( "option", "height", dialogSize[1]);
+        if (watchedCases == undefined)
+        {
+            watchedCases = []
+        }
+        if (watchedCases.length == 0)
+        {
+            $("#caseWatchList").append('<li style="margin: 0;">No cases being watched!</li>');
+        }
+        else
+        {
+            for (i = 0; i < watchedCases.length; i++)
+            {
+                deleteButton = $('<span style="display:inline-flex" class="ui-icon ui-icon-closethick"></span>');
+                var listItem = $(`
+                    <li style="margin: 0; white-space: nowrap">
+                    <span style="display:inline-flex">` + watchedCases[i].caseNumber + `</span>
+                    <span style="margin-left: 20px;background-color: coral; display:inline-flex">` + watchedCases[i].note + `</span>
+                    </li>
+                `)
+                listItem.prepend(deleteButton);
+                deleteButton.click(function(e){
+                    var toDelete = ($(this).next().text());
+                    RemoveCaseFromWatchList(toDelete);
+                    $(e.target).parent().remove();
+                    c
+                    watchedCases = GM_getValue("watchedCases");
+                })
+
+                $("#caseWatchList").append(listItem);
+            }
+        }
+        
+    });
+    watchButton.click(openWatch);
 });
