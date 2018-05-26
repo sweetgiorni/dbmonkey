@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.4
+// @version      0.5
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -65,6 +65,8 @@ function AddCaseToWatchList(caseNumber, note) {
     // Make sure this case isn't in the list already
     for (i = 0; i < watchedCases.length; i++) {
         if (watchedCases[i].caseNumber == caseNumber) {
+            watchedCases[i].note = note; // Although it doesn't need to be re-added, the note can be updated
+            GM_setValue("watchedCases", watchedCases);
             return;
         }
     }
@@ -307,7 +309,7 @@ $(function () {
         watchCaseButton.before(caseWatchNote);
 
         watchCaseButton.click(function () {
-            $("body > div:nth-child(12) > div.ui-dialog-titlebar.ui-widget-header.ui-corner-all.ui-helper-clearfix > button").trigger("click");
+            $(".ui-button-icon-primary.ui-icon.ui-icon-closethick").trigger("click");
             AddCaseToWatchList(caseNumber, caseWatchNote.val());
         });
         
@@ -426,18 +428,19 @@ $(function () {
         width: 166
     });
     $(".nav1left").after(watchButton);
-    $(watchDialog).on("dialogclose", function (event, ui) {
-        dialogPos = watchDialog.dialog("option", "position");
-        dialogSize = [watchDialog.dialog("option", "width"), watchDialog.dialog("option", "height")]
-        GM_setValue("dialogPos", dialogPos);
-        GM_setValue("dialogSize", dialogSize);
+    $(watchDialog).dialog({"dragStop": function (event, ui) 
+        {
+            dialogPos = watchDialog.dialog("option", "position");
+            dialogSize = [watchDialog.dialog("option", "width"), watchDialog.dialog("option", "height")]
+            GM_setValue("dialogPos", dialogPos);
+            GM_setValue("dialogSize", dialogSize);
+        }
     });
-
     openWatch = (function () {
         if (watchDialog.dialog("isOpen") == true) {
             return;
         }
-        $(watchDialog).css("width", "auto"); //////////////////
+        $(watchDialog).css("width", "auto");
         $("#caseWatchList").empty();
         watchedCases = GM_getValue("watchedCases");
         watchDialog.dialog('open');
@@ -463,7 +466,7 @@ $(function () {
                 deleteButton = $('<span style="display:inline-flex" class="ui-icon ui-icon-closethick"></span>');
                 var listItem = $(`
                     <li style="margin: 0; white-space: nowrap">
-                    <span style="display:inline-flex">` + watchedCases[i].caseNumber + `</span>
+                    <a href="https://db.datarecovery.com/view_case.jsp?case_id=` + watchedCases[i].caseNumber + ` " style="display:inline-flex">` + watchedCases[i].caseNumber + `</a>
                     <span style="margin-left: 20px;background-color: coral; display:inline-flex">` + watchedCases[i].note + `</span>
                     </li>
                 `)
@@ -479,7 +482,16 @@ $(function () {
                 $("#caseWatchList").append(listItem);
             }
         }
-
     });
-    watchButton.click(openWatch);
+    watchButton.click(function(){
+        if (watchDialog.dialog("isOpen"))
+        {
+            watchDialog.dialog("close");
+        }
+        else
+        {
+            openWatch();
+        }
+    });
+    
 });
