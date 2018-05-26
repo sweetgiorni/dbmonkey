@@ -19,6 +19,43 @@ var emailInquiry = {};
 var path = "";
 var root = window.location.host;
 
+templates = {
+    "Q1":
+        [
+            ["Initial contact letter", `Hello {FIRST_NAME},
+
+We received your online data recovery request, and I'm here to answer your questions and guide you through our process. The next step is to ship your device to our laboratory for a free evaluation. If you're within driving distance, you can also drop off your case in person. 
+            
+You should have received a case setup letter, which includes a case ID number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS.
+            
+After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote. Data recovery costs start around $200, but vary considerably depending on the complexity of the case. 
+            
+You're under no obligation to proceed with recovery after receiving the quote. If you decline our recovery services, we will ship back your drive at our expense. If you approve our quote, you will only pay if the recovery is successful. 
+            
+To finalize your case setup, please email me at this address or call me at the number listed below to provide some more information. I can also answer any questions you have about the case process or our recovery capabilities.  
+            
+Best regards,`],
+            ["Initial contact letter (WD variation)", `Hello {FIRST_NAME},
+
+We received your online data recovery request, and I'm here to answer your questions and guide you through our process. The next step is to ship your device to our laboratory for a free evaluation. If you're within driving distance, you can also drop off your case in person. 
+            
+You should have received a case setup letter, which includes a case ID number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS.
+            
+After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote. Data recovery costs start around $200, but vary considerably depending on the complexity of the case.
+            
+As a referral from Western Digital, you'll receive free shipping both ways and a 10% discount off the recovery quote.
+            
+You're under no obligation to proceed with recovery after receiving the quote. If you decline our recovery services, we will ship back your drive at our expense. If you approve our quote, you will only pay if the recovery is successful. 
+            
+To finalize your case setup, please email me at this address or call me at the number listed below to provide some more information. I can also answer any questions you have about the case process or our recovery capabilities.  
+            
+            
+Best regards,`]
+        ]
+    
+};
+
+
 function AddCaseToWatchList(caseNumber, note) {
     var watchedCases = GM_getValue("watchedCases");
     if (watchedCases == undefined) {
@@ -50,7 +87,6 @@ function RemoveCaseFromWatchList(caseNumber) {
     GM_setValue("watchedCases", watchedCases);
 }
 $(function () {
-
     path = window.location.pathname;
     if (path == "/" || path == "" || path.indexOf("index.jsp") != -1) //Home page
     {
@@ -182,8 +218,10 @@ $(function () {
             emailInquiry.active = false;
             GM_setValue("emailInquiry", emailInquiry);
         }
-    } else if (path.indexOf("new_case") != -1) //Add case page
+    } else if (path.indexOf("new_case") != -1) //Add case page OR process new case
     {
+        newCasePage = !(path.indexOf("process_new_case") != -1); // True if on new case page, false if on process new online case
+
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
@@ -213,10 +251,6 @@ $(function () {
         function setServicePhone() {
             setService("70");
         }
-        $("#case_setup_method").val("phone").trigger("change"); // Change the setup method
-        //Service type will default to Standard Hard Drive
-        $("#operating_system_id").val("Unknown").trigger("change"); // Change the OS to Uknown
-        $("#return_media_id").val("Client Will Decide Later").trigger("change"); // Change RM  
 
         //Service type shortcut buttons
         shortcuts = $(`
@@ -228,10 +262,37 @@ $(function () {
                     </th>
                 </tr>
         `);
-        $("#new_case_form > table > tbody > tr:nth-child(1) > td > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(1)").after(shortcuts);
+
+        if (newCasePage == true)  // Only for standard new case page
+        {
+            $("#new_case_form > table > tbody > tr:nth-child(1) > td > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(1)").after(shortcuts);
+        }
+        else  // Online case processing
+        {
+            // TODO: Get Mike to add an id to the tables so this selector doesn't need to be stupid long
+            $("body > div.main > div.add_client_1 > div:nth-child(2) > fieldset > div > form > table > tbody > tr:nth-child(1) > td > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(1)").after(shortcuts);
+        }
         $("#hardDriveButton").on("click", setServiceHardDrive);
         $("#thumbDriveButton").on("click", setServiceThumbDrive);
         $("#phoneButton").on("click", setServicePhone);
+
+        //////////////////////
+        //  Anything past this point is ONLY for the standard new case page
+        //
+        //
+        if (newCasePage != true)
+        {
+            return;
+        }
+        //////////////////////
+
+        $("#case_setup_method").val("phone").trigger("change"); // Change the setup method
+        $("#operating_system_id").val("Unknown").trigger("change"); // Change the OS to Uknown
+        $("#return_media_id").val("Client Will Decide Later").trigger("change"); // Change RM  
+
+        
+        
+        
     } else if (path.indexOf("view_case") != -1) // View case page
     {
         var caseNumber = $('#nav1_case > table > tbody > tr > td:nth-child(1) > a').text().replace(/\s/g, '');
@@ -249,10 +310,101 @@ $(function () {
             $("body > div:nth-child(12) > div.ui-dialog-titlebar.ui-widget-header.ui-corner-all.ui-helper-clearfix > button").trigger("click");
             AddCaseToWatchList(caseNumber, caseWatchNote.val());
         });
+        
+        // Setup email template things
+        emailButton = $(`
+        <div style="display: inline-block; vertical-align: middle;" class="ui-state-default ui-corner-all">
+            <span class="ui-icon ui-icon-triangle-1-s"></span>
+        </div>
+        `);
+        
+        emailMenu = $(`
+            <ul style = "position: absolute; cursor:default" id="qs">
+                
+            </ul>
+        `);
+
+        function hoverHighlight(target)
+        {
+            target.hover(function(){
+                target.css({
+                    "border":"#003eff",
+                    "background":"#007fff"
+                });
+            }, function(){
+                target.css({
+                    "border":"#ffffff",
+                    "background":"#ffffff"
+                });
+            });
+        }
+        tempText = $(`<textarea id="temp" style="opacity: 0.0; position:absolute"></textarea>`);
+                        $('body').append(tempText);
+        for (queue in templates)
+        {
+            newQueue = $(`<li class="ui-menu-item"><div style="font-weight: bold; width: 60px; height: 25px;" role="menuitem">` + queue + '</div></li>');
+            emailMenu.append(newQueue);
+            templateList = $(`<ul></ul>`)
+            newQueue.append(templateList);
+            hoverHighlight(newQueue);
+            for (template in queue)
+            {
+                template = templates[queue][template]
+                // Format is ["Summary", "Full email body"]
+                newTemplate = $(`<li class="ui-menu-item" style="width: 300px; font-weight: bold"><div style=";">` + template[0] + `</div></li>`);
+                hoverHighlight(newTemplate);
+                newTemplate.on("click",{currentTemplate : template}, function(e){
+                    currentTemplate = e.data.currentTemplate;
+                    emailBody = currentTemplate[1];
+                    
+                    //Get the client's first name
+                    clientInfo = $("#client_loc_info").parent().text();
+                    start = clientInfo.indexOf("Contact:") + 8;
+                    end = clientInfo.indexOf("Location");
+                    name = clientInfo.slice(start, end).replace(/^\s+|\s+$/g, '');
+                    lastNameIndex = name.indexOf(" ");
+                    firstName = name.slice(0, lastNameIndex);
+                    emailBody = emailBody.replace("{FIRST_NAME}", firstName);
+                    emailButtonCopy = $("#email_button").clone();
+                    href = emailButtonCopy.attr('href');
+                    emailBodyEncoded = encodeURIComponent(emailBody);
+                    //href += "body=" + emailBody;
+                    href += `&body=` + emailBodyEncoded;
+                    emailButtonCopy.attr('href', href);
+                    if (href.length > 2000) // Too long for mailto?
+                    {
+                        tempText.text(emailBody);
+                        tempText.select();
+                        document.execCommand("copy");
+                        $("#submitNoteNewNote").blur();
+                        $(location).attr('href', $("#email_button").attr("href"));
+                    }
+                    else
+                    {
+                        $(location).attr('href', href);
+                    }
+                });
+                templateList.append(newTemplate);
+            }
+        }
+        emailMenu.menu({
+        });
+        emailMenu.hide();
+
+        emailButton.hover(function(e){
+            emailButton.addClass("ui-state-hover");
+            emailMenu.menu("expand");
+            emailMenu.show();
+
+        }, function(e){
+            $(e.target).removeClass("ui-state-hover");
+            emailMenu.menu("collapse");
+            emailMenu.hide();
+        });
+
+        $("#email_button").after(emailButton);
+        emailButton.append(emailMenu);
     }
-
-
-
     //  Case Watcher
     var watchDialogVals = GM_getValue("watchDialogVals");
 
@@ -261,7 +413,7 @@ $(function () {
         <button type="button">Case Watch</button>
     </td>
         
-    `);
+    `); 
     watchDialog = $(`
         <div id="watchDialog">
             <ul style="list-style-type: none; padding: 0;display: flex; flex-direction: column;flex-wrap: wrap;" id="caseWatchList">
