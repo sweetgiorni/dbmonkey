@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.5
+// @version      0.6
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -50,7 +50,40 @@ You're under no obligation to proceed with recovery after receiving the quote. I
 To finalize your case setup, please email me at this address or call me at the number listed below to provide some more information. I can also answer any questions you have about the case process or our recovery capabilities.  
             
             
-Best regards,`]
+Best regards,`],["Follow up", `Hello {FIRST_NAME},
+
+Please provide your full shipping address and phone number, I will email you a free shipping label. Can you also please provide some more details on the failure. What happened, power surge, drive was dropped, just stopped working, etc. Also, please provide a list of critical files to be recovered, example – word, excel, pdf, pictures, videos, etc.
+
+Please feel free to contact me if you have any questions
+Best Regards,`],["1-day follow up", `Hi {FIRST_NAME},
+
+I just wanted to thank you for opening a case with us recently. If you have any questions or concerns, please don’t hesitate to reach out. You can reply to this email or give us a call at 800-237-4200.
+
+Best,
+`],
+        ["Closing letter", `Dear {FIRST_NAME},
+
+I haven't been able to get a hold if you, so I'll close your case for now. 
+
+However, if you decide to go through with the data recovery process, I can easily reopen your case. Send me an email or call me at the number below, and I'll import your information so you don't have to fill out any more forms. 
+
+Alternately, you can ship your device to the laboratory listed on your case setup letter. Clearly label the package with your case number, and we'll automatically re-open your ticket. 
+
+I hope you've regained access to your data, but if you're still assessing your options, please feel free to give me a call. I can explain our recovery capabilities or consult with an engineer regarding your case. To reach our general customer service line, call 1-800-237-4200.
+
+https://datarecovery.com/submit.php
+
+Thank you again, and please let me know if I can be of assistance. 
+
+Sincerely,`],
+        ["Closing letter 2", `Hello {FIRST_NAME}, 
+        
+Just following up one last time here before closing your case. I'm happy to answer any questions you have regarding recoverability or price — alternately, if you've decided not to recover your data, I can close out the ticket so you don't get any more of these messages. 
+
+Please contact me via email or phone if you've made a decision or if you have any questions. 
+
+Best,
+`]
         ]
     
 };
@@ -88,6 +121,80 @@ function RemoveCaseFromWatchList(caseNumber) {
     }
     GM_setValue("watchedCases", watchedCases);
 }
+
+function ParseEmailInquiry(wdPrompt)
+{
+    emailInquiry.active = true;
+    //Get phone number with RegEx pattern
+    phoneRegEx = /(?:\+?(\d{1,3}))?[- (]*(\d{3})[- )]*(\d{3})[- ]*(\d{4})(?: *x(\d+))?\b/;
+    phone = phoneRegEx.exec(wdPrompt);
+    validPhone = false;
+    if (phone != undefined && phone[0] != undefined) {
+        validPhone = true;
+        phone = phone[0];
+        phone = phone.replace(/\D/g, '');
+    }
+    if (validPhone) {
+        emailInquiry.phone = phone;
+    }
+    //Try and find email
+    fromIndex = wdPrompt.indexOf("From:") + 6;
+    sentIndex = wdPrompt.indexOf(" Sent:");
+    if (wdPrompt.indexOf("WD Inquiry") != -1) // Check if this a WD referral
+    {
+        emailInquiry.wdReferral = true;
+    }
+    if (fromIndex != -1 && sentIndex != -1) //Make sure the email contains valid from/sent text
+    {
+        fromText = wdPrompt.substring(wdPrompt.indexOf("From:") + 6, wdPrompt.indexOf(" Sent:"));
+        var sepCharIndex = fromText.indexOf("<"); // Check to see if the email is enclosed in <>
+        var sepChar = "<";
+        if (sepCharIndex == -1) {
+            sepCharIndex = fromText.indexOf("["); // Check to see if the email is enclosed in []
+            sepChar = "[";
+        }
+        if (sepCharIndex != -1) //Make sure a [ or a < was found
+        {
+            fullName = fromText.substring(0, sepCharIndex);
+        }
+        if (fullName) // Make sure a name was found
+        {
+            var commaIndex = fullName.indexOf(',');
+            if (commaIndex != -1) //Check if the name is in the format last, first
+            {
+                lastName = fullName.substring(0, commaIndex);
+                firstName = fullName.substring(commaIndex + 2, fullName.length);
+            } else //No comma in the name
+            {
+                spaceIndex = fullName.indexOf(' ');
+                if (spaceIndex != -1) {
+                    firstName = fullName.substring(0, spaceIndex);
+                    lastName = fullName.substring(spaceIndex, fullName.length);
+                }
+            }
+            firstName = $.trim(firstName);
+            lastName = $.trim(lastName);
+            emailInquiry.firstName = firstName;
+            emailInquiry.lastName = lastName;
+        }
+        email = fromText.substring(sepCharIndex + (sepChar == "<" ? 1 : 8), fromText.length - 1);
+        if (email) {
+            emailInquiry.email = email;
+        }
+
+        if (email == fullName) {
+            emailInquiry.firstName = "";
+            emailInquiry.lastName = "";
+        }
+        subjectIndex = wdPrompt.indexOf("Subject:", fromIndex);
+        scenario = wdPrompt.substring(subjectIndex, wdPrompt.length);
+        emailInquiry.scenario = scenario;
+
+    }
+    GM_setValue("emailInquiry", emailInquiry);
+    window.location.href = ("/add_client_1.jsp");
+}
+
 $(function () {
     path = window.location.pathname;
     if (path == "/" || path == "" || path.indexOf("index.jsp") != -1) //Home page
@@ -107,86 +214,46 @@ $(function () {
         });
         emailInquiryButton.click(function () {
             wdPrompt = prompt("Paste the inquiry email here.");
-            if (wdPrompt) {
+            if (wdPrompt) 
+            {
                 if (wdPrompt.toLowerCase().indexOf("got it") === -1) {
                     gotitPrompt = window.confirm('Didn\'t detect "Got it!" in your email; are you sure this is the "Got it!" email?')
                     if (!gotitPrompt) {
                         return;
                     }
                 }
-
-                emailInquiry.active = true;
-                //Get phone number with RegEx pattern
-                phoneRegEx = /(?:\+?(\d{1,3}))?[- (]*(\d{3})[- )]*(\d{3})[- ]*(\d{4})(?: *x(\d+))?\b/;
-                phone = phoneRegEx.exec(wdPrompt);
-                validPhone = false;
-                if (phone != undefined && phone[0] != undefined) {
-                    validPhone = true;
-                    phone = phone[0];
-                    phone = phone.replace(/\D/g, '');
-                }
-                if (validPhone) {
-                    emailInquiry.phone = phone;
-                }
-                //Try and find email
-                fromIndex = wdPrompt.indexOf("From:") + 6;
-                sentIndex = wdPrompt.indexOf(" Sent:");
-                if (wdPrompt.indexOf("WD Inquiry") != -1) // Check if this a WD referral
-                {
-                    emailInquiry.wdReferral = true;
-                }
-                if (fromIndex != -1 && sentIndex != -1) //Make sure the email contains valid from/sent text
-                {
-                    fromText = wdPrompt.substring(wdPrompt.indexOf("From:") + 6, wdPrompt.indexOf(" Sent:"));
-                    var sepCharIndex = fromText.indexOf("<"); // Check to see if the email is enclosed in <>
-                    var sepChar = "<";
-                    if (sepCharIndex == -1) {
-                        sepCharIndex = fromText.indexOf("["); // Check to see if the email is enclosed in []
-                        sepChar = "[";
-                    }
-                    if (sepCharIndex != -1) //Make sure a [ or a < was found
-                    {
-                        fullName = fromText.substring(0, sepCharIndex);
-                    }
-                    if (fullName) // Make sure a name was found
-                    {
-                        var commaIndex = fullName.indexOf(',');
-                        if (commaIndex != -1) //Check if the name is in the format last, first
-                        {
-                            lastName = fullName.substring(0, commaIndex);
-                            firstName = fullName.substring(commaIndex + 2, fullName.length);
-                        } else //No comma in the name
-                        {
-                            spaceIndex = fullName.indexOf(' ');
-                            if (spaceIndex != -1) {
-                                firstName = fullName.substring(0, spaceIndex);
-                                lastName = fullName.substring(spaceIndex, fullName.length);
-                            }
-                        }
-                        firstName = $.trim(firstName);
-                        lastName = $.trim(lastName);
-                        emailInquiry.firstName = firstName;
-                        emailInquiry.lastName = lastName;
-                    }
-                    email = fromText.substring(sepCharIndex + (sepChar == "<" ? 1 : 8), fromText.length - 1);
-                    if (email) {
-                        emailInquiry.email = email;
-                    }
-
-                    if (email == fullName) {
-                        emailInquiry.firstName = "";
-                        emailInquiry.lastName = "";
-                    }
-                    subjectIndex = wdPrompt.indexOf("Subject:", fromIndex);
-                    scenario = wdPrompt.substring(subjectIndex, wdPrompt.length);
-                    emailInquiry.scenario = scenario;
-
-                }
-                GM_setValue("emailInquiry", emailInquiry);
-                window.location.href = ("/add_client_1.jsp");
+                ParseEmailInquiry(wdPrompt);
             }
         });
-    } else if (path.indexOf("add_client") != -1) //Add client page
+
+        // Add documentation link
+        docButton = $(`
+            <a href = "https://github.com/sweetgiorni/dbmonkey/tree/master">Documentation</a>
+        `)
+        monkeyPane.append(docButton);
+        lastVersion = GM_getValue("lastVersion");
+        if (lastVersion == undefined || lastVersion != GM_info.script.version)  // Fresh update; show the changelog modal
+        {
+            GM_setValue("lastVersion", GM_info.script.version);
+            dialog = $(`<div id="dialog" title="DBMonkey Update - Version ` + GM_info.script.version + `">
+                <ul>
+                    <li>Added this changelog modal</li>
+                    <li>Added note pattern highlighting</li>
+                    <li>Added new template emails</li>
+                    <li>Added documentation link on home page</li>
+                    <li>Added documentation<li>
+                    <li>Fixed email templates sub-menu positioning bug<li>
+                </ul>
+            </div>`);
+          dialog.dialog({
+              modal:true,
+              width: "400px"
+          });
+        }
+
+    }
+    
+    else if (path.indexOf("add_client") != -1) //Add client page
     {
         emailInquiry = GM_getValue("emailInquiry");
         if (emailInquiry != undefined && emailInquiry.active) {
@@ -309,11 +376,54 @@ $(function () {
         watchCaseButton.before(caseWatchNote);
 
         watchCaseButton.click(function () {
-            $(".ui-button-icon-primary.ui-icon.ui-icon-closethick").trigger("click");
+            $("#notes_gen_scrollarea").trigger("click");
             AddCaseToWatchList(caseNumber, caseWatchNote.val());
         });
         
-        // Setup email template things
+        /////////// Case note highlighting
+        notesTable = $("#notes_gen_scrollarea>table>tbody").children();
+        colors = {
+            "yellow" : "#fff468",
+            "orange" : "#ffbe5e",
+            "green" : "#68ff68",
+            "blue" : "#75a0ff",
+            "purple" : "#ed54ff",
+            "red" : "#ff3030",
+            "black" : "#3d3d3d",
+            "pink" : "#ff77e8"
+        }
+        currentColor = "yellow";
+        for (i = notesTable.length - 1; i >= 0; i--)
+        {
+            currentRow = $(notesTable[i]).children();
+            note = currentRow.last().text();
+            if (note.startsWith("* Flagged"))
+            {
+                end = note.indexOf(' ', 10);
+                if (end == -1)
+                {
+                    end = note.length;
+                }
+                color = note.slice(10, end);
+                currentColor = color.trim($(this).text());;
+            }
+            //If this is a highlighted note, leave it alone
+            if (currentRow.parent().attr("class").indexOf("highlight") != -1)
+            {
+                currentRow.css("background-color", "#f7f300");
+                currentRow.css("font-weight", "bold");
+                continue;
+            }
+            if (currentColor == "black")
+            {
+                currentRow.css("color", "white");
+            }
+            currentRow.css("background-color", colors[currentColor]);
+
+        }
+
+
+        /////////// Setup email template things
         emailButton = $(`
         <div style="display: inline-block; vertical-align: middle;" class="ui-state-default ui-corner-all">
             <span class="ui-icon ui-icon-triangle-1-s"></span>
@@ -342,16 +452,20 @@ $(function () {
         }
         tempText = $(`<textarea id="temp" style="opacity: 0.0; position:absolute"></textarea>`);
                         $('body').append(tempText);
+                        
+        
+        
         for (queue in templates)
         {
             newQueue = $(`<li class="ui-menu-item"><div style="font-weight: bold; width: 60px; height: 25px;" role="menuitem">` + queue + '</div></li>');
             emailMenu.append(newQueue);
-            templateList = $(`<ul></ul>`)
+            templateList = $(`<ul style="display: inline-block; padding: 0px;"></ul>`)
             newQueue.append(templateList);
             hoverHighlight(newQueue);
+            queue = templates[queue];
             for (template in queue)
             {
-                template = templates[queue][template]
+                template = queue[template];
                 // Format is ["Summary", "Full email body"]
                 newTemplate = $(`<li class="ui-menu-item" style="width: 300px; font-weight: bold"><div style=";">` + template[0] + `</div></li>`);
                 hoverHighlight(newTemplate);
@@ -389,18 +503,15 @@ $(function () {
                 templateList.append(newTemplate);
             }
         }
-        emailMenu.menu({
-        });
+        emailMenu.menu();
         emailMenu.hide();
 
         emailButton.hover(function(e){
             emailButton.addClass("ui-state-hover");
-            emailMenu.menu("expand");
             emailMenu.show();
 
         }, function(e){
             $(e.target).removeClass("ui-state-hover");
-            emailMenu.menu("collapse");
             emailMenu.hide();
         });
 
