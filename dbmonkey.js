@@ -20,9 +20,8 @@ var path = "";
 var root = window.location.host;
 
 templates = {
-    "Q1":
-        [
-            ["Initial contact letter", `Hello {FIRST_NAME},
+    "Q1": [
+        ["Initial contact letter", `Hello {FIRST_NAME},
 
 We received your online data recovery request, and I'm here to answer your questions and guide you through our process. The next step is to ship your device to our laboratory for a free evaluation. If you're within driving distance, you can also drop off your case in person. 
             
@@ -35,7 +34,7 @@ You're under no obligation to proceed with recovery after receiving the quote. I
 To finalize your case setup, please email me at this address or call me at the number listed below to provide some more information. I can also answer any questions you have about the case process or our recovery capabilities.  
             
 Best regards,`],
-            ["Initial contact letter (WD variation)", `Hello {FIRST_NAME},
+        ["Initial contact letter (WD variation)", `Hello {FIRST_NAME},
 
 We received your online data recovery request, and I'm here to answer your questions and guide you through our process. The next step is to ship your device to our laboratory for a free evaluation. If you're within driving distance, you can also drop off your case in person. 
             
@@ -50,12 +49,14 @@ You're under no obligation to proceed with recovery after receiving the quote. I
 To finalize your case setup, please email me at this address or call me at the number listed below to provide some more information. I can also answer any questions you have about the case process or our recovery capabilities.  
             
             
-Best regards,`],["Follow up", `Hello {FIRST_NAME},
+Best regards,`],
+        ["Follow up", `Hello {FIRST_NAME},
 
 Please provide your full shipping address and phone number, I will email you a free shipping label. Can you also please provide some more details on the failure. What happened, power surge, drive was dropped, just stopped working, etc. Also, please provide a list of critical files to be recovered, example – word, excel, pdf, pictures, videos, etc.
 
 Please feel free to contact me if you have any questions
-Best Regards,`],["1-day follow up", `Hi {FIRST_NAME},
+Best Regards,`],
+        ["1-day follow up", `Hi {FIRST_NAME},
 
 I just wanted to thank you for opening a case with us recently. If you have any questions or concerns, please don’t hesitate to reach out. You can reply to this email or give us a call at 800-237-4200.
 
@@ -84,8 +85,8 @@ Please contact me via email or phone if you've made a decision or if you have an
 
 Best,
 `]
-        ]
-    
+    ]
+
 };
 
 
@@ -122,8 +123,7 @@ function RemoveCaseFromWatchList(caseNumber) {
     GM_setValue("watchedCases", watchedCases);
 }
 
-function ParseEmailInquiry(wdPrompt)
-{
+function ParseEmailInquiry(wdPrompt) {
     emailInquiry.active = true;
     //Get phone number with RegEx pattern
     phoneRegEx = /(?:\+?(\d{1,3}))?[- (]*(\d{3})[- )]*(\d{3})[- ]*(\d{4})(?: *x(\d+))?\b/;
@@ -214,8 +214,7 @@ $(function () {
         });
         emailInquiryButton.click(function () {
             wdPrompt = prompt("Paste the inquiry email here.");
-            if (wdPrompt) 
-            {
+            if (wdPrompt) {
                 if (wdPrompt.toLowerCase().indexOf("got it") === -1) {
                     gotitPrompt = window.confirm('Didn\'t detect "Got it!" in your email; are you sure this is the "Got it!" email?')
                     if (!gotitPrompt) {
@@ -232,7 +231,7 @@ $(function () {
         `)
         monkeyPane.append(docButton);
         lastVersion = GM_getValue("lastVersion");
-        if (lastVersion == undefined || lastVersion != GM_info.script.version)  // Fresh update; show the changelog modal
+        if (lastVersion == undefined || lastVersion != GM_info.script.version) // Fresh update; show the changelog modal
         {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="DBMonkey Update - Version ` + GM_info.script.version + `">
@@ -240,15 +239,13 @@ $(function () {
                     <li>Reverted back to boring grey notes</li>
                 </ul>
             </div>`);
-          dialog.dialog({
-              modal:true,
-              width: "400px"
-          });
+            dialog.dialog({
+                modal: true,
+                width: "400px"
+            });
         }
 
-    }
-    
-    else if (path.indexOf("add_client") != -1) //Add client page
+    } else if (path.indexOf("add_client") != -1) //Add client page
     {
         emailInquiry = GM_getValue("emailInquiry");
         if (emailInquiry != undefined && emailInquiry.active) {
@@ -327,11 +324,10 @@ $(function () {
                 </tr>
         `);
 
-        if (newCasePage == true)  // Only for standard new case page
+        if (newCasePage == true) // Only for standard new case page
         {
             $("#new_case_form > table > tbody > tr:nth-child(1) > td > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(1)").after(shortcuts);
-        }
-        else  // Online case processing
+        } else // Online case processing
         {
             // TODO: Get Mike to add an id to the tables so this selector doesn't need to be stupid long
             $("body > div.main > div.add_client_1 > div:nth-child(2) > fieldset > div > form > table > tbody > tr:nth-child(1) > td > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(1)").after(shortcuts);
@@ -344,8 +340,7 @@ $(function () {
         //  Anything past this point is ONLY for the standard new case page
         //
         //
-        if (newCasePage != true)
-        {
+        if (newCasePage != true) {
             return;
         }
         //////////////////////
@@ -354,9 +349,9 @@ $(function () {
         $("#operating_system_id").val("Unknown").trigger("change"); // Change the OS to Uknown
         $("#return_media_id").val("Client Will Decide Later").trigger("change"); // Change RM  
 
-        
-        
-        
+
+
+
     } else if (path.indexOf("view_case") != -1) // View case page
     {
         var caseNumber = $('#nav1_case > table > tbody > tr > td:nth-child(1) > a').text().replace(/\s/g, '');
@@ -374,7 +369,7 @@ $(function () {
             $("#notes_gen_scrollarea").trigger("click");
             AddCaseToWatchList(caseNumber, caseWatchNote.val());
         });
-        
+
         /////////// Case note highlighting
         /*
         notesTable = $("#notes_gen_scrollarea>table>tbody").children();
@@ -425,50 +420,49 @@ $(function () {
             <span class="ui-icon ui-icon-triangle-1-s"></span>
         </div>
         `);
-        
+
         emailMenu = $(`
             <ul style = "position: absolute; cursor:default" id="qs">
                 
             </ul>
         `);
 
-        function hoverHighlight(target)
-        {
-            target.hover(function(){
+        function hoverHighlight(target) {
+            target.hover(function () {
                 target.css({
-                    "border":"#003eff",
-                    "background":"#007fff"
+                    "border": "#003eff",
+                    "background": "#007fff"
                 });
-            }, function(){
+            }, function () {
                 target.css({
-                    "border":"#ffffff",
-                    "background":"#ffffff"
+                    "border": "#ffffff",
+                    "background": "#ffffff"
                 });
             });
         }
         tempText = $(`<textarea id="temp" style="opacity: 0.0; position:absolute"></textarea>`);
-                        $('body').append(tempText);
-                        
-        
-        
-        for (queue in templates)
-        {
+        $('body').append(tempText);
+
+
+
+        for (queue in templates) {
             newQueue = $(`<li class="ui-menu-item"><div style="font-weight: bold; width: 60px; height: 25px;" role="menuitem">` + queue + '</div></li>');
             emailMenu.append(newQueue);
             templateList = $(`<ul style="display: inline-block; padding: 0px;"></ul>`)
             newQueue.append(templateList);
             hoverHighlight(newQueue);
             queue = templates[queue];
-            for (template in queue)
-            {
+            for (template in queue) {
                 template = queue[template];
                 // Format is ["Summary", "Full email body"]
                 newTemplate = $(`<li class="ui-menu-item" style="width: 300px; font-weight: bold"><div style=";">` + template[0] + `</div></li>`);
                 hoverHighlight(newTemplate);
-                newTemplate.on("click",{currentTemplate : template}, function(e){
+                newTemplate.on("click", {
+                    currentTemplate: template
+                }, function (e) {
                     currentTemplate = e.data.currentTemplate;
                     emailBody = currentTemplate[1];
-                    
+
                     //Get the client's first name
                     clientInfo = $("#client_loc_info").parent().text();
                     start = clientInfo.indexOf("Contact:") + 8;
@@ -490,9 +484,7 @@ $(function () {
                         document.execCommand("copy");
                         $("#submitNoteNewNote").blur();
                         $(location).attr('href', $("#email_button").attr("href"));
-                    }
-                    else
-                    {
+                    } else {
                         $(location).attr('href', href);
                     }
                 });
@@ -502,11 +494,11 @@ $(function () {
         emailMenu.menu();
         emailMenu.hide();
 
-        emailButton.hover(function(e){
+        emailButton.hover(function (e) {
             emailButton.addClass("ui-state-hover");
             emailMenu.show();
 
-        }, function(e){
+        }, function (e) {
             $(e.target).removeClass("ui-state-hover");
             emailMenu.hide();
         });
@@ -522,7 +514,7 @@ $(function () {
         <button type="button">Case Watch</button>
     </td>
         
-    `); 
+    `);
     watchDialog = $(`
         <div id="watchDialog">
             <ul style="list-style-type: none; padding: 0;display: flex; flex-direction: column;flex-wrap: wrap;" id="caseWatchList">
@@ -535,8 +527,8 @@ $(function () {
         width: 166
     });
     $(".nav1left").after(watchButton);
-    $(watchDialog).dialog({"dragStop": function (event, ui) 
-        {
+    $(watchDialog).dialog({
+        "dragStop": function (event, ui) {
             dialogPos = watchDialog.dialog("option", "position");
             dialogSize = [watchDialog.dialog("option", "width"), watchDialog.dialog("option", "height")]
             GM_setValue("dialogPos", dialogPos);
@@ -590,15 +582,12 @@ $(function () {
             }
         }
     });
-    watchButton.click(function(){
-        if (watchDialog.dialog("isOpen"))
-        {
+    watchButton.click(function () {
+        if (watchDialog.dialog("isOpen")) {
             watchDialog.dialog("close");
-        }
-        else
-        {
+        } else {
             openWatch();
         }
     });
-    
+
 });
