@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.6
+// @version      0.7
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -237,12 +237,7 @@ $(function () {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="DBMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Added this changelog modal</li>
-                    <li>Added note pattern highlighting</li>
-                    <li>Added new template emails</li>
-                    <li>Added documentation link on home page</li>
-                    <li>Added documentation<li>
-                    <li>Fixed email templates sub-menu positioning bug<li>
+                    <li>Reverted back to boring grey notes</li>
                 </ul>
             </div>`);
           dialog.dialog({
@@ -381,6 +376,7 @@ $(function () {
         });
         
         /////////// Case note highlighting
+        /*
         notesTable = $("#notes_gen_scrollarea>table>tbody").children();
         colors = {
             "yellow" : "#fff468",
@@ -422,7 +418,7 @@ $(function () {
 
         }
 
-
+        */
         /////////// Setup email template things
         emailButton = $(`
         <div style="display: inline-block; vertical-align: middle;" class="ui-state-default ui-corner-all">
