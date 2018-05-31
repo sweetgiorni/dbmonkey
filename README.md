@@ -33,10 +33,6 @@ Then, open up the "got it" message you just sent and press Ctrl+A to copy the en
 To set up the case, go to the database homepage and click the "New Email Case" in the DB Monkey pane. A dialog will appear and ask you to paste in the email you just copied. It will attempt to parse the email to find things like the client's name, email address, and phone number.
 On the next page, be sure to double check that the information is correct before submitting.
 
-<h3>Note Highlighting</h3>
-This feature makes it a little bit easier to follow the stages that a case has gone through. It will automatically add colors to case notes based on the color of the last flag that was set.
-It makes more sense when you look at it, so go take a look.
-
 <h3>Shortcut Buttons and Defaults</h3>
 The new case page now features three shortcut buttons for the most common service types: single hard drive, mobile phone, and thumb drive.
 The script also sets default values on a few different pages around the database, including the new client page and new case page. Things like state, city, OS, and RM will be set to default values. Don't forget to get that information from the client at some point.
