@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.7
+// @version      0.8
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -21,7 +21,7 @@ var root = window.location.host;
 
 templates = {
     "Q1": [
-        ["Initial contact letter", `Hello {FIRST_NAME},
+        ["Initial contact letter", `Dear {FIRST_NAME},
 
 We received your online data recovery request, and I'm here to answer your questions and guide you through our process. The next step is to ship your device to our laboratory for a free evaluation. If you're within driving distance, you can also drop off your case in person. 
             
@@ -34,7 +34,8 @@ You're under no obligation to proceed with recovery after receiving the quote. I
 To finalize your case setup, please email me at this address or call me at the number listed below to provide some more information. I can also answer any questions you have about the case process or our recovery capabilities.  
             
 Best regards,`],
-        ["Initial contact letter (WD variation)", `Hello {FIRST_NAME},
+
+        ["Initial contact letter (WD variation)", `Dear {FIRST_NAME},
 
 We received your online data recovery request, and I'm here to answer your questions and guide you through our process. The next step is to ship your device to our laboratory for a free evaluation. If you're within driving distance, you can also drop off your case in person. 
             
@@ -50,19 +51,42 @@ To finalize your case setup, please email me at this address or call me at the n
             
             
 Best regards,`],
-        ["Follow up", `Hello {FIRST_NAME},
+        
+
+        ["Label receipt follow up letter", `Hey {FIRST_NAME}, 
+
+I just wanted to thank you for opening a case with us recently. Please confirm receipt of the UPS shipping label. If you have any questions or concerns, please don’t hesitate to reach out. You can reply to this email or give us a call at 800-237-4200.
+
+Best Regards, `],
+
+
+["Client consultation follow up", `Hello {FIRST_NAME}, 
 
 Please provide your full shipping address and phone number, I will email you a free shipping label. Can you also please provide some more details on the failure. What happened, power surge, drive was dropped, just stopped working, etc. Also, please provide a list of critical files to be recovered, example – word, excel, pdf, pictures, videos, etc.
 
-Please feel free to contact me if you have any questions
+Please feel free to contact me if you have any questions 
+
 Best Regards,`],
-        ["1-day follow up", `Hi {FIRST_NAME},
 
-I just wanted to thank you for opening a case with us recently. If you have any questions or concerns, please don’t hesitate to reach out. You can reply to this email or give us a call at 800-237-4200.
 
-Best,
+["Generic follow up letter", `Dear {FIRST_NAME},
+
+We received your request, and once we receive your device, we'll provide a free evaluation to give you a price quote, turnaround estimate, and recoverability assessment. Please follow the shipping instructions in your case setup letter to get started.
+
+If you have any questions or concerns regarding your recovery, please give me a call or an email. If you would not like to proceed with the recovery, let me know and I'll close the ticket. 
+
+Best regards,`],
+
+["Closing next week letter", `Hello {FIRST_NAME}, 
+        
+Just following up one last time here before closing your case. I'm happy to answer any questions you have regarding recoverability or price — alternately, if you've decided not to recover your data, I can close out the ticket so you don't get any more of these messages. 
+
+Please contact me via email or phone if you've made a decision or if you have any questions. 
+
+Best regards,
 `],
-        ["Closing letter", `Dear {FIRST_NAME},
+   
+["Final Closing Letter", `Dear {FIRST_NAME},
 
 I haven't been able to get a hold if you, so I'll close your case for now. 
 
@@ -76,17 +100,8 @@ https://datarecovery.com/submit.php
 
 Thank you again, and please let me know if I can be of assistance. 
 
-Sincerely,`],
-        ["Closing letter 2", `Hello {FIRST_NAME}, 
-        
-Just following up one last time here before closing your case. I'm happy to answer any questions you have regarding recoverability or price — alternately, if you've decided not to recover your data, I can close out the ticket so you don't get any more of these messages. 
-
-Please contact me via email or phone if you've made a decision or if you have any questions. 
-
-Best,
-`]
-    ]
-
+Best regards,`]
+    ]  //// End of Q1
 };
 
 
@@ -236,7 +251,7 @@ $(function () {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="DBMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Reverted back to boring grey notes</li>
+                    <li>Added to Q1 templates</li>
                 </ul>
             </div>`);
             dialog.dialog({
