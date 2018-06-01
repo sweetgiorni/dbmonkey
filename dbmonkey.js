@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.8
+// @version      0.9
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -64,7 +64,7 @@ Best Regards, `],
 
 Please provide your full shipping address and phone number, I will email you a free shipping label. Can you also please provide some more details on the failure. What happened, power surge, drive was dropped, just stopped working, etc. Also, please provide a list of critical files to be recovered, example – word, excel, pdf, pictures, videos, etc.
 
-Please feel free to contact me if you have any questions 
+Please feel free to contact me if you have any questions.
 
 Best Regards,`],
 
@@ -104,6 +104,10 @@ Best regards,`]
     ]  //// End of Q1
 };
 
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function AddCaseToWatchList(caseNumber, note) {
     var watchedCases = GM_getValue("watchedCases");
@@ -214,7 +218,7 @@ $(function () {
     path = window.location.pathname;
     if (path == "/" || path == "" || path.indexOf("index.jsp") != -1) //Home page
     {
-        monkeyPane = $('<div class="home_grid_block3_cell" style="background-color: #ff7070;" ><h3>DB Monkey</h3></div>').prependTo(".home_grid_divrow");
+        monkeyPane = $('<div class="home_grid_block3_cell" style="background-color: #ff7070;" ><h3>dbMonkey</h3></div>').prependTo(".home_grid_divrow");
         emailInquiryButton = $('<a href="#">New Email Case</a>');
         emailInquiryComment = $('<div style="display: inline-block; vertical-align: middle;" class="ui-state-default ui-corner-all" id="q_nav1_button"> <span class="ui-icon ui-icon-comment"></span>  </div>');
 
@@ -249,9 +253,10 @@ $(function () {
         if (lastVersion == undefined || lastVersion != GM_info.script.version) // Fresh update; show the changelog modal
         {
             GM_setValue("lastVersion", GM_info.script.version);
-            dialog = $(`<div id="dialog" title="DBMonkey Update - Version ` + GM_info.script.version + `">
+            dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Added to Q1 templates</li>
+                    <li>Clicking a Q1 template automatically redirects to ship in call page</li>
+                    <li>Fixed typo in consultation template</li>
                 </ul>
             </div>`);
             dialog.dialog({
@@ -298,9 +303,7 @@ $(function () {
     {
         newCasePage = !(path.indexOf("process_new_case") != -1); // True if on new case page, false if on process new online case
 
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
+        
 
         function Reset() {
             $("#serv_pick_attr1").val("").trigger("change");
@@ -466,9 +469,9 @@ $(function () {
             templateList = $(`<ul style="display: inline-block; padding: 0px;"></ul>`)
             newQueue.append(templateList);
             hoverHighlight(newQueue);
-            queue = templates[queue];
-            for (template in queue) {
-                template = queue[template];
+            currentQueue = templates[queue];
+            for (template in currentQueue) {
+                template = currentQueue[template];
                 // Format is ["Summary", "Full email body"]
                 newTemplate = $(`<li class="ui-menu-item" style="width: 300px; font-weight: bold"><div style=";">` + template[0] + `</div></li>`);
                 hoverHighlight(newTemplate);
@@ -502,6 +505,15 @@ $(function () {
                     } else {
                         $(location).attr('href', href);
                     }
+                    if (queue == "Q1")
+                    {
+                        // Save values for ship in email page
+                        GM_setValue("shipInEmail", true);
+                        GM_setValue("shipInEmailType", currentTemplate[0]);
+                        sleep(500).then(() => {
+                            window.location.href = ("/vc_shipin_call.jsp?case_id=" + caseNumber);
+                        });
+                    }
                 });
                 templateList.append(newTemplate);
             }
@@ -520,6 +532,17 @@ $(function () {
 
         $("#email_button").after(emailButton);
         emailButton.append(emailMenu);
+    }
+    else if (path.indexOf("vc_shipin_call") != -1) // Ship in call page
+    {
+        if (GM_getValue("shipInEmail") == true)
+        {
+            GM_setValue("shipInEmail", false);
+            shipInEmailType = GM_getValue("shipInEmailType");
+            $("#com_method").val(2).trigger("change");
+            $("#call_note").val("Sent " + shipInEmailType);
+            $('#send_ship_in_email_checkbox').prop('checked', false);
+        }
     }
     //  Case Watcher
     var watchDialogVals = GM_getValue("watchDialogVals");
