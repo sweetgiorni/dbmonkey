@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.9
+// @version      0.10
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -255,8 +255,8 @@ $(function () {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Clicking a Q1 template automatically redirects to ship in call page</li>
-                    <li>Fixed typo in consultation template</li>
+                    <li>Colored notes are back</li>
+                    <li>Added detection of Mr, Ms, and Mrs in client names</li>
                 </ul>
             </div>`);
             dialog.dialog({
@@ -389,7 +389,6 @@ $(function () {
         });
 
         /////////// Case note highlighting
-        /*
         notesTable = $("#notes_gen_scrollarea>table>tbody").children();
         colors = {
             "yellow" : "#fff468",
@@ -401,37 +400,32 @@ $(function () {
             "black" : "#3d3d3d",
             "pink" : "#ff77e8"
         }
-        currentColor = "yellow";
         for (i = notesTable.length - 1; i >= 0; i--)
         {
             currentRow = $(notesTable[i]).children();
             note = currentRow.last().text();
-            if (note.startsWith("* Flagged"))
+            if (currentRow.parent().attr("class").indexOf("highlight") != -1)  //If this is a highlighted note, leave it alone
             {
-                end = note.indexOf(' ', 10);
-                if (end == -1)
-                {
-                    end = note.length;
-                }
-                color = note.slice(10, end);
-                currentColor = color.trim($(this).text());;
-            }
-            //If this is a highlighted note, leave it alone
-            if (currentRow.parent().attr("class").indexOf("highlight") != -1)
-            {
-                currentRow.css("background-color", "#f7f300");
-                currentRow.css("font-weight", "bold");
                 continue;
             }
-            if (currentColor == "black")
+            else if (note == "* Item(s) received for case" || note.startsWith("* Case items shipped"))
             {
-                currentRow.css("color", "white");
+                currentRow.css("background-color", colors["purple"]);
             }
-            currentRow.css("background-color", colors[currentColor]);
+            else if(note.startsWith("* Evaluation completed") || note == '* Recovery result finalized')
+            {
+                currentRow.css("background-color", colors["orange"]);
+            }
+            else if (note.startsWith("* Evaluation follow-up") || note.startsWith("* Client submitted an approval"))
+            {
+                currentRow.css("background-color", colors["pink"]);
+            }
+            else if (note == '* Client billed amounts recorded' || note == '* Billing info added')
+            {
+                currentRow.css("background-color", colors["green"]);
+            }
 
         }
-
-        */
         /////////// Setup email template things
         emailButton = $(`
         <div style="display: inline-block; vertical-align: middle;" class="ui-state-default ui-corner-all">
@@ -486,6 +480,11 @@ $(function () {
                     start = clientInfo.indexOf("Contact:") + 8;
                     end = clientInfo.indexOf("Location");
                     name = clientInfo.slice(start, end).replace(/^\s+|\s+$/g, '');
+                    if (name.startsWith("Mr") || name.startsWith("Ms"))
+                    {
+                        start = name.indexOf(" ");
+                        name = name.slice(start + 1, name.length - start);
+                    }
                     lastNameIndex = name.indexOf(" ");
                     firstName = name.slice(0, lastNameIndex);
                     emailBody = emailBody.replace("{FIRST_NAME}", firstName);
