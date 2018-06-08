@@ -42,3 +42,9 @@ This script adds templated emails that allow you to quickly send the most common
 
 On the "View Case" screen, you should see an arrow button next to the client's email. From there you can select an email template to send.
 Unfortunately, web browsers have a hard limit on the length of a mailto link, which means that if the email has a total length over two thousand characters, it won't work. In this situation, the script will instead copy the body of the email to your clipboard. So if you click a template but the Outlook email window that pops up is blank, just hit Ctrl+V.
+
+<h3>Blue Yourself</h3>
+This feature goes through all the cases you have flagged blue to yourself and flags this yellow. Use this in the morning when you get into work to save 30 seconds. It adds up! To use, go to your flagged cases page and click the button at the button labeled "Blue yourself!"
+
+<h3>Note Highlighting</h3>
+Important events in your case's life are now highlighted the appropriate color. These events include shipping/receiving, billing, evaluation and recovery completion, and eval follow-up calls.
