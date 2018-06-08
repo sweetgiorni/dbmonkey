@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.12
+// @version      0.13
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -282,6 +282,8 @@ $(function() {
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
                     <li>Added "Blue yourself!" button</li>
+                    <li>Watch case button should close flag window</li>
+                    <li>First name in flag window is no longer highlighted by default</li>
                 </ul>
             </div>`);
             dialog.dialog({
@@ -409,10 +411,13 @@ $(function() {
         watchCaseButton.before(caseWatchNote);
 
         watchCaseButton.click(function () {
-            $("#notes_gen_scrollarea").trigger("click");
+            $("#ui-id-6").next().trigger('click');
             AddCaseToWatchList(caseNumber, caseWatchNote.val());
         });
 
+        $("#flag_editor_button").click(function() {  // When flag button is clicked, don't highlight the first entry
+           $("[for=flagUser_0]").removeClass('ui-state-hover ui-state-focus');
+        });
         /////////// Case note highlighting
         notesTable = $("#notes_gen_scrollarea>table>tbody").children();
         colors = {
