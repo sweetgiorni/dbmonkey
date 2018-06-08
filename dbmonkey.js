@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.10
+// @version      0.11
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -104,7 +104,33 @@ Best regards,`]
     ]  //// End of Q1
 };
 
-
+function UpdateFlag(user, caseId, newFlagColor)
+{
+    var action_type = "1";
+    var dataString = ""+
+        "action_type="+action_type+
+        "&case_id="+caseId+
+        "&user="+ user+
+        "&new_flag_color="+ newFlagColor+
+        "&new_flag_user="+user;
+    $.ajax({
+        type: "GET",
+        url: "flagChangeServlet",
+        data: dataString,
+        dataType: "xml",
+        success: function(returnedData) {
+            var err_msg_text = $(returnedData).find("err_msg").text();
+            
+            if (err_msg_text != ''){
+                //we had an error, display err msg and don't reload notes
+                alert(err_msg_text);
+            }
+            else {
+                // No error
+            }
+        }
+    });
+}
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -214,7 +240,7 @@ function ParseEmailInquiry(wdPrompt) {
     window.location.href = ("/add_client_1.jsp");
 }
 
-$(function () {
+$(function() {
     path = window.location.pathname;
     if (path == "/" || path == "" || path.indexOf("index.jsp") != -1) //Home page
     {
@@ -541,6 +567,32 @@ $(function () {
             $("#com_method").val(2).trigger("change");
             $("#call_note").val("Sent " + shipInEmailType);
             $('#send_ship_in_email_checkbox').prop('checked', false);
+        }
+    }
+    else if (path.indexOf("r_user_flags") != -1)  // Flagged cases page
+    {
+        // Get username
+        user = $('#nav1 > table > tbody > tr > td.nav1right > span:nth-child(1) > b').text();
+        if (String(window.location).endsWith(user)) // Check if we're looking at the current user's cases
+        {
+            blueMeButton  = $(`<button style='margin-top: 10px' type='button'>Blue yourself!</button>`);
+            table = $(".qt1 tbody").children();
+            table.parent().parent().after(blueMeButton);
+
+            blueMeButton.click(async function (){
+                for (i = 0; i < table.length; i++)
+                {
+                    clss = $(table[i]).attr('class');
+                    if (clss != undefined && clss.startsWith("flag4")) // Is this case flagged blue?
+                    {
+                        caseNumber = $(table[i]).children(':eq(1)').children(':first').text();
+                        UpdateFlag(user, caseNumber, "1")
+                    }
+                }
+                await sleep(1000);
+                location.reload();
+            })
+            
         }
     }
     //  Case Watcher
