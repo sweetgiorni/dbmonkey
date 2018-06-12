@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.14
+// @version      0.15
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -266,8 +266,8 @@ function ShowReminder(reminder)
 function RemoveReminder(caseNumber)
 {
     reminders = GM_getValue('reminders');
-    if (reminders == undefined)
-        return;
+    if (reminders == undefined || reminders.length == 0)
+        return [];
     var reminderIndex = reminders.findIndex(reminder => {
         return reminder.caseNumber == caseNumber;
     });
@@ -275,6 +275,7 @@ function RemoveReminder(caseNumber)
     {
         reminders.splice(reminderIndex, 1);
         GM_setValue('reminders', reminders);
+        return reminders;
     }
 }
 function AddReminder(caseNumber)
@@ -339,10 +340,10 @@ function AddReminder(caseNumber)
               reminders = GM_getValue('reminders');
               if (reminders == undefined)
               {
-                  reminders = new []
+                  reminders = []
               }
               //If there is already a reminder for this case, delete it
-              RemoveReminder(caseNumber);
+              reminders = RemoveReminder(caseNumber);
               newReminder = {};
               newReminder.note = dialogForm.find("#note").val();
               newReminder.date = UpdateDate();
@@ -409,6 +410,7 @@ $(function() {
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
                     <li>Added case reminders</li>
+                    <li>Fixed reminder bug</li>
                 </ul>
             </div>`);
             dialog.dialog({
