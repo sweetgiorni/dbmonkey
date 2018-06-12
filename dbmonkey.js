@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.13
+// @version      0.14
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -19,7 +19,8 @@ var emailInquiry = {};
 var path = "";
 var root = window.location.host;
 
-templates = {
+templates = 
+{
     "Q1": [
         ["Initial contact letter", `Dear {FIRST_NAME},
 
@@ -240,6 +241,132 @@ function ParseEmailInquiry(wdPrompt) {
     window.location.href = ("/add_client_1.jsp");
 }
 
+function ShowReminder(reminder)
+{
+    reminderDialog = $(`
+        <div title="Reminder!"> 
+            <p>Case number ` + reminder.caseNumber + `</p>
+            <p>` + reminder.note + `
+        </div>
+    `);
+    reminderDialog.dialog({
+        modal: true,
+        close: () => {
+            GM_setValue('modalOpen', false);
+        },
+        buttons: {
+          Dismiss: function() {
+            RemoveReminder(reminder.caseNumber);
+            reminderDialog.dialog('close');
+          }
+        }
+      });
+}
+
+function RemoveReminder(caseNumber)
+{
+    reminders = GM_getValue('reminders');
+    if (reminders == undefined)
+        return;
+    var reminderIndex = reminders.findIndex(reminder => {
+        return reminder.caseNumber == caseNumber;
+    });
+    if (reminderIndex != undefined)
+    {
+        reminders.splice(reminderIndex, 1);
+        GM_setValue('reminders', reminders);
+    }
+}
+function AddReminder(caseNumber)
+{
+    dialogForm = $(`
+        <div id="reminderForm" title="Add reminder">
+            <form>
+                <label> Case ` + caseNumber +` </label>
+                <label for="note" style="display: block; margin-top:10px;"> Note (optional)</label>
+                <input type="text" name="note" id="note" class="text ui-widget-content ui-corner-all">
+                
+                <div style="display:inline-block; margin: 8px 0px">
+                    <label style="margin-top:10px;">Remind me in</label>
+                    <input id="spinner" value=1 style="width: 30px; display:inline-block" >
+                    <select id="timeUnit">
+                        <option selected="selected" value=1>Minutes</option>
+                        <option value=60 >Hours</option>
+                        <option value=1440 >Days</option>
+                    </select>
+                </div>
+                
+                <div style="display:inline-block; margin: 5px 0px">
+                    <label for="popupCheckBox">Show me a popup</label>
+                    <input type="checkbox" id="popupCheckBox">
+                </div>
+                <div style="display:inline-block margin: 5px 0px">
+                    <label for="flagCheckBox">Flag the case to me</label>
+                    <input type="checkbox" name="flagCheckBox" id="flagCheckBox">
+                </div>
+                <div id="colorPickerDiv" display: hidden>
+                    <select id="colorPicker">
+                        <option value=1 >Yellow</option>
+                        <option value=2 >Orange</option>
+                        <option value=3 >Green</option>
+                        <option value=4 >Blue</option>
+                        <option value=5 >Purple</option>
+                        <option value=6 >Red</option>
+                        <option value=7 >Black</option>
+                        <option value=8 >Pink</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    `);
+    
+    function UpdateDate()
+    {
+        spinnerNum = $("#spinner").val();
+        unit = $("#timeUnit").val();
+        newDate = new Date();
+        newMinutes = newDate.getMinutes() + (spinnerNum * unit);
+        newDate.setMinutes(newMinutes);
+        return newDate;
+    }
+    dialog = dialogForm.dialog({
+        autoOpen: true,
+        height: 350,
+        width: 360,
+        modal: false,
+        buttons: {
+          "Add reminder": () => {
+              reminders = GM_getValue('reminders');
+              if (reminders == undefined)
+              {
+                  reminders = new []
+              }
+              //If there is already a reminder for this case, delete it
+              RemoveReminder(caseNumber);
+              newReminder = {};
+              newReminder.note = dialogForm.find("#note").val();
+              newReminder.date = UpdateDate();
+              newReminder.flagOption = dialogForm.find("#flagCheckBox").is(":checked");
+              newReminder.flagColor = dialogForm.find("#colorPicker").val();
+              newReminder.popupOption = dialogForm.find("#popupCheckBox").is(":checked");
+              newReminder.caseNumber = caseNumber;
+
+              reminders.push(newReminder);
+              GM_setValue('reminders', reminders);
+              dialogForm.dialog('close');
+          }
+        }
+      });
+
+      spinner = dialogForm.find("#spinner").spinner({
+          stop: UpdateDate
+      });
+      dialogForm.find("#timeUnit").change(UpdateDate);
+      dialogForm.find("#flagCheckBox").change(() => {  // When this is checked, give the option to select flag color
+        dialogForm.find("#colorPickerDiv").toggle("blind");
+      });
+      UpdateDate();
+}
 $(function() {
     path = window.location.pathname;
     if (path == "/" || path == "" || path.indexOf("index.jsp") != -1) //Home page
@@ -281,9 +408,7 @@ $(function() {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Added "Blue yourself!" button</li>
-                    <li>Watch case button should close flag window</li>
-                    <li>First name in flag window is no longer highlighted by default</li>
+                    <li>Added case reminders</li>
                 </ul>
             </div>`);
             dialog.dialog({
@@ -415,6 +540,17 @@ $(function() {
             AddCaseToWatchList(caseNumber, caseWatchNote.val());
         });
 
+        // Remind me button
+        reminderButton = $(`
+        <div style="position: relative; bottom: 0px; margin-top: 30px;">
+            <button type="button">Set a reminder</button>
+        </div>
+        `);
+        reminderButton.click(() => {
+            $("#ui-id-6").next().trigger('click');
+            AddReminder(caseNumber);
+        })
+        watchCaseButton.after(reminderButton);
         $("#flag_editor_button").click(function() {  // When flag button is clicked, don't highlight the first entry
            $("[for=flagUser_0]").removeClass('ui-state-hover ui-state-focus');
         });
@@ -465,7 +601,6 @@ $(function() {
 
         emailMenu = $(`
             <ul style = "position: absolute; cursor:default" id="qs">
-                
             </ul>
         `);
 
@@ -606,7 +741,6 @@ $(function() {
     <td style="vertical-align: inherit;">
         <button type="button">Case Watch</button>
     </td>
-        
     `);
     watchDialog = $(`
         <div id="watchDialog">
@@ -682,5 +816,40 @@ $(function() {
             openWatch();
         }
     });
+    GM_setValue('modalOpen', false);
 
+    setInterval(function() {  // Check remind me list
+        var reminders = GM_getValue('reminders');  // Get list of active reminders
+        if (reminders == undefined)
+        {
+            reminders = [];
+        }
+        currentDate = new Date();
+        reminders.forEach (reminder => {
+            // Reminder has properties
+            /*
+            newReminder.note = $("#note").val();
+              newReminder.date = new Date();
+              newReminder.flagOption = $("#flagCheckBox").is(":checked");
+              newReminder.flagColor = $("#colorPicker").val();
+              newReminder.popupOption = $("#popupCheckBox").is(":checked");
+              newReminder.caseNumber = caseNumber; */
+
+            //if (reminder.date > currentDate) // Has the date passed? Show reminder
+            reminderDate = new Date(reminder.date);
+            if ((GM_getValue('modalOpen') != true) && currentDate > reminderDate)
+            {
+                if (reminder.flagOption)  // Check if "Flag to me" option was checked
+                {
+                    user = $('#nav1 > table > tbody > tr > td.nav1right > span:nth-child(1) > b').text();
+                    UpdateFlag(user, reminder.caseNumber, reminder.flagColor);
+                }
+                if (reminder.popupOption)  // Check if "Show me popup" option was checked
+                {
+                    GM_setValue('modalOpen', true);
+                    ShowReminder(reminder);
+                }
+            }
+        });
+    }, 1000 * 3);
 });

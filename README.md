@@ -48,3 +48,7 @@ This feature goes through all the cases you have flagged blue to yourself and fl
 
 <h3>Note Highlighting</h3>
 Important events in your case's life are now highlighted the appropriate color. These events include shipping/receiving, billing, evaluation and recovery completion, and eval follow-up calls.
+
+<h3>Case Reminders</h3>
+With case reminders, you can set a timer on cases you'd like to follow up on in the future. When the timer runs out, it will open a popup window with the case number and a note and/or it will flag the case to you.
+To use, go to the view case page and click the flag case button. Click the button at the bottom labeled "Add a reminder". Optionally add a note, choose the amount of timer for the timer, and check the boxes for the type of reminder you want. If you want to flag it to yourself, you also have the option of choosing what color it is flagged (the default selection is yellow.)
