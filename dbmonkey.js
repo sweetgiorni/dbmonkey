@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.16
+// @version      0.17
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -409,7 +409,7 @@ $(function() {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Updated email templates to reflect new pricing structure</li>
+                    <li>Added SIP click to call links</li>
                 </ul>
             </div>`);
             dialog.dialog({
@@ -526,6 +526,21 @@ $(function() {
     } else if (path.indexOf("view_case") != -1) // View case page
     {
         var caseNumber = $('#nav1_case > table > tbody > tr > td:nth-child(1) > a').text().replace(/\s/g, '');
+
+        // SIP click to call
+        contactHtml = $("#client_loc_info").parent().html();
+        phoneStart = contactHtml.indexOf('Phone') + 8;
+        phoneEnd = phoneStart
+        while (contactHtml[phoneEnd] != 'P')
+        {
+            phoneEnd++;
+        }
+        phoneEnd--;
+        phoneNumber = contactHtml.slice(phoneStart,phoneEnd);
+        contactHtml = contactHtml.slice(9, phoneStart) + "<a href='sip://" + phoneNumber + "'>" + phoneNumber + "</a>" + contactHtml.slice(phoneEnd, contactHtml.length);
+        $("#client_loc_info").parent().html(contactHtml);
+
+
         watchCaseButton = $(`
         <div>
             <button type="button" style="">Watch this case</button>
