@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.17
+// @version      0.18
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -409,7 +409,7 @@ $(function() {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Added SIP click to call links</li>
+                    <li>Added credit card name checker (Checks if account name == billing name)</li>
                 </ul>
             </div>`);
             dialog.dialog({
@@ -750,9 +750,22 @@ $(function() {
             
         }
     }
+    else if (path.indexOf('vc_billing') != -1)  // Billing page
+    {
+        name = $('#nav1_case > table > tbody > tr > td:nth-child(3) > a').text().toLowerCase().trim();
+        if (name.startsWith('mr.') || name.startsWith('ms.') || name.startsWith('mrs.'))
+        {
+            name = name.slice(name.indexOf(' ') + 1);
+        }
+        billingName = $('.vc_bill_info tbody :nth-child(2) :nth-child(2)').text().toLowerCase().trim()
+        if (name != billingName)
+        {
+            alert("Name on the first credit card doesn't match the name on the case! Make sure you get a CC auth form.");
+        }
+    }
+
     //  Case Watcher
     var watchDialogVals = GM_getValue("watchDialogVals");
-
     watchButton = $(`
     <td style="vertical-align: inherit;">
         <button type="button">Case Watch</button>
