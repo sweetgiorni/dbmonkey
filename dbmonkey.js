@@ -19,8 +19,7 @@ var emailInquiry = {};
 var path = "";
 var root = window.location.host;
 
-templates = 
-{
+templates = {
     "Q1": [
         ["Initial contact letter", `Dear {FIRST_NAME},
 
@@ -52,7 +51,7 @@ To finalize your case setup, please email me at this address or call me at the n
             
             
 Best regards,`],
-        
+
 
         ["Label receipt follow up letter", `Hey {FIRST_NAME}, 
 
@@ -61,7 +60,7 @@ I just wanted to thank you for opening a case with us recently. Please confirm r
 Best Regards, `],
 
 
-["Client consultation follow up", `Hello {FIRST_NAME}, 
+        ["Client consultation follow up", `Hello {FIRST_NAME}, 
 
 Please provide your full shipping address and phone number, I will email you a free shipping label. Can you also please provide some more details on the failure. What happened, power surge, drive was dropped, just stopped working, etc. Also, please provide a list of critical files to be recovered, example – word, excel, pdf, pictures, videos, etc.
 
@@ -70,7 +69,7 @@ Please feel free to contact me if you have any questions.
 Best Regards,`],
 
 
-["Generic follow up letter", `Dear {FIRST_NAME},
+        ["Generic follow up letter", `Dear {FIRST_NAME},
 
 We received your request, and once we receive your device, we'll provide a free evaluation to give you a price quote, turnaround estimate, and recoverability assessment. Please follow the shipping instructions in your case setup letter to get started.
 
@@ -78,7 +77,7 @@ If you have any questions or concerns regarding your recovery, please give me a 
 
 Best regards,`],
 
-["Closing next week letter", `Hello {FIRST_NAME}, 
+        ["Closing next week letter", `Hello {FIRST_NAME}, 
         
 Just following up one last time here before closing your case. I'm happy to answer any questions you have regarding recoverability or price — alternately, if you've decided not to recover your data, I can close out the ticket so you don't get any more of these messages. 
 
@@ -86,8 +85,8 @@ Please contact me via email or phone if you've made a decision or if you have an
 
 Best regards,
 `],
-   
-["Final Closing Letter", `Dear {FIRST_NAME},
+
+        ["Final Closing Letter", `Dear {FIRST_NAME},
 
 I haven't been able to get a hold if you, so I'll close your case for now. 
 
@@ -102,36 +101,35 @@ https://datarecovery.com/submit.php
 Thank you again, and please let me know if I can be of assistance. 
 
 Best regards,`]
-    ]  //// End of Q1
+    ] //// End of Q1
 };
 
-function UpdateFlag(user, caseId, newFlagColor)
-{
+function UpdateFlag(user, caseId, newFlagColor) {
     var action_type = "1";
-    var dataString = ""+
-        "action_type="+action_type+
-        "&case_id="+caseId+
-        "&user="+ user+
-        "&new_flag_color="+ newFlagColor+
-        "&new_flag_user="+user;
+    var dataString = "" +
+        "action_type=" + action_type +
+        "&case_id=" + caseId +
+        "&user=" + user +
+        "&new_flag_color=" + newFlagColor +
+        "&new_flag_user=" + user;
     $.ajax({
         type: "GET",
         url: "flagChangeServlet",
         data: dataString,
         dataType: "xml",
-        success: function(returnedData) {
+        success: function (returnedData) {
             var err_msg_text = $(returnedData).find("err_msg").text();
-            
-            if (err_msg_text != ''){
+
+            if (err_msg_text != '') {
                 //we had an error, display err msg and don't reload notes
                 alert(err_msg_text);
-            }
-            else {
+            } else {
                 // No error
             }
         }
     });
 }
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -241,8 +239,7 @@ function ParseEmailInquiry(wdPrompt) {
     window.location.href = ("/add_client_1.jsp");
 }
 
-function ShowReminder(reminder)
-{
+function ShowReminder(reminder) {
     reminderDialog = $(`
         <div title="Reminder!"> 
             <p>Case number ` + reminder.caseNumber + `</p>
@@ -255,35 +252,33 @@ function ShowReminder(reminder)
             GM_setValue('modalOpen', false);
         },
         buttons: {
-          Dismiss: function() {
-            RemoveReminder(reminder.caseNumber);
-            reminderDialog.dialog('close');
-          }
+            Dismiss: function () {
+                RemoveReminder(reminder.caseNumber);
+                reminderDialog.dialog('close');
+            }
         }
-      });
+    });
 }
 
-function RemoveReminder(caseNumber)
-{
+function RemoveReminder(caseNumber) {
     reminders = GM_getValue('reminders');
     if (reminders == undefined || reminders.length == 0)
         return [];
     var reminderIndex = reminders.findIndex(reminder => {
         return reminder.caseNumber == caseNumber;
     });
-    if (reminderIndex != undefined)
-    {
+    if (reminderIndex != undefined) {
         reminders.splice(reminderIndex, 1);
         GM_setValue('reminders', reminders);
         return reminders;
     }
 }
-function AddReminder(caseNumber)
-{
+
+function AddReminder(caseNumber) {
     dialogForm = $(`
         <div id="reminderForm" title="Add reminder">
             <form>
-                <label> Case ` + caseNumber +` </label>
+                <label> Case ` + caseNumber + ` </label>
                 <label for="note" style="display: block; margin-top:10px;"> Note (optional)</label>
                 <input type="text" name="note" id="note" class="text ui-widget-content ui-corner-all">
                 
@@ -320,9 +315,8 @@ function AddReminder(caseNumber)
             </form>
         </div>
     `);
-    
-    function UpdateDate()
-    {
+
+    function UpdateDate() {
         spinnerNum = $("#spinner").val();
         unit = $("#timeUnit").val();
         newDate = new Date();
@@ -336,41 +330,39 @@ function AddReminder(caseNumber)
         width: 360,
         modal: false,
         buttons: {
-          "Add reminder": () => {
-              reminders = GM_getValue('reminders');
-              if (reminders == undefined)
-              {
-                  reminders = []
-              }
-              //If there is already a reminder for this case, delete it
-              reminders = RemoveReminder(caseNumber);
-              newReminder = {};
-              newReminder.note = dialogForm.find("#note").val();
-              newReminder.date = UpdateDate();
-              newReminder.flagOption = dialogForm.find("#flagCheckBox").is(":checked");
-              newReminder.flagColor = dialogForm.find("#colorPicker").val();
-              newReminder.popupOption = dialogForm.find("#popupCheckBox").is(":checked");
-              newReminder.caseNumber = caseNumber;
+            "Add reminder": () => {
+                reminders = GM_getValue('reminders');
+                if (reminders == undefined) {
+                    reminders = []
+                }
+                //If there is already a reminder for this case, delete it
+                reminders = RemoveReminder(caseNumber);
+                newReminder = {};
+                newReminder.note = dialogForm.find("#note").val();
+                newReminder.date = UpdateDate();
+                newReminder.flagOption = dialogForm.find("#flagCheckBox").is(":checked");
+                newReminder.flagColor = dialogForm.find("#colorPicker").val();
+                newReminder.popupOption = dialogForm.find("#popupCheckBox").is(":checked");
+                newReminder.caseNumber = caseNumber;
 
-              reminders.push(newReminder);
-              GM_setValue('reminders', reminders);
-              dialogForm.dialog('close');
-          }
+                reminders.push(newReminder);
+                GM_setValue('reminders', reminders);
+                dialogForm.dialog('close');
+            }
         }
-      });
+    });
 
-      spinner = dialogForm.find("#spinner").spinner({
-          stop: UpdateDate
-      });
-      dialogForm.find("#timeUnit").change(UpdateDate);
-      dialogForm.find("#flagCheckBox").change(() => {  // When this is checked, give the option to select flag color
+    spinner = dialogForm.find("#spinner").spinner({
+        stop: UpdateDate
+    });
+    dialogForm.find("#timeUnit").change(UpdateDate);
+    dialogForm.find("#flagCheckBox").change(() => { // When this is checked, give the option to select flag color
         dialogForm.find("#colorPickerDiv").toggle("blind");
-      });
-      UpdateDate();
+    });
+    UpdateDate();
 }
 
-function CopyToClipboard(value)
-{
+function CopyToClipboard(value) {
     const el = document.createElement('textarea');
     el.value = value;
     el.setAttribute('readonly', '');
@@ -381,7 +373,7 @@ function CopyToClipboard(value)
     document.execCommand('copy');
     document.body.removeChild(el);
 }
-$(function() {
+$(function () {
     path = window.location.pathname;
     if (path == "/" || path == "" || path.indexOf("index.jsp") != -1) //Home page
     {
@@ -469,7 +461,7 @@ $(function() {
     {
         newCasePage = !(path.indexOf("process_new_case") != -1); // True if on new case page, false if on process new online case
 
-        
+
 
         function Reset() {
             $("#serv_pick_attr1").val("").trigger("change");
@@ -544,12 +536,11 @@ $(function() {
         contactHtml = $("#client_loc_info").parent().html();
         phoneStart = contactHtml.indexOf('Phone') + 8;
         phoneEnd = phoneStart
-        while (contactHtml[phoneEnd] != 'P')
-        {
+        while (contactHtml[phoneEnd] != 'P') {
             phoneEnd++;
         }
         phoneEnd--;
-        phoneNumber = contactHtml.slice(phoneStart,phoneEnd);
+        phoneNumber = contactHtml.slice(phoneStart, phoneEnd);
         contactHtml = contactHtml.slice(9, phoneStart) + "<a href='sip://" + phoneNumber + "'>" + phoneNumber + "</a>" + contactHtml.slice(phoneEnd, contactHtml.length);
         $("#client_loc_info").parent().html(contactHtml);
 
@@ -559,8 +550,8 @@ $(function() {
         </div>
         `);
 
-        $("[href='sip://" + phoneNumber +"']").after(copyPhoneButton);
-        
+        $("[href='sip://" + phoneNumber + "']").after(copyPhoneButton);
+
         copyPhoneButton.hover(function (e) {
             copyPhoneButton.addClass("ui-state-hover");
 
@@ -568,8 +559,8 @@ $(function() {
             copyPhoneButton.removeClass("ui-state-hover");
         });
 
-        copyPhoneButton.click(function(){
-                CopyToClipboard(phoneNumber);
+        copyPhoneButton.click(function () {
+            CopyToClipboard(phoneNumber);
         });
         watchCaseButton = $(`
         <div>
@@ -597,43 +588,34 @@ $(function() {
             AddReminder(caseNumber);
         })
         watchCaseButton.after(reminderButton);
-        $("#flag_editor_button").click(function() {  // When flag button is clicked, don't highlight the first entry
-           $("[for=flagUser_0]").removeClass('ui-state-hover ui-state-focus');
+        $("#flag_editor_button").click(function () { // When flag button is clicked, don't highlight the first entry
+            $("[for=flagUser_0]").removeClass('ui-state-hover ui-state-focus');
         });
         /////////// Case note highlighting
         notesTable = $("#notes_gen_scrollarea>table>tbody").children();
         colors = {
-            "yellow" : "#fff468",
-            "orange" : "#ffbe5e",
-            "green" : "#68ff68",
-            "blue" : "#75a0ff",
-            "purple" : "#ed54ff",
-            "red" : "#ff3030",
-            "black" : "#3d3d3d",
-            "pink" : "#ff77e8"
+            "yellow": "#fff468",
+            "orange": "#ffbe5e",
+            "green": "#68ff68",
+            "blue": "#75a0ff",
+            "purple": "#ed54ff",
+            "red": "#ff3030",
+            "black": "#3d3d3d",
+            "pink": "#ff77e8"
         }
-        for (i = notesTable.length - 1; i >= 0; i--)
-        {
+        for (i = notesTable.length - 1; i >= 0; i--) {
             currentRow = $(notesTable[i]).children();
             note = currentRow.last().text();
-            if (currentRow.parent().attr("class").indexOf("highlight") != -1)  //If this is a highlighted note, leave it alone
+            if (currentRow.parent().attr("class").indexOf("highlight") != -1) //If this is a highlighted note, leave it alone
             {
                 continue;
-            }
-            else if (note == "* Item(s) received for case" || note.startsWith("* Case items shipped"))
-            {
+            } else if (note == "* Item(s) received for case" || note.startsWith("* Case items shipped")) {
                 currentRow.css("background-color", colors["purple"]);
-            }
-            else if(note.startsWith("* Evaluation completed") || note == '* Recovery result finalized')
-            {
+            } else if (note.startsWith("* Evaluation completed") || note == '* Recovery result finalized') {
                 currentRow.css("background-color", colors["orange"]);
-            }
-            else if (note.startsWith("* Evaluation follow-up") || note.startsWith("* Client submitted an approval"))
-            {
+            } else if (note.startsWith("* Evaluation follow-up") || note.startsWith("* Client submitted an approval")) {
                 currentRow.css("background-color", colors["pink"]);
-            }
-            else if (note == '* Client billed amounts recorded' || note == '* Billing info added')
-            {
+            } else if (note == '* Client billed amounts recorded' || note == '* Billing info added') {
                 currentRow.css("background-color", colors["green"]);
             }
 
@@ -687,8 +669,7 @@ $(function() {
                     start = clientInfo.indexOf("Contact:") + 8;
                     end = clientInfo.indexOf("Location");
                     name = clientInfo.slice(start, end).replace(/^\s+|\s+$/g, '');
-                    if (name.startsWith("Mr") || name.startsWith("Ms"))
-                    {
+                    if (name.startsWith("Mr") || name.startsWith("Ms")) {
                         start = name.indexOf(" ");
                         name = name.slice(start + 1, name.length - start);
                     }
@@ -709,8 +690,7 @@ $(function() {
                     } else {
                         $(location).attr('href', href);
                     }
-                    if (queue == "Q1")
-                    {
+                    if (queue == "Q1") {
                         // Save values for ship in email page
                         GM_setValue("shipInEmail", true);
                         GM_setValue("shipInEmailType", currentTemplate[0]);
@@ -736,31 +716,27 @@ $(function() {
 
         $("#email_button").after(emailButton);
         emailButton.append(emailMenu);
-    }
-    else if (path.indexOf("vc_shipin_call") != -1) // Ship in call page
+    } else if (path.indexOf("vc_shipin_call") != -1) // Ship in call page
     {
-        if (GM_getValue("shipInEmail") == true)
-        {
+        if (GM_getValue("shipInEmail") == true) {
             GM_setValue("shipInEmail", false);
             shipInEmailType = GM_getValue("shipInEmailType");
             $("#com_method").val(2).trigger("change");
             $("#call_note").val("Sent " + shipInEmailType);
             $('#send_ship_in_email_checkbox').prop('checked', false);
         }
-    }
-    else if (path.indexOf("r_user_flags") != -1)  // Flagged cases page
+    } else if (path.indexOf("r_user_flags") != -1) // Flagged cases page
     {
         // Get username
         user = $('#nav1 > table > tbody > tr > td.nav1right > span:nth-child(1) > b').text();
         if (String(window.location).endsWith(user)) // Check if we're looking at the current user's cases
         {
-            blueMeButton  = $(`<button style='margin-top: 10px' type='button'>Blue yourself!</button>`);
+            blueMeButton = $(`<button style='margin-top: 10px' type='button'>Blue yourself!</button>`);
             table = $(".qt1 tbody").children();
             table.parent().parent().after(blueMeButton);
 
-            blueMeButton.click(async function (){
-                for (i = 0; i < table.length; i++)
-                {
+            blueMeButton.click(async function () {
+                for (i = 0; i < table.length; i++) {
                     clss = $(table[i]).attr('class');
                     if (clss != undefined && clss.startsWith("flag4")) // Is this case flagged blue?
                     {
@@ -771,19 +747,16 @@ $(function() {
                 await sleep(1000);
                 location.reload();
             })
-            
+
         }
-    }
-    else if (path.indexOf('vc_billing') != -1)  // Billing page
+    } else if (path.indexOf('vc_billing') != -1) // Billing page
     {
         name = $('#nav1_case > table > tbody > tr > td:nth-child(3) > a').text().toLowerCase().trim();
-        if (name.startsWith('mr.') || name.startsWith('ms.') || name.startsWith('mrs.'))
-        {
+        if (name.startsWith('mr.') || name.startsWith('ms.') || name.startsWith('mrs.')) {
             name = name.slice(name.indexOf(' ') + 1);
         }
         billingName = $('.vc_bill_info tbody :nth-child(2) :nth-child(2)').text().toLowerCase().trim()
-        if (name != billingName)
-        {
+        if (name != billingName) {
             alert("Name on the first credit card doesn't match the name on the case! Make sure you get a CC auth form.");
         }
     }
@@ -871,14 +844,13 @@ $(function() {
     });
     GM_setValue('modalOpen', false);
 
-    setInterval(function() {  // Check remind me list
-        var reminders = GM_getValue('reminders');  // Get list of active reminders
-        if (reminders == undefined)
-        {
+    setInterval(function () { // Check remind me list
+        var reminders = GM_getValue('reminders'); // Get list of active reminders
+        if (reminders == undefined) {
             reminders = [];
         }
         currentDate = new Date();
-        reminders.forEach (reminder => {
+        reminders.forEach(reminder => {
             // Reminder has properties
             /*
             newReminder.note = $("#note").val();
@@ -890,14 +862,13 @@ $(function() {
 
             //if (reminder.date > currentDate) // Has the date passed? Show reminder
             reminderDate = new Date(reminder.date);
-            if ((GM_getValue('modalOpen') != true) && currentDate > reminderDate)
-            {
-                if (reminder.flagOption)  // Check if "Flag to me" option was checked
+            if ((GM_getValue('modalOpen') != true) && currentDate > reminderDate) {
+                if (reminder.flagOption) // Check if "Flag to me" option was checked
                 {
                     user = $('#nav1 > table > tbody > tr > td.nav1right > span:nth-child(1) > b').text();
                     UpdateFlag(user, reminder.caseNumber, reminder.flagColor);
                 }
-                if (reminder.popupOption)  // Check if "Show me popup" option was checked
+                if (reminder.popupOption) // Check if "Show me popup" option was checked
                 {
                     GM_setValue('modalOpen', true);
                     ShowReminder(reminder);
