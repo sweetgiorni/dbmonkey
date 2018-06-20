@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.18
+// @version      0.19
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -368,6 +368,19 @@ function AddReminder(caseNumber)
       });
       UpdateDate();
 }
+
+function CopyToClipboard(value)
+{
+    const el = document.createElement('textarea');
+    el.value = value;
+    el.setAttribute('readonly', '');
+    el.style.position = 'absolute';
+    el.style.left = '-9999px';
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+}
 $(function() {
     path = window.location.pathname;
     if (path == "/" || path == "" || path.indexOf("index.jsp") != -1) //Home page
@@ -409,7 +422,7 @@ $(function() {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Added credit card name checker (Checks if account name == billing name)</li>
+                    <li>Added copy phone number button</li>
                 </ul>
             </div>`);
             dialog.dialog({
@@ -540,7 +553,24 @@ $(function() {
         contactHtml = contactHtml.slice(9, phoneStart) + "<a href='sip://" + phoneNumber + "'>" + phoneNumber + "</a>" + contactHtml.slice(phoneEnd, contactHtml.length);
         $("#client_loc_info").parent().html(contactHtml);
 
+        copyPhoneButton = $(`
+        <div style="display: inline-block; vertical-align: middle; margin: 0px 3px" class="ui-state-default ui-corner-all">
+            <span class="ui-icon ui-icon-copy"></span>
+        </div>
+        `);
 
+        $("[href='sip://" + phoneNumber +"']").after(copyPhoneButton);
+        
+        copyPhoneButton.hover(function (e) {
+            copyPhoneButton.addClass("ui-state-hover");
+
+        }, function (e) {
+            copyPhoneButton.removeClass("ui-state-hover");
+        });
+
+        copyPhoneButton.click(function(){
+                CopyToClipboard(phoneNumber);
+        });
         watchCaseButton = $(`
         <div>
             <button type="button" style="">Watch this case</button>
@@ -633,10 +663,6 @@ $(function() {
                 });
             });
         }
-        tempText = $(`<textarea id="temp" style="opacity: 0.0; position:absolute"></textarea>`);
-        $('body').append(tempText);
-
-
 
         for (queue in templates) {
             newQueue = $(`<li class="ui-menu-item"><div style="font-weight: bold; width: 60px; height: 25px;" role="menuitem">` + queue + '</div></li>');
@@ -677,9 +703,7 @@ $(function() {
                     emailButtonCopy.attr('href', href);
                     if (href.length > 2000) // Too long for mailto?
                     {
-                        tempText.text(emailBody);
-                        tempText.select();
-                        document.execCommand("copy");
+                        CopyToClipboard(emailBody);
                         $("#submitNoteNewNote").blur();
                         $(location).attr('href', $("#email_button").attr("href"));
                     } else {
