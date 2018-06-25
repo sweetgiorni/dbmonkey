@@ -12,8 +12,8 @@
 // @grant GM_getValue
 // @grant GM_deleteValue
 // @grant GM_xmlhttpRequest
-// @connect https://wwwcie.ups.com
-// @connect https://onlinetools.ups.com
+// @connect wwwcie.ups.com
+// @connect onlinetools.ups.com
 // ==/UserScript==
 
 salmon = '#ff7070';
