@@ -292,20 +292,21 @@ function ReturnLabel(addr, returnTo, serviceCode, callback)
                 },
                 "ShipmentServiceOptions":
                 {
-                    "Notification":
+                    /*"Notification":
                     {
                         "NotificationCode":"2",
                         "EMail":
                         {
-                            "EMailAddress": addr.email
+                            "EMailAddress": addr.email // Not the actual label, just a notification that it was sent. Maybe send to case manager?
                         }
-                    },
+                    },*/
                     "LabelDelivery":
                     {
                         "EMail":
                         {
-                            "EMailAddress":"sweet.giorni@gmail.com",
-                            "FromEMailAddress":"alex.sweet@datarecovery.com"
+                            "EMailAddress": addr.email,
+                            'UndeliverableEMailAddress':'csrs@datarcovery.com',
+                            "FromEMailAddress":"csrs@datarecovery.com"
                         }
                     }
                 },
