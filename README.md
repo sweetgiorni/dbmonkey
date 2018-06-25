@@ -63,17 +63,26 @@ This adds experimental, pre-alpha support for sending UPS return labels from the
 Currently, it only supports return labels (not outgoing) in the US. I'll add support for Canada if Justin switches from FedEx. I probably won't be adding support for international shipping since it's a huge pain to implement and we rarely use it.
 This script is public at the moment, so you'll have to put in the account information manually. On the homepage, clicks the 'Options' link. You'll see four new inputs: username, password, api key, and account number. The username and password is the login you normally use on UPS.com. The account number can be found on the UPS website or Ben's company directory cheat-sheet . If you don't have the api key already, message me for it. Needless to say, this is all sensitive information and shouldn't be shared.
 There are essentially three steps to the process:
+
 1.Address Verification
+
 2.Rate collection
+
 3.Label creation
+
 <b>Address Verification</b>
+
 This step performs initial validation on the address. The script tries to automatically fill in the address from the client information on the webpage, but it doesn't handle every edge case, so be sure to check everything for accuracy.
 There are three possible validation results: UPS finds no matches for the address, the address is ambiguous and UPS found multiple possible matches, or UPS found a perfect match. 
 If no matches are found, the address is probably very wrong. Fix it.
 If the address is ambiguous, you should see a list of possible matches. Pick one and make the address match that as closely as possible. Keep fixing until it succeeds.
+
 <b>Rate Collection</b>
+
 UPS will return of list of services available to the selected address and their costs. It should automatically show you the negotiated rates for the account.
+
 <b>Label Creation</b>
+
 Clicking the 'send label' button will attempt to create and finalize a label with the selected address. If it succeeds, you'll see a success message and the label will be emailed to the client. A private note is automatically created with the tracking number and the email address that the label was sent to.
   
 
