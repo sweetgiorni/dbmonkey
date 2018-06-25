@@ -44,16 +44,36 @@ On the "View Case" screen, you should see an arrow button next to the client's e
 Unfortunately, web browsers have a hard limit on the length of a mailto link, which means that if the email has a total length over two thousand characters, it won't work. In this situation, the script will instead copy the body of the email to your clipboard. So if you click a template but the Outlook email window that pops up is blank, just hit Ctrl+V.
 
 <h3>Blue Yourself</h3>
-This feature goes through all the cases you have flagged blue to yourself and flags it yellow. Use this in the morning when you get into work to save 30 seconds. It adds up! To use, go to your flagged cases page and click the button at the bottom labeled "Blue yourself!"
+This feature goes through all the cases you have flagged blue to yourself and flags them yellow. Use this in the morning when you get into work to save 30 seconds. It adds up! To use, go to your flagged cases page and click the button at the bottom labeled "Blue yourself!"
 
 <h3>Note Highlighting</h3>
 Important events in your case's life are now highlighted the appropriate color. These events include shipping/receiving, billing, evaluation and recovery completion, and eval follow-up calls.
 
 <h3>Case Reminders</h3>
 With case reminders, you can set a timer on cases you'd like to follow up on in the future. When the timer runs out, it will open a popup window with the case number and a note and/or it will flag the case to you.
-To use, go to the view case page and click the flag case button. Click the button at the bottom labeled "Add a reminder". Optionally add a note, choose the amount of timer for the timer, and check the boxes for the type of reminder you want. If you want to flag it to yourself, you also have the option of choosing what color it is flagged (the default selection is yellow.)
+To use, go to the view case page and click the flag case button. Click the button at the bottom labeled "Add a reminder". Optionally add a note, choose the amount of timer for the timer, and check the boxes for the type of reminder you want. If you want to flag it to yourself, you also have the option of choosing what color to flag it (the default selection is yellow.)
 
 <h3>SIP Click To Call</h3>
 This feature turns client phone numbers into a SIP click to call link. To get it working with HUD, follow the instructions in the following link (you can skip installing the browser extension; this script replaces it.)
 
 http://www.dslreports.com/forum/r28591771-General-Windows-Dialer-and-Click-to-Dial-using-Google-Chrome
+
+<h3>UPS Integration</h3>
+This adds experimental, pre-alpha support for sending UPS return labels from the database. You'll find a new link of the left side of the view case page labeled 'UPS'.
+Currently, it only supports return labels (not outgoing) in the US. I'll add support for Canada if Justin switches from FedEx. I probably won't be adding support for international shipping since it's a huge pain to implement and we rarely use it.
+This script is public at the moment, so you'll have to put in the account information manually. On the homepage, clicks the 'Options' link. You'll see four new inputs: username, password, api key, and account number. The username and password is the login you normally use on UPS.com. The account number can be found on the UPS website or Ben's company directory cheat-sheet . If you don't have the api key already, message me for it. Needless to say, this is all sensitive information and shouldn't be shared.
+There are essentially three steps to the process:
+1.Address Verification
+2.Rate collection
+3.Label creation
+<b>Address Verification</b>
+This step performs initial validation on the address. The script tries to automatically fill in the address from the client information on the webpage, but it doesn't handle every edge case, so be sure to check everything for accuracy.
+There are three possible validation results: UPS finds no matches for the address, the address is ambiguous and UPS found multiple possible matches, or UPS found a perfect match. 
+If no matches are found, the address is probably very wrong. Fix it.
+If the address is ambiguous, you should see a list of possible matches. Pick one and make the address match that as closely as possible. Keep fixing until it succeeds.
+<b>Rate Collection</b>
+UPS will return of list of services available to the selected address and their costs. It should automatically show you the negotiated rates for the account.
+<b>Label Creation</b>
+Clicking the 'send label' button will attempt to create and finalize a label with the selected address. If it succeeds, you'll see a success message and the label will be emailed to the client. A private note is automatically created with the tracking number and the email address that the label was sent to.
+  
+
