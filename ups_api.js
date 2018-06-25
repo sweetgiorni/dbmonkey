@@ -305,7 +305,7 @@ function ReturnLabel(addr, returnTo, serviceCode, callback)
                         "EMail":
                         {
                             "EMailAddress": addr.email,
-                            'UndeliverableEMailAddress':'csrs@datarcovery.com',
+                            'UndeliverableEMailAddress':'csrs@datarecovery.com',
                             "FromEMailAddress":"csrs@datarecovery.com"
                         }
                     }
