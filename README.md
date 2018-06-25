@@ -59,8 +59,8 @@ This feature turns client phone numbers into a SIP click to call link. To get it
 http://www.dslreports.com/forum/r28591771-General-Windows-Dialer-and-Click-to-Dial-using-Google-Chrome
 
 <h3>UPS Integration</h3>
-This adds experimental, pre-alpha support for sending UPS return labels from the database. You'll find a new link of the left side of the view case page labeled 'UPS'.
-Currently, it only supports return labels (not outgoing) in the US. I'll add support for Canada if Justin switches from FedEx. I probably won't be adding support for international shipping since it's a huge pain to implement and we rarely use it.
+This adds experimental, pre-alpha support for sending UPS return labels from the database. You'll find a new link on the left side of the view case page labeled 'UPS'.
+Currently it only supports return labels (not outgoing) in the US. I'll add support for Canada if Justin switches over from FedEx. I probably won't be adding support for international shipping since it's a huge pain to implement and we rarely use it.
 This script is public at the moment, so you'll have to put in the account information manually. On the homepage, clicks the 'Options' link. You'll see four new inputs: username, password, api key, and account number. The username and password is the login you normally use on UPS.com. The account number can be found on the UPS website or Ben's company directory cheat-sheet . If you don't have the api key already, message me for it. Needless to say, this is all sensitive information and shouldn't be shared.
 There are essentially three steps to the process:
 
