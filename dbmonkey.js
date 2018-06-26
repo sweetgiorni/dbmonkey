@@ -22,6 +22,7 @@ var emailInquiry = {};
 var path = "";
 var root = window.location.host;
 
+//Delete old jquery ui script
 templates = {
     "Q1": [
         ["Initial contact letter", `Dear {FIRST_NAME},
@@ -106,6 +107,7 @@ Thank you again, and please let me know if I can be of assistance.
 Best regards,`]
     ] //// End of Q1
 };
+
 
 function UpdateFlag(user, caseId, newFlagColor) {
     var action_type = "1";
@@ -725,6 +727,34 @@ $(function () {
         //// UPS Shipping Code
         /////////////////////////
 
+        address_forms_html = ` 
+        <div id='address_form_container'>
+            <label style='display: block'>Contact</label>
+            <input type='text' id='contact_form'>
+            <label style='display: block'>Email</label>
+            <input type='text' id='email_form'>
+            <label>Address</label>
+            <input type='text' id='street_form'>
+            <label>City</label>
+            <input type='text' id='city_form'>
+
+            <div style='margin: 10px 0px'>
+                    <label>State</label>
+                    <input type='text' id='state_form'>
+                    <label>Zip</label>
+                    <input type='text' id='zip_form'>
+            </div>
+
+            
+            
+           
+            
+
+            <button style='display:none; margin: 5px 0px' type='button' id='confirm_shipment_button' disabled>Send return label</button>
+            <div id='loader' class='loader'></div>
+            <label style='display:none' id='label_result'></label>
+        </div>`
+
         //Get current lab
         lab = $('.right_top_vc > tbody > tr > *').eq(3).text();
         if (lab.indexOf('Pleasanton') != -1)
@@ -769,119 +799,185 @@ $(function () {
         email = $('#email').text()
         newAddr = new Address(clientName, "", line1, city, state, zip, "", 'US', email);
         
-        function SetAddressForms(addr)
+        function SetAddressFormsFromForm(addr, form)
         {
-            $('#contact_form').val(clientName);
-            $('#street_form').val(addr.address_line);
-            $('#city_form').val(addr.city);
-            $('#state_form').val(addr.state);
-            $('#zip_form').val(addr.zip);
-            $('#email_form').val(addr.email);
+            form.find('#contact_form').val(clientName);
+            form.find('#street_form').val(addr.address_line);
+            form.find('#city_form').val(addr.city);
+            form.find('#state_form').val(addr.state);
+            form.find('#zip_form').val(addr.zip);
+            form.find('#email_form').val(addr.email);
         }
-        function GetCurrentAddress()
+        function GetCurrentAddressFromForm(form)
         {
-            return new Address(clientName, "", $('#street_form').val(), $('#city_form').val(), $('#state_form').val(), $('#zip_form').val(), '', 'US', $('#email_form').val());
+            return new Address(clientName, "", form.find('#street_form').val(), form.find('#city_form').val(), form.find('#state_form').val(), form.find('#zip_form').val(), '', 'US', form.find('#email_form').val());
         }
-        upsDialog = $(`<div id='ups-dialog' title='UPS Interface'>
-                <label style='display: block'>Contact</label>
-                <input type='text' id='contact_form'>
-                <label style='display: block'>Email</label>
-                <input type='text' id='email_form'>
-                <label>Address</label>
-                <input type='text' id='street_form'>
-                <label>City</label>
-                <input type='text' id='city_form'>
-                <div style='margin: 10px 0px'>
-                        <label>State</label>
-                        <input type='text' id='state_form'>
-                        <label>Zip</label>
-                        <input type='text' id='zip_form'>
-                </div>
-                
+        upsDialog = $(`
+        <div id='ups-dialog' title='UPS Interface'>
+            <ul>
+                <li><a href="#tabs-1">Return Label</a></li>
+                <li><a href="#tabs-2">Outgoing Shipment</a></li>
+            </ul>
+
+            <div id='tabs-1'>
                 <label>Return To</label>
                 <select id='return_to_form'>
                     <option value='edwardsville'>Edwardsville</option>
                     <option value='tempe'>Tempe</option>
                     <option value='pleasanton'>Pleasanton</option>
                 </select>
+                
+                <select style='display:none; width: 95%; margin: 5px 0px'id='service_form'></select>
                 <div>
                     <button style='display:inline-block; margin: 5px 0px' type='button' id='verify_button'>Verify</button>
                     <label style='display:inline-block;' id="verify_status"></label>
                 </div>
-                <select style='display:none; width: 95%; margin: 5px 0px'id='service_form'></select>
-                <button style='display:none; margin: 5px 0px' type='button' id='return_label_button' disabled>Send return label</button>
+
                 <div id='candidate_container' style='word-break:  break-word;'>
                     <span>UPS couldn't match your input to a particular address. Here's a list of possible matches.</span>
                     <ul id='candidate_list' style='font-size: 11px; padding: 0px; white-space: pre'>
 
                     </ul>
                 </div>
-                <div id='loader' class='loader'></div>
-                <label style='display:none' id='label_result'></label>
-        </div>`).dialog({
-            autoOpen:false
+            </div>
+
+            <div id='tabs-2'>
+                <div id='ship_to_radios' style='margin-bottom: 10px;'>
+                    <legend>Ship To:</legend>
+                    <label for='client_radio'>Client</label>
+                    <input type='radio' id='client_radio'>
+                    <label for='lab_radio'>Lab</label>
+                    <input type='radio' id='lab_radio'>
+                </div>
+
+                <div id='from_lab_div'>
+                    <label for='from_lab_select'>Ship from:</label>
+                    <select id='from_lab_select'>
+                        <option value='edwardsville'>Edwardsville</option>
+                        <option value='tempe'>Tempe</option>
+                        <option value='pleasanton'>Pleasanton</option>
+                    </select>
+                </div>
+                <select style='display:none; width: 95%; margin: 5px 0px'id='service_form'></select>
+                <div>
+                    <button style='margin: 5px 0px' type='button' id='verify_button'>Verify</button>
+                    <label style='display:inline-block;' id="verify_status"></label>
+                </div>
+
+                <div id='candidate_container' style='word-break:  break-word;'>
+                    <span>UPS couldn't match your input to a particular address. Here's a list of possible matches.</span>
+                    <ul id='candidate_list' style='font-size: 11px; padding: 0px; white-space: pre'>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        `).dialog({
+            autoOpen:false,
+            width: 634,
+            height: 562
         });
+        return_label_address_forms = $(address_forms_html);
+        outgoing_address_forms = $(address_forms_html);
+        $('#return_to_form').after(return_label_address_forms);
+        $('#ship_to_radios').after(outgoing_address_forms);
+        return_label_address_forms = $('#tabs-1');
+        outgoing_address_forms = $('#tabs-2');
+        outgoing_address_forms.find('#confirm_shipment_button').text('Print label');
         upsDialog.children().css('display', 'block');
-        upsDialog.find('input').css('width', '95%');
+        upsDialog.find('input:not([type="radio"])').css('width', '95%');
         upsDialog.find('#state_form').css('width', '20%');
         upsDialog.find('#zip_form').css('width', '40%');
         upsDialog.find('div').css('display', 'inline-block');
-        upsDialog.find('#loader, #service_form, #candidate_container, #return_label_button').css('display','none');
+        upsDialog.find('#loader, #service_form, #candidate_container, #confirm_shipment_button').css('display','none');
         upsDialog.find('#return_to_form').val(lab);
         upsLink = $(`
         <p class="req_actions" style="margin-top: 18px;">
             <a href="#" id="ups_link">UPS</a>
         </p>`)
+        //$('#from_lab_div').css('display', 'none');
         $('.timeline_below').append(upsLink);
-        
-        upsDialog.find('input,select :not(#return_label_button),#return_to_form').change(() => { // Reset everything
-            if($('#verify_status').text() == '')
+        $('#client_radio').prop('checked', true);
+        $('#ship_to_radios').css('white-space', 'nowrap');
+        $('#ship_to_radios > *').css('display','inline-block')
+        $('#ship_to_radios > input').change(function(e){
+            $('#ship_to_radios > input').prop('checked', false);
+            $(e.target).prop('checked', true);
+            if ($('#client_radio').prop('checked') == true)
+            {
+                outgoing_address_forms.find('#address_form_container').css('display', 'block');
+                $('#from_lab_div').css('display', 'none');
+            }
+            else  // Lab radio is checked
+            {
+                outgoing_address_forms.find('#address_form_container').css('display', 'none');
+                $('#from_lab_div').css('display', 'inline-block');
+            }
+        });
+        $('#ups-dialog').tabs();
+        outgoing_address_forms.find('input,select :not(#confirm_shipment_button),#return_to_form').change(() =>{
+            FormResetOnChange(outgoing_address_forms);
+        });
+        return_label_address_forms.parent().find('input,select :not(#confirm_shipment_button), #return_to_form').change(() =>{
+            FormResetOnChange(return_label_address_forms);
+        });
+        function FormResetOnChange(form)
+        {
+            if(form.find('#verify_status').text() == '')
             {
                 return;
             }
-            ResetThings();
-            $('#verify_status').text('Data changed. Please verify again.');
-            $('#verify_status').css('color', 'red')
-        });
+            ResetThings(form);
+            form.find('#verify_status').text('Data changed. Please verify again.');
+            form.find('#verify_status').css('color', 'red')
+        }
+        outgoing_address_forms.find('#confirm_shipment_button')
 
         upsLink.click((e) => {
             e.preventDefault();
             upsDialog.dialog('open');
-            SetAddressForms(newAddr);
+            SetAddressFormsFromForm(newAddr, return_label_address_forms);
+            SetAddressFormsFromForm(newAddr, outgoing_address_forms);
         });
         //upsLink.trigger('click');
-        $('#return_label_button').click(() => {
-            ShowSpinner();
-            ReturnLabel(GetCurrentAddress(), $('#return_to_form').val(), $('#service_form').val(), (json) =>{
+        return_label_address_forms.find('#confirm_shipment_button').click(() => {
+            SendReturnLabelFromForm(return_label_address_forms);
+        });
+        function SendReturnLabelFromForm(form)
+        {
+            ShowSpinner(form);
+            ReturnLabel(GetCurrentAddressFromForm(form), $('#return_to_form').val(), form.find('#service_form').val(), (json) =>{
                 console.log(json);
-                HideSpinner();
+                HideSpinner(form);
                 if ('Fault' in json)
                 {
-                    $('#label_result').text(json['Fault']['detail']['Errors']['ErrorDetail']['PrimaryErrorCode']['Description']);
+                    form.find('#label_result').css('display', 'block');
+                    form.find('#label_result').text(json['Fault']['detail']['Errors']['ErrorDetail']['PrimaryErrorCode']['Description']);
                     return;
                 }
                 ShipmentResponse = json['ShipmentResponse'];
                 tracking_number = ShipmentResponse['ShipmentResults']['ShipmentIdentificationNumber'];
                 
-                $('#label_result').text('Success!\n' + tracking_number);
-                $('#submitNoteNewNote').val(tracking_number + ' emailed to ' + $('#email_form').val());
+                form.find('#label_result').css('display', 'block');
+                form.find('#label_result').text('Success!\n' + tracking_number);
+                $('#submitNoteNewNote').val(tracking_number + ' emailed to ' + form.find('#email_form').val());
                 $('#submitNotePrivate').trigger('click');
-            })
-        });
+            });
+        }
 
-        function ResetThings()
+        function ResetThings(form)
         {
-            HideSpinner();
-            upsDialog.find('#loader, #service_form, #candidate_container, #return_label_button').css('display','none');
+            HideSpinner(form);
+            upsDialog.find('#loader, #service_form, #candidate_container, #confirm_shipment_button').css('display','none');
 
         }
-        function ShowSpinner()
+        function ShowSpinner(form)
         {
-            $('#loader').css('display', 'block');
+            form.find('#loader').css('display', 'block');
         }
-        function HideSpinner()
+        function HideSpinner(form)
         {
-            $('#loader').css('display', 'none');
+            form.find('#loader').css('display', 'none');
         }
         function JsonAddrToString(json)
         {
@@ -897,127 +993,131 @@ $(function () {
             return result;
         }
 
-        $('#verify_button').click(() => {
-            ResetThings();
-            $('#loader').css('display','block');
-            inAddress = new Address("", "", $('#street_form').val(), $('#city_form').val(), $('#state_form').val().toUpperCase(), $('#zip_form').val(), '', 'US', $('email_form').val());
+        return_label_address_forms.find('#verify_button').click(() => {
+            VerifyAddressFromForm(return_label_address_forms);
+        });
+        outgoing_address_forms.find('#verify_button').click(() => {
+            VerifyAddressFromForm(outgoing_address_forms);
+        });
+
+        function VerifyAddressFromForm(form){
+            ResetThings(form);
+            form.find('#loader').css('display','block');
+            inAddress = new Address("", "", form.find('#street_form').val(), form.find('#city_form').val(), form.find('#state_form').val().toUpperCase(), form.find('#zip_form').val(), '', 'US', form.find('email_form').val());
             VerifyAddress(inAddress, function(json){
                 if ('Fault' in json)
                 {
                     console.log("Error!!!");
                     err = (json['Fault']['detail']['Errors']['ErrorDetail']['PrimaryErrorCode']['Description']);
-                    $('#verify_status').text(err);
-                    $('#verify_status').css('color', 'red');
-                    ResetThings();
+                    form.find('#verify_status').text(err);
+                    form.find('#verify_status').css('color', 'red');
+                    ResetThings(form);
                     return;
                 }
-                console.log(json);
                 json = json['XAVResponse'];
                 if ('ValidAddressIndicator' in json)
                 {
                     console.log('Address is valid!');
-                    $('#verify_status').text('Address is valid!');
-                    $('#verify_status').css('color', 'green');
+                    form.find('#verify_status').text('Address is valid!');
+                    form.find('#verify_status').css('color', 'green');
                     
                 }
                 else if ('AmbiguousAddressIndicator' in json)
                 {
-                    ResetThings();
-                    $('#verify_status').text('Address is ambiguous.');
-                    $('#verify_status').css('color', 'orange');
-                    $('#candidate_container').css('display','block');
+                    ResetThings(form);
+                    form.find('#verify_status').text('Address is ambiguous.');
+                    form.find('#verify_status').css('color', 'orange');
+                    form.find('#candidate_container').css('display','block');
                     candidates = json['Candidate'];
                     //Populate candidates list
-                    $('#candidate_list').empty();
+                    form.find('#candidate_list').empty();
                     console.log(json);
-                    if (candidates.constructor === Array)  // Did we get more than one candidate?
+                    if (candidates.constructor !== Array)  // Did we get more than one candidate?
                     {
-                        for (i in candidates)
-                        {
-                            candidate = candidates[i];
-                            console.log(candidate);
-                            $('#candidate_list').append($(`<li>`, {
-                                text:JsonAddrToString(candidate),
-                                display:'block'
-                            }));
-                        }
+                       candidates = [candidates]; 
                     }
-                    else // Only one candidate
+                    for (i in candidates)
                     {
-                        console.log(candidates);
-                            $('#candidate_list').append($(`<li>`, {
-                                text:JsonAddrToString(candidates)
-                            }));
+                        candidate = candidates[i];
+                        console.log(candidate);
+                        form.find('#candidate_list').append($(`<li>`, {
+                            text:JsonAddrToString(candidate),
+                            display:'block'
+                        }));
                     }
-                    
                     return;
                 }
                 else if ('NoCandidatesIndicator' in json)
                 {
-                    $('#verify_status').text('Could not find a valid match.');
-                    $('#verify_status').css('color', 'red');
-                    HideSpinner();
+                    form.find('#verify_status').text('Could not find a valid match.');
+                    form.find('#verify_status').css('color', 'red');
+                    HideSpinner(form);
                     return;
                 }
+                RateFromForm(form, inAddress);
+            });
 
-                //Address is valid; get rates
-                Rate(inAddress, $('#return_to_form').val(), function(json){
-                    console.log(json);
-                    if ('Fault' in json)
+        }
+        function RateFromForm(form, shipFrom)
+        {
+            //Address is valid; get rates
+            Rate(shipFrom, $('#return_to_form').val(), function(json){
+                
+                if ('Fault' in json)
+                {
+                    console.log("Error!!!");
+                    allErrStr = '';
+                    errorList = json['Fault']['detail']['Errors']['ErrorDetail'];
+                    if (errorList.constructor !== Array)
                     {
-                        console.log("Error!!!");
-                        allErrStr = '';
-                        errorList = json['Fault']['detail']['Errors']['ErrorDetail'];
-                        if (errorList.constructor !== Array)
+                        errorList = [errorList];
+                    }
+                    for (i in errorList)
                         {
-                            errorList = [errorList];
+                            allErrStr += errorList[i]['PrimaryErrorCode']['Description'];
+                            allErrStr += '\n';
                         }
-                        for (i in errorList)
-                            {
-                                allErrStr += errorList[i]['PrimaryErrorCode']['Description'];
-                                allErrStr += '\n';
-                            }
-                        $('#verify_status').text(allErrStr);
-                        $('#verify_status').css('color', 'red');
-                        ResetThings();
+                    form.find('#verify_status').text(allErrStr);
+                    form.find('#verify_status').css('color', 'red');
+                    ResetThings(form);
+                    return;
+                }
+                RateResponse = json['RateResponse'];
+                Response = RateResponse['Response'];
+                ResponseStatus = Response['ResponseStatus'];
+                ResponseStatusDesc = ResponseStatus['Description'];
+                Rates = RateResponse['RatedShipment'];
+
+                //Empty and show the services dropdown
+                console.log(form);
+                form.find('#service_form').empty();
+                form.find('#service_form').css('display','block');
+                // Enable return label button
+                form.find('#confirm_shipment_button').removeAttr('disabled');
+                form.find('#confirm_shipment_button').css('display', 'block');
+                console.log(Rates);
+                for (i in Rates)
+                {
+                    rate = Rates[i];
+                    if (rate['NegotiatedRateCharges'] == undefined)
+                    {
+                        ResetThings(form);
+                        form.find('#verify_status').text("Couln't get negotiated rates.\nIs your account number correct?");
+                        form.find('#verify_status').css('color', 'red');
                         return;
                     }
-                    RateResponse = json['RateResponse'];
-                    Response = RateResponse['Response'];
-                    ResponseStatus = Response['ResponseStatus'];
-                    ResponseStatusDesc = ResponseStatus['Description'];
-                    Rates = RateResponse['RatedShipment'];
+                    cost = rate['NegotiatedRateCharges']['TotalCharge']['MonetaryValue'];
+                    service_code = rate['Service']['Code'];
+                    serviceDesription = service_codes[service_code];
+                    form.find('#service_form').append($('<option>', {
+                        value: service_code,
+                        text:serviceDesription + ' ($' + cost +')'
+                    }));
+                    form.find('#loader').css('display', 'none');
+                }
+            }); 
+        }
 
-                    //Empty and show the services dropdown
-                    $('#service_form').empty();
-                    $('#service_form').css('display','block');
-                    // Enable return label button
-                    $('#return_label_button').removeAttr('disabled');
-                    $('#return_label_button').css('display', 'block');
-                    console.log(Rates);
-                    for (i in Rates)
-                    {
-                        rate = Rates[i];
-                        if (rate['NegotiatedRateCharges'] == undefined)
-                        {
-                            ResetThings();
-                            $('#verify_status').text("Couln't get negotiated rates.\nIs your account number correct?");
-                            $('#verify_status').css('color', 'red');
-                            return;
-                        }
-                        cost = rate['NegotiatedRateCharges']['TotalCharge']['MonetaryValue'];
-                        service_code = rate['Service']['Code'];
-                        serviceDesription = service_codes[service_code];
-                        $('#service_form').append($('<option>', {
-                            value: service_code,
-                            text:serviceDesription + ' ($' + cost +')'
-                        }));
-                        $('#loader').css('display', 'none');
-                    }
-                });
-
-            });
-        });
     } else if (path.indexOf("vc_shipin_call") != -1) // Ship in call page
     {
         if (GM_getValue("shipInEmail") == true) {

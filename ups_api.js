@@ -144,8 +144,8 @@ class Address {
 }
 
 function VerifyAddress(address, callback) {
-    // var apiurl = "https://wwwcie.ups.com/rest/XAV";
-     var apiurl = 'https://onlinetools.ups.com/rest/XAV';
+    var apiurl = "https://wwwcie.ups.com/rest/XAV";
+    //var apiurl = 'https://onlinetools.ups.com/rest/XAV';
 
     var postdata = address.ToXml();
     var xhr = new GM_xmlhttpRequest({
@@ -314,8 +314,8 @@ function ReturnLabel(addr, returnTo, serviceCode, callback)
             },
         }
     }
-    //var apiurl = "https://wwwcie.ups.com/rest/Ship";
-    var apiurl = 'https://onlinetools.ups.com/rest/Ship';
+    var apiurl = "https://wwwcie.ups.com/rest/Ship";
+    //var apiurl = 'https://onlinetools.ups.com/rest/Ship';
     var xhr = new GM_xmlhttpRequest({
         method:'POST',
         url:apiurl,
