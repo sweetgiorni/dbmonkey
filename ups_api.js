@@ -41,7 +41,11 @@ edwardsville = {
         "CountryCode":"US"
     }
 };
-
+lab_dict = {
+    'pleasanton':pleasanton,
+    'tempe': tempe,
+    'edwardsville' : edwardsville
+}
 service_codes = {
     '03':'UPS Ground',
     '01':'UPS Next Day Air',
@@ -120,61 +124,83 @@ class Address {
     }
 
     ToXml() {
-        return JSON.stringify({
-            "UPSSecurity": UPSSecurity,
-            "XAVRequest": {
-                "Request": {
-                    "RequestOption": "1",
-                },
-                "MaximumListSize": "10",
-                "AddressKeyFormat": {
-                    "ConsigneeName": this.name,
-                    "BuildingName": this.attn,
+        return {
+            "Name": this.name,
+            'EMailAddress':this.email,
+            'Address' : 
+            {
                     "AddressLine": this.address_line,
-                    "PoliticalDivision2": this.city,
-                    "PoliticalDivision1": this.state,
-                    "PostcodePrimaryLow": this.zip,
-                    "PostcodeExtendedLow": this.zip_extension,
+                    "City": this.city,
+                    "StateProvinceCode": this.state,
+                    "PostalCode": this.zip,
                     "CountryCode": this.country_code
-                }
             }
-
-        });
+        };
     }
 }
 
 function VerifyAddress(address, callback) {
-    var apiurl = "https://wwwcie.ups.com/rest/XAV";
-    //var apiurl = 'https://onlinetools.ups.com/rest/XAV';
+    
+    //var apiurl = "https://wwwcie.ups.com/rest/XAV";
+    var apiurl = 'https://onlinetools.ups.com/rest/XAV';
 
-    var postdata = address.ToXml();
+    var postdata = 
+    { 
+        "UPSSecurity": UPSSecurity,
+        "XAVRequest": 
+        {
+            "Request": 
+            {
+                "RequestOption": "1",
+            },
+            "MaximumListSize": "10",
+            "AddressKeyFormat": {}
+        }
+    }
+    if (address instanceof Address)  // Is the address the custom address class...
+    {
+        postdata['XAVRequest']['AddressKeyFormat'] = 
+        {
+                "AddressLine": address.address_line,
+                "PoliticalDivision2": address.city,
+                "PoliticalDivision1": address.state,
+                "PostcodePrimaryLow": address.zip,
+               // "PostcodeExtendedLow": address.zip_extension,
+                "CountryCode": address.country_code
+        };
+    }
+    else  // Or is it a preset lab address?
+    {
+        address = address['Address'];
+        postdata['XAVRequest']['AddressKeyFormat'] = 
+        {
+            "AddressLine": address['AddressLine'],
+            "PoliticalDivision2": address['City'],
+            "PoliticalDivision1": address['StateProvinceCode'],
+            "PostcodePrimaryLow": address['PostalCode'],
+            "CountryCode": address['CountryCode']
+        };
+    }
     var xhr = new GM_xmlhttpRequest({
         method:'POST',
         url:apiurl,
-        data:postdata,
+        data:JSON.stringify(postdata),
         onload: (res) => {
             callback(JSON.parse(res.responseText));
         }
     });
 }
-function Rate(shipFrom, shipTo, callback) {
+function Rate(shipTo, shipFrom, isReturn, callback) {
     //var apiurl = "https://wwwcie.ups.com/rest/Rate";
     var apiurl = 'https://onlinetools.ups.com/rest/Rate';
-
-    
-    switch(shipTo)
+    if (shipTo instanceof Address)
     {
-        case "pleasanton":
-            shipTo = pleasanton;
-            break;
-        case "tempe":
-            shipTo = tempe;
-            break;
-        case "edwardsville":
-            shipTo = edwardsville;
-            break;
+        shipTo = shipTo.ToXml();
     }
-
+    if (shipFrom instanceof Address)
+    {
+        shipFrom = shipFrom.ToXml();
+    }
     var postdata = {
         "UPSSecurity": UPSSecurity,
         "RateRequest":
@@ -185,7 +211,18 @@ function Rate(shipFrom, shipTo, callback) {
             },
             "Shipment":
             {
-                "Shipper":shipTo,
+               // "Shipper":shipTo,
+                /*"ShipTo":
+                {
+                    "Address":
+                    {
+                        "AddressLine":shipTo.address_line,
+                        "City":shipTo.city,
+                        "StateProvinceCode":shipTo.state,
+                        "PostalCode":shipTo.zip,
+                        "CountryCode":shipTo.country_code
+                    }
+                },
                 "ShipFrom":
                 {
                     "Address":
@@ -196,24 +233,33 @@ function Rate(shipFrom, shipTo, callback) {
                         "PostalCode":shipFrom.zip,
                         "CountryCode":shipFrom.country_code
                     }
-                },
-                "ShipTo": shipTo,
+                },*/
                 "Package": Package,
                 'ShipmentRatingOptions':
                 {
                     "NegotiatedRatesIndicator":""
                 },
-                "ShipmentServiceOptions":
-                {
-                    "ReturnService":
-                    {
-                        "Code":"8"
-                    }
-                }
+                "ShipmentServiceOptions":{}
             }
         }
     }
-    
+
+    postdata['RateRequest']['Shipment']['ShipTo'] = shipTo;
+    postdata['RateRequest']['Shipment']['ShipFrom'] = shipFrom;
+    if (isReturn == true)
+    {
+        postdata['RateRequest']['Shipment']['Shipper'] = shipTo; 
+        postdata['RateRequest']['Shipment']['ShipmentServiceOptions'] = {
+            "ReturnService":
+            {
+                "Code":"8"
+            }
+        }
+    }
+    else
+    {
+        postdata['RateRequest']['Shipment']['Shipper'] = shipFrom;
+    }
     var xhr = new GM_xmlhttpRequest({
         method:'POST',
         url:apiurl,
@@ -224,23 +270,18 @@ function Rate(shipFrom, shipTo, callback) {
     });
 }
 
-
-
-function ReturnLabel(addr, returnTo, serviceCode, callback)
+function ConfirmLabel(shipFrom, shipTo, serviceCode, isReturn, callback)
 {
-    var returnToAddr;
-    switch(returnTo)
+    if (shipTo instanceof Address)
     {
-        case "pleasanton":
-            returnToAddr = pleasanton;
-            break;
-        case "tempe":
-            returnToAddr = tempe;
-            break;
-        case "edwardsville":
-            returnToAddr = edwardsville;
-            break;
+        shipTo = shipTo.ToXml();
     }
+    if (shipFrom instanceof Address)
+    {
+        shipFrom = shipFrom.ToXml();
+    }
+
+    console.log(shipFrom, shipTo);
     shipRequest = 
     {
         "UPSSecurity": UPSSecurity,
@@ -251,25 +292,11 @@ function ReturnLabel(addr, returnTo, serviceCode, callback)
             },
             "Shipment":
             {
-                "ReturnService":
+               /*"ReturnService":
                 {
-                    "Code":"8" // Electronic Return Label
-                },
-                "Shipper": returnToAddr,
-                
-                "ShipTo": returnToAddr,
-                "ShipFrom":
-                {
-                    "Name" : addr.name,
-                    "Address":
-                    {
-                        "AddressLine": addr.address_line,
-                        "City": addr.city,
-                        "StateProvinceCode": addr.state,
-                        "PostalCode": addr.zip,
-                        "CountryCode":"US"
-                    }
-                },
+                    //"Code":"8" // Electronic Return Label
+                },*/
+
                 "PaymentInformation": 
                 { 
                     "ShipmentCharge": 
@@ -290,30 +317,36 @@ function ReturnLabel(addr, returnTo, serviceCode, callback)
                     "NegotiatedRatesIndicator" : "",
                     "RateChartIndicator":"",
                 },
-                "ShipmentServiceOptions":
-                {
-                    /*"Notification":
-                    {
-                        "NotificationCode":"2",
-                        "EMail":
-                        {
-                            "EMailAddress": addr.email // Not the actual label, just a notification that it was sent. Maybe send to case manager?
-                        }
-                    },*/
-                    "LabelDelivery":
-                    {
-                        "EMail":
-                        {
-                            "EMailAddress": addr.email,
-                            'UndeliverableEMailAddress':'csrs@datarecovery.com',
-                            "FromEMailAddress":"csrs@datarecovery.com"
-                        }
-                    }
-                },
+                "ShipmentServiceOptions":{},
                 "Package":Package
             },
         }
     }
+
+    shipRequest['ShipmentRequest']['Shipment']['ShipTo'] = shipTo;
+    shipRequest['ShipmentRequest']['Shipment']['ShipFrom'] = shipFrom;
+    if (isReturn == true)
+    {
+        shipRequest['ShipmentRequest']['Shipment']['ShipmentServiceOptions'] = {
+            "LabelDelivery":
+            {
+                "EMail":
+                {
+                    "EMailAddress": shipFrom['EMailAddress'],
+                    'UndeliverableEMailAddress':'csrs@datarecovery.com',
+                    "FromEMailAddress":"csrs@datarecovery.com"
+                }
+            }
+        };
+        shipRequest['ShipmentRequest']['Shipment']['Shipper'] = shipTo; 
+        shipRequest['ShipmentRequest']['Shipment']['ReturnService'] = {"Code":"8"}
+    }
+    else
+    {
+        shipRequest['ShipmentRequest']['Shipment']['Shipper'] = shipFrom;
+    }
+
+    console.log(shipRequest);
     var apiurl = "https://wwwcie.ups.com/rest/Ship";
     //var apiurl = 'https://onlinetools.ups.com/rest/Ship';
     var xhr = new GM_xmlhttpRequest({

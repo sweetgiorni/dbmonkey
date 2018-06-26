@@ -358,6 +358,7 @@ function AddReminder(caseNumber) {
     });
 
     spinner = dialogForm.find("#spinner").spinner({
+
         stop: UpdateDate
     });
     dialogForm.find("#timeUnit").change(UpdateDate);
@@ -745,12 +746,6 @@ $(function () {
                     <input type='text' id='zip_form'>
             </div>
 
-            
-            
-           
-            
-
-            <button style='display:none; margin: 5px 0px' type='button' id='confirm_shipment_button' disabled>Send return label</button>
             <div id='loader' class='loader'></div>
             <label style='display:none' id='label_result'></label>
         </div>`
@@ -839,18 +834,28 @@ $(function () {
 
                     </ul>
                 </div>
+                
+                <button style='display:none; margin: 5px 0px' type='button' id='confirm_shipment_button' disabled>Send return label</button>
             </div>
 
             <div id='tabs-2'>
                 <div id='ship_to_radios' style='margin-bottom: 10px;'>
-                    <legend>Ship To:</legend>
+                    <label>Ship To:</label>
                     <label for='client_radio'>Client</label>
                     <input type='radio' id='client_radio'>
                     <label for='lab_radio'>Lab</label>
                     <input type='radio' id='lab_radio'>
                 </div>
+                <div id='ship_to_lab_div'>
+                    <select id='to_lab_select'>
+                        <option value='edwardsville'>Edwardsville</option>
+                        <option value='tempe'>Tempe</option>
+                        <option value='pleasanton'>Pleasanton</option>
+                    </select>
+                </div>
 
-                <div id='from_lab_div'>
+
+                <div style='display: block' id='from_lab_div'>
                     <label for='from_lab_select'>Ship from:</label>
                     <select id='from_lab_select'>
                         <option value='edwardsville'>Edwardsville</option>
@@ -870,6 +875,8 @@ $(function () {
 
                     </ul>
                 </div>
+                
+            <button style='display:none; margin: 5px 0px' type='button' id='confirm_shipment_button' disabled>Create label</button>
             </div>
         </div>
         `).dialog({
@@ -880,22 +887,21 @@ $(function () {
         return_label_address_forms = $(address_forms_html);
         outgoing_address_forms = $(address_forms_html);
         $('#return_to_form').after(return_label_address_forms);
-        $('#ship_to_radios').after(outgoing_address_forms);
+        $('#ship_to_lab_div').after(outgoing_address_forms);
         return_label_address_forms = $('#tabs-1');
         outgoing_address_forms = $('#tabs-2');
-        outgoing_address_forms.find('#confirm_shipment_button').text('Print label');
         upsDialog.children().css('display', 'block');
         upsDialog.find('input:not([type="radio"])').css('width', '95%');
         upsDialog.find('#state_form').css('width', '20%');
         upsDialog.find('#zip_form').css('width', '40%');
-        upsDialog.find('div').css('display', 'inline-block');
+        upsDialog.find('div:not(#from_lab_div)').css('display', 'inline-block');
         upsDialog.find('#loader, #service_form, #candidate_container, #confirm_shipment_button').css('display','none');
         upsDialog.find('#return_to_form').val(lab);
         upsLink = $(`
         <p class="req_actions" style="margin-top: 18px;">
             <a href="#" id="ups_link">UPS</a>
         </p>`)
-        //$('#from_lab_div').css('display', 'none');
+        $('#ship_to_lab_div').css('display', 'none');
         $('.timeline_below').append(upsLink);
         $('#client_radio').prop('checked', true);
         $('#ship_to_radios').css('white-space', 'nowrap');
@@ -906,12 +912,13 @@ $(function () {
             if ($('#client_radio').prop('checked') == true)
             {
                 outgoing_address_forms.find('#address_form_container').css('display', 'block');
-                $('#from_lab_div').css('display', 'none');
+                $('#ship_to_lab_div').css('display', 'none');
+                console.log($('#ship_to_lab_div'));
             }
             else  // Lab radio is checked
             {
                 outgoing_address_forms.find('#address_form_container').css('display', 'none');
-                $('#from_lab_div').css('display', 'inline-block');
+                $('#ship_to_lab_div').css('display', 'inline-block');
             }
         });
         $('#ups-dialog').tabs();
@@ -931,7 +938,6 @@ $(function () {
             form.find('#verify_status').text('Data changed. Please verify again.');
             form.find('#verify_status').css('color', 'red')
         }
-        outgoing_address_forms.find('#confirm_shipment_button')
 
         upsLink.click((e) => {
             e.preventDefault();
@@ -939,31 +945,12 @@ $(function () {
             SetAddressFormsFromForm(newAddr, return_label_address_forms);
             SetAddressFormsFromForm(newAddr, outgoing_address_forms);
         });
-        //upsLink.trigger('click');
-        return_label_address_forms.find('#confirm_shipment_button').click(() => {
-            SendReturnLabelFromForm(return_label_address_forms);
-        });
-        function SendReturnLabelFromForm(form)
-        {
-            ShowSpinner(form);
-            ReturnLabel(GetCurrentAddressFromForm(form), $('#return_to_form').val(), form.find('#service_form').val(), (json) =>{
-                console.log(json);
-                HideSpinner(form);
-                if ('Fault' in json)
-                {
-                    form.find('#label_result').css('display', 'block');
-                    form.find('#label_result').text(json['Fault']['detail']['Errors']['ErrorDetail']['PrimaryErrorCode']['Description']);
-                    return;
-                }
-                ShipmentResponse = json['ShipmentResponse'];
-                tracking_number = ShipmentResponse['ShipmentResults']['ShipmentIdentificationNumber'];
-                
-                form.find('#label_result').css('display', 'block');
-                form.find('#label_result').text('Success!\n' + tracking_number);
-                $('#submitNoteNewNote').val(tracking_number + ' emailed to ' + form.find('#email_form').val());
-                $('#submitNotePrivate').trigger('click');
-            });
-        }
+
+        upsLink.trigger('click');
+
+        
+
+        
 
         function ResetThings(form)
         {
@@ -993,18 +980,104 @@ $(function () {
             return result;
         }
 
+        // Verify return address
         return_label_address_forms.find('#verify_button').click(() => {
-            VerifyAddressFromForm(return_label_address_forms);
-        });
-        outgoing_address_forms.find('#verify_button').click(() => {
-            VerifyAddressFromForm(outgoing_address_forms);
+            shipTo = lab_dict[$('#return_to_form').val()];
+            shipFrom = GetCurrentAddressFromForm(return_label_address_forms);
+            VerifyAddressFromForm(
+                return_label_address_forms,
+                GetCurrentAddressFromForm(return_label_address_forms),
+                () => {
+                    RateFromForm(return_label_address_forms, shipTo, shipFrom, true);
+                }
+            );
         });
 
-        function VerifyAddressFromForm(form){
+        //Confirm return label
+        return_label_address_forms.find('#confirm_shipment_button').click(() => {
+            shipTo = lab_dict[$('#return_to_form').val()];
+            shipFrom = GetCurrentAddressFromForm(return_label_address_forms);
+            SendLabelFromForm(return_label_address_forms, shipFrom, shipTo, true);
+        });
+
+        // Verify outgoing address
+        outgoing_address_forms.find('#verify_button').click(() => {
+            var shipTo;
+            if ($('#client_radio').prop('checked') == true)  // Selected custom address
+            {
+                shipTo = GetCurrentAddressFromForm(outgoing_address_forms);
+            }
+            else
+            {
+                shipTo = lab_dict[$('#to_lab_select').val()];
+            }
+            var shipFrom = lab_dict[outgoing_address_forms.find('#from_lab_select').val()];
+            VerifyAddressFromForm(outgoing_address_forms, shipTo, () =>
+            {
+                RateFromForm(outgoing_address_forms, shipTo, shipFrom, false);
+            });
+        });
+
+        // Outgoing SEND LABEL
+        outgoing_address_forms.find('#confirm_shipment_button').click(() => {
+            var shipTo;
+            if ($('#client_radio').prop('checked') == true)  // Selected custom address
+            {
+                shipTo = GetCurrentAddressFromForm(outgoing_address_forms);
+            }
+            else
+            {
+                shipTo = lab_dict[$('#to_lab_select').val()];
+            }
+            var shipFrom = lab_dict[outgoing_address_forms.find('#from_lab_select').val()];
+            SendLabelFromForm(outgoing_address_forms, shipFrom, shipTo, false);
+        });
+
+
+        // Confirm label - generic
+        function SendLabelFromForm(form, shipFrom, shipTo, isReturn)
+        {
+            ShowSpinner(form);
+            ConfirmLabel(shipFrom, shipTo, form.find('#service_form').val(), isReturn, (json) =>{
+                console.log(json);
+                HideSpinner(form);
+                if ('Fault' in json)
+                {
+                    form.find('#label_result').css('display', 'block');
+                    form.find('#label_result').text(json['Fault']['detail']['Errors']['ErrorDetail']['PrimaryErrorCode']['Description']);
+                    return;
+                }
+
+                ShipmentResponse = json['ShipmentResponse'];
+                tracking_number = ShipmentResponse['ShipmentResults']['ShipmentIdentificationNumber'];
+                
+                form.find('#label_result').css('display', 'block');
+                form.find('#label_result').text('Success!\n' + tracking_number);
+                if (isReturn)
+                {
+                    $('#submitNoteNewNote').val(tracking_number + ' emailed to ' + form.find('#email_form').val());
+                    $('#submitNotePrivate').trigger('click');
+                }
+                else
+                {
+                    base64Label = ShipmentResponse['ShipmentResults']['PackageResults']['ShippingLabel']['GraphicImage'];
+                    labelImage = $(`<img src='data:image/gif;base64,` + base64Label + `'>`);
+                    labelImage.css('transform', 'rotate(90deg)')
+                    printButton = $(`
+                    <input type='button' value='Print' onclick='UPS_PRINT.printWindow("receiptWindow", true)'>
+                    `)
+                    outgoing_address_forms.find('#confirm_shipment_button').after(labelImage);
+                    labelImage.before(printButton);
+                }
+            });
+        }
+
+
+        // Verify address - generic
+        function VerifyAddressFromForm(form, addressToValidate, OnSuccess){
             ResetThings(form);
             form.find('#loader').css('display','block');
-            inAddress = new Address("", "", form.find('#street_form').val(), form.find('#city_form').val(), form.find('#state_form').val().toUpperCase(), form.find('#zip_form').val(), '', 'US', form.find('email_form').val());
-            VerifyAddress(inAddress, function(json){
+            VerifyAddress(addressToValidate, function(json){
                 if ('Fault' in json)
                 {
                     console.log("Error!!!");
@@ -1020,7 +1093,8 @@ $(function () {
                     console.log('Address is valid!');
                     form.find('#verify_status').text('Address is valid!');
                     form.find('#verify_status').css('color', 'green');
-                    
+                    OnSuccess();
+                    return;
                 }
                 else if ('AmbiguousAddressIndicator' in json)
                 {
@@ -1031,7 +1105,6 @@ $(function () {
                     candidates = json['Candidate'];
                     //Populate candidates list
                     form.find('#candidate_list').empty();
-                    console.log(json);
                     if (candidates.constructor !== Array)  // Did we get more than one candidate?
                     {
                        candidates = [candidates]; 
@@ -1039,7 +1112,6 @@ $(function () {
                     for (i in candidates)
                     {
                         candidate = candidates[i];
-                        console.log(candidate);
                         form.find('#candidate_list').append($(`<li>`, {
                             text:JsonAddrToString(candidate),
                             display:'block'
@@ -1052,17 +1124,14 @@ $(function () {
                     form.find('#verify_status').text('Could not find a valid match.');
                     form.find('#verify_status').css('color', 'red');
                     HideSpinner(form);
-                    return;
+                    return false; 
                 }
-                RateFromForm(form, inAddress);
             });
-
         }
-        function RateFromForm(form, shipFrom)
+        function RateFromForm(form, shipTo, shipFrom, isReturn)
         {
             //Address is valid; get rates
-            Rate(shipFrom, $('#return_to_form').val(), function(json){
-                
+            Rate(shipTo, shipFrom, isReturn, function(json){
                 if ('Fault' in json)
                 {
                     console.log("Error!!!");
@@ -1089,13 +1158,11 @@ $(function () {
                 Rates = RateResponse['RatedShipment'];
 
                 //Empty and show the services dropdown
-                console.log(form);
                 form.find('#service_form').empty();
                 form.find('#service_form').css('display','block');
                 // Enable return label button
                 form.find('#confirm_shipment_button').removeAttr('disabled');
                 form.find('#confirm_shipment_button').css('display', 'block');
-                console.log(Rates);
                 for (i in Rates)
                 {
                     rate = Rates[i];
