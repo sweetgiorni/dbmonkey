@@ -5,6 +5,8 @@
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
+// @require      
+// @require      https://www.ups.com/javascript/iss_v20.0.42.00.js
 // @updateUrl    https://raw.githubusercontent.com/sweetgiorni/dbmonkey/master/dbmonkey.js
 // @downloadUrl  https://raw.githubusercontent.com/sweetgiorni/dbmonkey/master/dbmonkey.js
 // @require      https://raw.githubusercontent.com/sweetgiorni/dbmonkey/master/ups_api.js
@@ -746,7 +748,6 @@ $(function () {
                     <input type='text' id='zip_form'>
             </div>
 
-            <div id='loader' class='loader'></div>
             <label style='display:none' id='label_result'></label>
         </div>`
 
@@ -876,6 +877,7 @@ $(function () {
                     </ul>
                 </div>
                 
+            <div id='loader' class='loader'></div>
             <button style='display:none; margin: 5px 0px' type='button' id='confirm_shipment_button' disabled>Create label</button>
             </div>
         </div>
