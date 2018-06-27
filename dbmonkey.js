@@ -729,27 +729,24 @@ $(function () {
 
         address_forms_html = ` 
         <div id='address_form_container'>
+            <div>
+                <label style='display: inline-block'>Contact addresses:</label>
+                <select id='address_select'></select>
+            </div>
             <label style='display: block'>Contact</label>
             <input type='text' id='contact_form'>
             <label style='display: block'>Email</label>
             <input type='text' id='email_form'>
             <label>Address</label>
             <input type='text' id='street_form'>
-            <label>City</label>
+            <label style='display: block'>City</label>
             <input type='text' id='city_form'>
-
             <div style='margin: 10px 0px'>
                     <label>State</label>
                     <input type='text' id='state_form'>
                     <label>Zip</label>
                     <input type='text' id='zip_form'>
             </div>
-
-            
-            
-           
-            
-
             <button style='display:none; margin: 5px 0px' type='button' id='confirm_shipment_button' disabled>Send return label</button>
             <div id='loader' class='loader'></div>
             <label style='display:none' id='label_result'></label>
@@ -790,18 +787,43 @@ $(function () {
                 100% { transform: rotate(360deg); }
             }
         </style>`).appendTo($('head'))
-        clientName = copy_client_address_button_content.slice(0, copy_client_address_button_content.indexOf('<'));
-        addressData = copy_client_address_button_content.slice(copy_client_address_button_content.indexOf('>') + 1, copy_client_address_button_content.length);
-        line1 = addressData.slice(0, addressData.indexOf('<')).trim();
-        city = addressData.slice(addressData.indexOf('>') + 1, addressData.indexOf(',')).trim();
-        state = addressData.slice(addressData.indexOf(',') + 1, addressData.indexOf(',') + 4).trim();
-        zip = addressData.slice(addressData.indexOf(',') + 4, addressData.length).trim();
-        email = $('#email').text()
-        newAddr = new Address(clientName, "", line1, city, state, zip, "", 'US', email);
+
+        contactAddresses = [];
+        contactID = $('input[name="client_contact_id"]').attr('value');
+        var addType = '1'; //denotes we are changing an existing client_contact_cc
+        var xmlPostUrl = "https://db.datarecovery.com/addAddrCCServlet?addType=4&client_contact_id=" + contactID;
+        var xhr = new GM_xmlhttpRequest({
+            method:'POST',
+            url:xmlPostUrl,
+            onload: (res) => {
+                $($(res.responseXML).find('row')).each((ind, row) => {
+                    add1 = $(row).find('[key="add1"]').text();
+                    add2 = $(row).find('[key="add2"]').text();
+                    add3 = $(row).find('[key="add3"]').text();
+                    add4 = $(row).find('[key="add4"]').text();
+                    city = $(row).find('[key="city"]').text();
+                    state = $(row).find('[key="state"]').text();
+                    zipcode = $(row).find('[key="zipcode"]').text();
+                    country = $(row).find('[key="country"]').text();
+                    name = $('#name_f').text() + ' ' + $('#name_l').text();
+                    email = $('#email').text();
+                    contactAddresses.push(new Address(
+                        name, "",
+                        add1 + ' ' + add2 + ' ' + add3, 
+                        city,
+                        state, 
+                        zipcode, "",
+                        country, 
+                        email)
+                    );
+                });
+            }
+        });
+        
         
         function SetAddressFormsFromForm(addr, form)
         {
-            form.find('#contact_form').val(clientName);
+            form.find('#contact_form').val(addr.name);
             form.find('#street_form').val(addr.address_line);
             form.find('#city_form').val(addr.city);
             form.find('#state_form').val(addr.state);
@@ -879,11 +901,15 @@ $(function () {
         });
         return_label_address_forms = $(address_forms_html);
         outgoing_address_forms = $(address_forms_html);
+
         $('#return_to_form').after(return_label_address_forms);
         $('#ship_to_radios').after(outgoing_address_forms);
+
         return_label_address_forms = $('#tabs-1');
         outgoing_address_forms = $('#tabs-2');
+
         outgoing_address_forms.find('#confirm_shipment_button').text('Print label');
+
         upsDialog.children().css('display', 'block');
         upsDialog.find('input:not([type="radio"])').css('width', '95%');
         upsDialog.find('#state_form').css('width', '20%');
@@ -895,7 +921,7 @@ $(function () {
         <p class="req_actions" style="margin-top: 18px;">
             <a href="#" id="ups_link">UPS</a>
         </p>`)
-        //$('#from_lab_div').css('display', 'none');
+        
         $('.timeline_below').append(upsLink);
         $('#client_radio').prop('checked', true);
         $('#ship_to_radios').css('white-space', 'nowrap');
@@ -914,6 +940,28 @@ $(function () {
                 $('#from_lab_div').css('display', 'inline-block');
             }
         });
+
+
+        function AddContactAddressesToForm(form, addressList)
+        {
+            
+            addressList.forEach((ele) =>
+            {
+                newOption = $('<option>' + ele.address_line + '</option>');
+                form.find('#address_select').append(newOption);
+                newOption.data(ele);
+            });
+        }
+        
+        function SetupAddressSelectorFromForm(form)
+        {
+            form.find('#address_select').change((e) => { // When the selection is changed
+                var addr = ($(e.target).find(':selected').data()); // Get the corresponding address
+                SetAddressFormsFromForm(addr, form);      // And put it in the forms
+            });
+        }
+        SetupAddressSelectorFromForm(outgoing_address_forms);
+        SetupAddressSelectorFromForm(return_label_address_forms);
         $('#ups-dialog').tabs();
         outgoing_address_forms.find('input,select :not(#confirm_shipment_button),#return_to_form').change(() =>{
             FormResetOnChange(outgoing_address_forms);
@@ -936,8 +984,13 @@ $(function () {
         upsLink.click((e) => {
             e.preventDefault();
             upsDialog.dialog('open');
-            SetAddressFormsFromForm(newAddr, return_label_address_forms);
-            SetAddressFormsFromForm(newAddr, outgoing_address_forms);
+            if (contactAddresses.length >= 1)
+            {
+                AddContactAddressesToForm(return_label_address_forms, contactAddresses);
+                AddContactAddressesToForm(outgoing_address_forms, contactAddresses);
+                SetAddressFormsFromForm(contactAddresses[0], return_label_address_forms);
+                SetAddressFormsFromForm(contactAddresses[0], outgoing_address_forms);
+            }
         });
         //upsLink.trigger('click');
         return_label_address_forms.find('#confirm_shipment_button').click(() => {
