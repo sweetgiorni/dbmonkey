@@ -59,30 +59,21 @@ This feature turns client phone numbers into a SIP click to call link. To get it
 http://www.dslreports.com/forum/r28591771-General-Windows-Dialer-and-Click-to-Dial-using-Google-Chrome
 
 <h3>UPS Integration</h3>
-This adds experimental, pre-alpha support for sending UPS return labels from the database. You'll find a new link on the left side of the view case page labeled 'UPS'.
-Currently it only supports return labels (not outgoing) in the US. I'll add support for Canada if Justin switches over from FedEx. I probably won't be adding support for international shipping since it's a huge pain to implement and we rarely use it.
-This script is public at the moment, so you'll have to put in the account information manually. On the homepage, clicks the 'Options' link. You'll see four new inputs: username, password, api key, and account number. The username and password is the login you normally use on UPS.com. The account number can be found on the UPS website or Ben's company directory cheat-sheet . If you don't have the api key already, message me for it. Needless to say, this is all sensitive information and shouldn't be shared.
-There are essentially three steps to the process:
+This adds pre-alpha support for sending UPS labels from the database. You'll find a new link on the left side of the view case page labeled 'UPS'.
+US only - I'll add support for Canada if Justin switches over from FedEx. I probably won't be adding support for international shipping since it's a huge pain to implement and we rarely use it.
+This script is public at the moment, so you'll have to put in the account information manually. On the homepage, clicks the 'Options' link. You'll see four new inputs: username, password, api key, and account number. The username and password is the login you normally use on UPS.com. The account number can be found on the UPS website or Ben's company directory cheat-sheet. If you don't have the api key already, message me for it. Needless to say, this is all sensitive information and shouldn't be shared.
 
-1.Address Verification
+The script will automatically collect all CONTACT addresses from the database. If you enter a contact location but no client address, it will not auto-fill for you!
+If there's no contact address, here are two easy ways to add it from the client location:
+1. On the view contact page, next to "Contact addresses", click "add". Check the box that says, "Check box to copy location above". It will copy the client location into the contact address. OR
+2. Just add return shipping. It gets added as a contact address, so whatever you put in the return shipping form will be available for autofill.
 
-2.Rate collection
+<b>Printing Outgoing Labels</b>
+It only supports Zebra thermal printers at the moment. It you are using something else, let me know.
+You need to install this program on your PC for printing to work:
 
-3.Label creation
+https://github.com/qzind/tray/releases/download/v2.0.7/qz-tray-2.0.7.exe
 
-<b>Address Verification</b>
-
-This step performs initial validation on the address. The script tries to automatically fill in the address from the client information on the webpage, but it doesn't handle every edge case, so be sure to check everything for accuracy.
-There are three possible validation results: UPS finds no matches for the address, the address is ambiguous and UPS found multiple possible matches, or UPS found a perfect match. 
-If no matches are found, the address is probably very wrong. Fix it.
-If the address is ambiguous, you should see a list of possible matches. Pick one and make the address match that as closely as possible. Keep fixing until it succeeds.
-
-<b>Rate Collection</b>
-
-UPS will return of list of services available to the selected address and their costs. It should automatically show you the negotiated rates for the account.
-
-<b>Label Creation</b>
-
-Clicking the 'send label' button will attempt to create and finalize a label with the selected address. If it succeeds, you'll see a success message and the label will be emailed to the client. A private note is automatically created with the tracking number and the email address that the label was sent to.
+It's pretty straightforward: install that, and next time you make an outgoing label you'll be asked if you want to allow the website to use the printer. Accept all prompts. You can't use the "Remember this decision" button because the db website does not currently have a valid SSL certificate. Petition Mike if you want it changed.
   
 

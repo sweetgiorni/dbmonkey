@@ -1,15 +1,16 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.22
+// @version      0.23
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
-// @require      
-// @require      https://www.ups.com/javascript/iss_v20.0.42.00.js
 // @updateUrl    https://raw.githubusercontent.com/sweetgiorni/dbmonkey/master/dbmonkey.js
 // @downloadUrl  https://raw.githubusercontent.com/sweetgiorni/dbmonkey/master/dbmonkey.js
 // @require      https://raw.githubusercontent.com/sweetgiorni/dbmonkey/master/ups_api.js
+// @require      https://raw.githubusercontent.com/sweetgiorni/dbmonkey/master/qz-tray.js
+// @require      https://raw.githubusercontent.com/sweetgiorni/dbmonkey/master/sha-256.min.js
+// @require      https://raw.githubusercontent.com/sweetgiorni/dbmonkey/master/rsvp-3.1.0.min.js
 // @grant GM_setValue
 // @grant GM_getValue
 // @grant GM_deleteValue
@@ -17,8 +18,6 @@
 // @connect wwwcie.ups.com
 // @connect onlinetools.ups.com
 // ==/UserScript==
-
-salmon = '#ff7070';
 
 var emailInquiry = {};
 var path = "";
@@ -382,6 +381,7 @@ function CopyToClipboard(value) {
     document.body.removeChild(el);
 }
 $(function () {
+
     path = window.location.pathname;
     if (path == "/" || path == "" || path.indexOf("index.jsp") != -1) //Home page
     {
@@ -733,7 +733,7 @@ $(function () {
         address_forms_html = ` 
         <div id='address_form_container'>
             <div>
-                <label style='display: inline-block'>Contact addresses:</label>
+                <label style='display: inline-block; margin: 5px 0px'>Contact addresses:</label>
                 <select id='address_select'></select>
             </div>
             <label style='display: block'>Contact</label>
@@ -744,13 +744,12 @@ $(function () {
             <input type='text' id='street_form'>
             <label style='display: block'>City</label>
             <input type='text' id='city_form'>
-            <div style='margin: 10px 0px'>
+            <div style='display: block; margin: 10px 0px'>
                     <label>State</label>
-                    <input type='text' id='state_form'>
+                    <input style='display: inline-block;" type='text' id='state_form'>
                     <label>Zip</label>
                     <input type='text' id='zip_form'>
             </div>
-            <label style='display:none' id='label_result'></label>
         </div>`
 
         //Get current lab
@@ -791,6 +790,7 @@ $(function () {
 
         contactAddresses = [];
         contactID = $('input[name="client_contact_id"]').attr('value');
+        clientName = $('#name_f').text() + ' ' + $('#name_l').text();
         var addType = '1'; //denotes we are changing an existing client_contact_cc
         var xmlPostUrl = "https://db.datarecovery.com/addAddrCCServlet?addType=4&client_contact_id=" + contactID;
         var xhr = new GM_xmlhttpRequest({
@@ -806,10 +806,10 @@ $(function () {
                     state = $(row).find('[key="state"]').text();
                     zipcode = $(row).find('[key="zipcode"]').text();
                     country = $(row).find('[key="country"]').text();
-                    name = $('#name_f').text() + ' ' + $('#name_l').text();
+                    clientName = $('#name_f').text() + ' ' + $('#name_l').text();
                     email = $('#email').text();
                     contactAddresses.push(new Address(
-                        name, "",
+                        clientName, "",
                         add1 + ' ' + add2 + ' ' + add3, 
                         city,
                         state, 
@@ -862,8 +862,8 @@ $(function () {
 
                     </ul>
                 </div>
-                
                 <button style='display:none; margin: 5px 0px' type='button' id='confirm_shipment_button' disabled>Send return label</button>
+                <label style='display:none' id='label_result'></label>
             </div>
 
             <div id='tabs-2'>
@@ -906,12 +906,14 @@ $(function () {
                 
             <div id='loader' class='loader'></div>
             <button style='display:none; margin: 5px 0px' type='button' id='confirm_shipment_button' disabled>Create label</button>
+            
+            <label style='display:none' id='label_result'></label>
             </div>
         </div>
         `).dialog({
             autoOpen:false,
-            width: 634,
-            height: 562
+            width: 650,
+            height: 580
         });
         return_label_address_forms = $(address_forms_html);
         outgoing_address_forms = $(address_forms_html);
@@ -924,6 +926,9 @@ $(function () {
         upsDialog.find('input:not([type="radio"])').css('width', '95%');
         upsDialog.find('#state_form').css('width', '20%');
         upsDialog.find('#zip_form').css('width', '40%');
+        outgoing_address_forms.find('#state_form').css('width', '20%');
+        outgoing_address_forms.find('#zip_form').css('width', '40%');
+        //upsDialog.find('div:not(#from_lab_div)').css('display', 'inline-block');
         upsDialog.find('div:not(#from_lab_div)').css('display', 'inline-block');
         upsDialog.find('#loader, #service_form, #candidate_container, #confirm_shipment_button').css('display','none');
         upsDialog.find('#return_to_form').val(lab);
@@ -943,7 +948,6 @@ $(function () {
             {
                 outgoing_address_forms.find('#address_form_container').css('display', 'block');
                 $('#ship_to_lab_div').css('display', 'none');
-                console.log($('#ship_to_lab_div'));
             }
             else  // Lab radio is checked
             {
@@ -955,7 +959,7 @@ $(function () {
 
         function AddContactAddressesToForm(form, addressList)
         {
-            
+            form.find('#address_select').empty(); // Clear it out first...
             addressList.forEach((ele) =>
             {
                 newOption = $('<option>' + ele.address_line + '</option>');
@@ -1002,12 +1006,6 @@ $(function () {
                 SetAddressFormsFromForm(contactAddresses[0], outgoing_address_forms);
             }
         });
-
-        upsLink.trigger('click');
-
-        
-
-        
 
         function ResetThings(form)
         {
@@ -1096,7 +1094,6 @@ $(function () {
         {
             ShowSpinner(form);
             ConfirmLabel(shipFrom, shipTo, form.find('#service_form').val(), isReturn, (json) =>{
-                console.log(json);
                 HideSpinner(form);
                 if ('Fault' in json)
                 {
@@ -1117,14 +1114,22 @@ $(function () {
                 }
                 else
                 {
-                    base64Label = ShipmentResponse['ShipmentResults']['PackageResults']['ShippingLabel']['GraphicImage'];
-                    labelImage = $(`<img src='data:image/gif;base64,` + base64Label + `'>`);
-                    labelImage.css('transform', 'rotate(90deg)')
-                    printButton = $(`
-                    <input type='button' value='Print' onclick='UPS_PRINT.printWindow("receiptWindow", true)'>
-                    `)
-                    outgoing_address_forms.find('#confirm_shipment_button').after(labelImage);
-                    labelImage.before(printButton);
+                    zpl = json['ShipmentResponse']['ShipmentResults']['PackageResults']['ShippingLabel']['GraphicImage']; //Base64
+                    data = [
+                        {
+                            type: 'raw',
+                            format: 'base64',
+                            data: zpl
+                        }
+                    ];
+                    qz.websocket.connect().then(function() 
+                    { 
+                        return qz.printers.find("zebra")               // Pass the printer name into the next Promise
+                    }).then(function(printer) 
+                    {
+                        var config = qz.configs.create(printer);       // Create a default config for the found printer
+                        return qz.print(config, data);
+                    }).catch(function(e) { console.error(e); });
                 }
             });
         }

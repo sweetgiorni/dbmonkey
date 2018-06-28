@@ -103,33 +103,6 @@ Package = {
     }
 }
 
-///////////
-//UPS_PRINT.printWindow('receiptWindow', true);
-$('head').append($(`<div id="printWindows" style="display:none">
-{
-"type": "PrintWindows",
-"printErrorMessage": "",
-"useHttpApp": true,
-"httpAppPort": "4349",
-"preferredPrinter": "ZebraZP450200dpi",
-"app": "",
-"pbs": true,
-"windows": [
-   {
-       "name": "receiptWindow",
-       "isPrintOnLoad": false,
-       "isThermal": true,
-       "printerType": "epl2",
-       "documents": [{ "key": "shipment_2103943637:rcpt1", "num": "2" }]
-   } ]
-}</div>`));
-
-UPS_PRINT.printWindow('labelWindow', true);
-//////////////
-
-
-
-
 class Address {
     constructor(name = "",
         attn = "",
@@ -308,8 +281,6 @@ function ConfirmLabel(shipFrom, shipTo, serviceCode, isReturn, callback)
     {
         shipFrom = shipFrom.ToXml();
     }
-
-    console.log(shipFrom, shipTo);
     shipRequest = 
     {
         "UPSSecurity": UPSSecurity,
@@ -350,7 +321,6 @@ function ConfirmLabel(shipFrom, shipTo, serviceCode, isReturn, callback)
             },
         }
     }
-
     shipRequest['ShipmentRequest']['Shipment']['ShipTo'] = shipTo;
     shipRequest['ShipmentRequest']['Shipment']['ShipFrom'] = shipFrom;
     if (isReturn == true)
@@ -368,15 +338,24 @@ function ConfirmLabel(shipFrom, shipTo, serviceCode, isReturn, callback)
         };
         shipRequest['ShipmentRequest']['Shipment']['Shipper'] = shipTo; 
         shipRequest['ShipmentRequest']['Shipment']['ReturnService'] = {"Code":"8"}
+        
     }
     else
     {
         shipRequest['ShipmentRequest']['Shipment']['Shipper'] = shipFrom;
+        shipRequest['ShipmentRequest']['LabelSpecification'] = {
+            'LabelImageFormat':{
+                'Code':'ZPL'
+            },
+            'LabelStockSize':
+            {
+                'Height':'6',
+                'Width':'4'
+            }
+        }
     }
-
-    console.log(shipRequest);
-    var apiurl = "https://wwwcie.ups.com/rest/Ship";
-    //var apiurl = 'https://onlinetools.ups.com/rest/Ship';
+    //var apiurl = "https://wwwcie.ups.com/rest/Ship";
+    var apiurl = 'https://onlinetools.ups.com/rest/Ship';
     var xhr = new GM_xmlhttpRequest({
         method:'POST',
         url:apiurl,
