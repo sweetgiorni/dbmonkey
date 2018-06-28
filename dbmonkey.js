@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.24
+// @version      0.25
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -17,6 +17,7 @@
 // @grant GM_xmlhttpRequest
 // @connect wwwcie.ups.com
 // @connect onlinetools.ups.com
+
 // ==/UserScript==
 
 var emailInquiry = {};
@@ -106,9 +107,62 @@ https://datarecovery.com/submit.php
 Thank you again, and please let me know if I can be of assistance. 
 
 Best regards,`]
-    ] //// End of Q1
+    ], //// End of Q1,
+    'Billing': [
+            ['CC Authorization Form (US)', `Hello {FIRST_NAME},
+
+We received the credit card approval and our engineers are beginning the work to recover the data today. Due to the fact that the name and/or location on the credit card are different from your own name and shipping address, we need this credit card authorization form filled out before we can ship back. Please download the form using the link below, scan in the required documents, fill out the form, scan it and send it back.
+            
+https://datarecovery.com/wp-content/uploads/2018/06/Credit-Card-Authorization-Form-USA-20160906.pdf
+            
+Thank you,`],
+            ['CC Authorization Form (Canada)', `Hello {FIRST_NAME},
+
+We received the credit card approval and our engineers are beginning the work to recover the data today. Due to the fact that the name and/or location on the credit card are different from your own name and shipping address, we need this credit card authorization form filled out before we can ship back. Please download the form using the link below, scan in the required documents, fill out the form, scan it and send it back.
+                        
+https://datarecovery.com/wp-content/uploads/2018/06/Credit-Card-Authorization-Form-CANADA-20160906.pdf
+                        
+Thank you,`]
+    ]  // End of Billing
 };
 
+function ShipInCall(caseNumber, note)
+{
+    shipInCallURL = 'https://db.datarecovery.com/vc_shipin_call.jsp?case_id=' + caseNumber;
+
+    postNoteURL = 'https://db.datarecovery.com/vc_gen.jsp';
+    var xhr = new GM_xmlhttpRequest({
+        method: 'GET',
+        url: shipInCallURL,
+        onload: (res) => {
+            callForm  = $(res.responseText).find('[name="log_call_2_form"]');
+            callForm.find('#call_form').val('async note');
+            formData = $(res.responseText).find('[name="log_call_2_form"]').serializeArray();
+            (formData[2])['call_note'] = 'textgoeshere';
+            postString = '';
+            $(formData).each((ind, dict) => {
+                if (dict['name'] == 'call_note')
+                {
+                    dict['value'] = note;
+                }
+                k = escape(dict['name']).replace(/%20/g, "+");
+                v = escape(dict['value']).replace(/%20/g, "+");
+
+                postString += k + '=' + v + '&'; 
+            });
+            new GM_xmlhttpRequest({
+                method: 'POST',
+                data: postString,
+                url: postNoteURL,
+                headers: {
+                    'accept-encoding': 'gzip, deflate, br',
+                    'content-type': 'application/x-www-form-urlencoded',
+                    'referer': shipInCallURL
+                }
+            });
+        }
+    });
+}
 
 function UpdateFlag(user, caseId, newFlagColor) {
     var action_type = "1";
@@ -422,14 +476,15 @@ $(function () {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Added contact address collection and autofill</li>
-                    <li>Added outgoing shipment capabilities</li>
-                    <li>UPS link now 70% less sensitive</li>
+                    <li>Return labels are now ship in calls</li>
+                    <li>Return label notes are more detailed</li>
+                    <li>Added templates for US and Canada CC auth forms</li>
+                    <li>The UPS form now collects addresses from the client location</li>
                 </ul>
             </div>`);
             dialog.dialog({
                 modal: true,
-                width: "400px"
+                width: "450px"
             });
         }
 
@@ -674,17 +729,9 @@ $(function () {
                     currentTemplate = e.data.currentTemplate;
                     emailBody = currentTemplate[1];
 
-                    //Get the client's first name
-                    clientInfo = $("#client_loc_info").parent().text();
-                    start = clientInfo.indexOf("Contact:") + 8;
-                    end = clientInfo.indexOf("Location");
-                    name = clientInfo.slice(start, end).replace(/^\s+|\s+$/g, '');
-                    if (name.startsWith("Mr") || name.startsWith("Ms")) {
-                        start = name.indexOf(" ");
-                        name = name.slice(start + 1, name.length - start);
-                    }
-                    lastNameIndex = name.indexOf(" ");
-                    firstName = name.slice(0, lastNameIndex);
+                    firstName = $('#name_f').text();
+                    lastName = $('#name_l').text();
+                    
                     emailBody = emailBody.replace("{FIRST_NAME}", firstName);
                     emailButtonCopy = $("#email_button").clone();
                     href = emailButtonCopy.attr('href');
@@ -783,39 +830,80 @@ $(function () {
             }
         </style>`).appendTo($('head'))
 
-        contactAddresses = [];
-        contactID = $('input[name="client_contact_id"]').attr('value');
-        clientName = $('#name_f').text() + ' ' + $('#name_l').text();
-        var addType = '1'; //denotes we are changing an existing client_contact_cc
-        var xmlPostUrl = "https://db.datarecovery.com/addAddrCCServlet?addType=4&client_contact_id=" + contactID;
+        // Get addresses from location
+        
+        //First, get client_loc_id
+        //client_id = client_id.slice(client_id.indexOf('client_id') + 10, client_id.length);
+
+        // TODO: Replace with addAddrCCServlet call once Mike adds client_loc_id to view_case
+        // For now, grab it from the view case page
+        var client_loc_id = '';
+        var viewContactURL = 'https://db.datarecovery.com/' + $('#nav1_case > table > tbody > tr > td:nth-of-type(3) > a').attr('href');
         var xhr = new GM_xmlhttpRequest({
-            method: 'POST',
-            url: xmlPostUrl,
+            method: 'GET',
+            url: viewContactURL,
             onload: (res) => {
-                $($(res.responseXML).find('row')).each((ind, row) => {
-                    add1 = $(row).find('[key="add1"]').text();
-                    add2 = $(row).find('[key="add2"]').text();
-                    add3 = $(row).find('[key="add3"]').text();
-                    add4 = $(row).find('[key="add4"]').text();
-                    city = $(row).find('[key="city"]').text();
-                    state = $(row).find('[key="state"]').text();
-                    zipcode = $(row).find('[key="zipcode"]').text();
-                    country = $(row).find('[key="country"]').text();
-                    clientName = $('#name_f').text() + ' ' + $('#name_l').text();
-                    email = $('#email').text();
-                    contactAddresses.push(new Address(
-                        clientName, "",
-                        add1 + ' ' + add2 + ' ' + add3,
-                        city,
-                        state,
-                        zipcode, "",
-                        country,
-                        email));
+
+                //Now that we have client_loc_id, we can get the actual location
+                response = res.responseText;
+                var idx = response.indexOf("client_loc_id = '")
+                client_loc_id = response.slice(idx + 17, response.indexOf("'", idx + 17));
+
+                var addType = '11';
+                var xmlPostUrl = "https://db.datarecovery.com/addAddrCCServlet?addType=" + addType + "&client_loc_id=" + client_loc_id;
+                var xhr = new GM_xmlhttpRequest({
+                    method: 'POST',
+                    url: xmlPostUrl,
+                    onload: (res) => {
+                        ParseAddressResponse(res.responseXML);
+                    }
                 });
             }
         });
 
 
+        
+
+        addType = '4';
+        contactAddresses = [];
+        contactID = $('input[name="client_contact_id"]').attr('value');
+        clientName = $('#name_f').text() + ' ' + $('#name_l').text();
+        var addType = '1'; //denotes we are changing an existing client_contact_cc
+        xmlPostUrl = "https://db.datarecovery.com/addAddrCCServlet?addType=" + addType + "&client_contact_id=" + contactID;
+        var xhr = new GM_xmlhttpRequest({
+            method: 'GET',
+            url: xmlPostUrl,
+            onload: (res) => {
+                ParseAddressResponse(res.responseXML);
+            }
+        });
+
+        
+        
+
+        function ParseAddressResponse(xml)
+        {
+            $(xml).find('row').each((ind, row) => {
+                add1 = $(row).find('[key="add1"]').text();
+                add2 = $(row).find('[key="add2"]').text();
+                add3 = $(row).find('[key="add3"]').text();
+                add4 = $(row).find('[key="add4"]').text();
+                city = $(row).find('[key="city"]').text();
+                state = $(row).find('[key="state"]').text();
+                zipcode = $(row).find('[key="zipcode"]').text();
+                country = $(row).find('[key="country"]').text();
+                clientName = $('#name_f').text() + ' ' + $('#name_l').text();
+                email = $('#email').text();
+                contactAddresses.push(new Address(
+                    clientName, "",
+                    add1 + ' ' + add2 + ' ' + add3,
+                    city,
+                    state,
+                    zipcode, "",
+                    country,
+                    email));
+            });
+        }
         function SetAddressFormsFromForm(addr, form) {
             form.find('#contact_form').val(addr.name);
             form.find('#street_form').val(addr.address_line);
@@ -1078,15 +1166,13 @@ $(function () {
                     form.find('#label_result').text(json['Fault']['detail']['Errors']['ErrorDetail']['PrimaryErrorCode']['Description']);
                     return;
                 }
-
                 ShipmentResponse = json['ShipmentResponse'];
                 tracking_number = ShipmentResponse['ShipmentResults']['ShipmentIdentificationNumber'];
-
                 form.find('#label_result').css('display', 'block');
                 form.find('#label_result').text('Success!\n' + tracking_number);
                 if (isReturn) {
-                    $('#submitNoteNewNote').val(tracking_number + ' emailed to ' + form.find('#email_form').val());
-                    $('#submitNotePrivate').trigger('click');
+                    var note = "Return label: " + service_codes[form.find('#service_form').val()] + ' to ' + shipTo['Address']['StateProvinceCode'] + '\n' + tracking_number + ' emailed to ' + form.find('#email_form').val(); 
+                    ShipInCall(case_id, note);
                 } else {
                     zpl = json['ShipmentResponse']['ShipmentResults']['PackageResults']['ShippingLabel']['GraphicImage']; //Base64
                     data = [{
