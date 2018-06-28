@@ -756,20 +756,13 @@ $(function () {
 
         //Get current lab
         lab = $('.right_top_vc > tbody > tr > *').eq(3).text();
-        if (lab.indexOf('Pleasanton') != -1)
-        {
+        if (lab.indexOf('Pleasanton') != -1) {
             lab = 'pleasanton';
-        }
-        else if (lab.indexOf('Tempe') != -1)
-        {
+        } else if (lab.indexOf('Tempe') != -1) {
             lab = 'tempe';
-        }
-        else if (lab.indexOf('Edwardsville') != -1)
-        {
+        } else if (lab.indexOf('Edwardsville') != -1) {
             lab = 'edwardsville';
-        }
-        else
-        {
+        } else {
             lab = '';
         }
 
@@ -796,8 +789,8 @@ $(function () {
         var addType = '1'; //denotes we are changing an existing client_contact_cc
         var xmlPostUrl = "https://db.datarecovery.com/addAddrCCServlet?addType=4&client_contact_id=" + contactID;
         var xhr = new GM_xmlhttpRequest({
-            method:'POST',
-            url:xmlPostUrl,
+            method: 'POST',
+            url: xmlPostUrl,
             onload: (res) => {
                 $($(res.responseXML).find('row')).each((ind, row) => {
                     add1 = $(row).find('[key="add1"]').text();
@@ -812,20 +805,18 @@ $(function () {
                     email = $('#email').text();
                     contactAddresses.push(new Address(
                         clientName, "",
-                        add1 + ' ' + add2 + ' ' + add3, 
+                        add1 + ' ' + add2 + ' ' + add3,
                         city,
-                        state, 
+                        state,
                         zipcode, "",
-                        country, 
-                        email)
-                    );
+                        country,
+                        email));
                 });
             }
         });
-        
-        
-        function SetAddressFormsFromForm(addr, form)
-        {
+
+
+        function SetAddressFormsFromForm(addr, form) {
             form.find('#contact_form').val(addr.name);
             form.find('#street_form').val(addr.address_line);
             form.find('#city_form').val(addr.city);
@@ -833,8 +824,8 @@ $(function () {
             form.find('#zip_form').val(addr.zip);
             form.find('#email_form').val(addr.email);
         }
-        function GetCurrentAddressFromForm(form)
-        {
+
+        function GetCurrentAddressFromForm(form) {
             return new Address(clientName, "", form.find('#street_form').val(), form.find('#city_form').val(), form.find('#state_form').val(), form.find('#zip_form').val(), '', 'US', form.find('#email_form').val());
         }
         upsDialog = $(`
@@ -913,7 +904,7 @@ $(function () {
             </div>
         </div>
         `).dialog({
-            autoOpen:false,
+            autoOpen: false,
             width: 650,
             height: 580
         });
@@ -932,7 +923,7 @@ $(function () {
         outgoing_address_forms.find('#zip_form').css('width', '40%');
         //upsDialog.find('div:not(#from_lab_div)').css('display', 'inline-block');
         upsDialog.find('div:not(#from_lab_div)').css('display', 'inline-block');
-        upsDialog.find('#loader, #service_form, #candidate_container, #confirm_shipment_button').css('display','none');
+        upsDialog.find('#loader, #service_form, #candidate_container, #confirm_shipment_button').css('display', 'none');
         upsDialog.find('#return_to_form').val(lab);
         upsLink = $(`
         <p class="req_actions" style="margin-top: 18px;">
@@ -942,16 +933,14 @@ $(function () {
         $('.timeline_below').append(upsLink);
         $('#client_radio').prop('checked', true);
         $('#ship_to_radios').css('white-space', 'nowrap');
-        $('#ship_to_radios > *').css('display','inline-block')
-        $('#ship_to_radios > input').change(function(e){
+        $('#ship_to_radios > *').css('display', 'inline-block')
+        $('#ship_to_radios > input').change(function (e) {
             $('#ship_to_radios > input').prop('checked', false);
             $(e.target).prop('checked', true);
-            if ($('#client_radio').prop('checked') == true)
-            {
+            if ($('#client_radio').prop('checked') == true) {
                 outgoing_address_forms.find('#address_form_container').css('display', 'block');
                 $('#ship_to_lab_div').css('display', 'none');
-            }
-            else  // Lab radio is checked
+            } else // Lab radio is checked
             {
                 outgoing_address_forms.find('#address_form_container').css('display', 'none');
                 $('#ship_to_lab_div').css('display', 'inline-block');
@@ -959,37 +948,33 @@ $(function () {
         });
 
 
-        function AddContactAddressesToForm(form, addressList)
-        {
+        function AddContactAddressesToForm(form, addressList) {
             form.find('#address_select').empty(); // Clear it out first...
-            addressList.forEach((ele) =>
-            {
+            addressList.forEach((ele) => {
                 newOption = $('<option>' + ele.address_line + '</option>');
                 form.find('#address_select').append(newOption);
                 newOption.data(ele);
             });
         }
-        
-        function SetupAddressSelectorFromForm(form)
-        {
+
+        function SetupAddressSelectorFromForm(form) {
             form.find('#address_select').change((e) => { // When the selection is changed
                 var addr = ($(e.target).find(':selected').data()); // Get the corresponding address
-                SetAddressFormsFromForm(addr, form);      // And put it in the forms
+                SetAddressFormsFromForm(addr, form); // And put it in the forms
             });
         }
         SetupAddressSelectorFromForm(outgoing_address_forms);
         SetupAddressSelectorFromForm(return_label_address_forms);
         $('#ups-dialog').tabs();
-        outgoing_address_forms.find('input,select :not(#confirm_shipment_button),#return_to_form').change(() =>{
+        outgoing_address_forms.find('input,select :not(#confirm_shipment_button),#return_to_form').change(() => {
             FormResetOnChange(outgoing_address_forms);
         });
-        return_label_address_forms.parent().find('input,select :not(#confirm_shipment_button), #return_to_form').change(() =>{
+        return_label_address_forms.parent().find('input,select :not(#confirm_shipment_button), #return_to_form').change(() => {
             FormResetOnChange(return_label_address_forms);
         });
-        function FormResetOnChange(form)
-        {
-            if(form.find('#verify_status').text() == '')
-            {
+
+        function FormResetOnChange(form) {
+            if (form.find('#verify_status').text() == '') {
                 return;
             }
             ResetThings(form);
@@ -1000,8 +985,7 @@ $(function () {
         $('#ups_link').click((e) => {
             e.preventDefault();
             upsDialog.dialog('open');
-            if (contactAddresses.length >= 1)
-            {
+            if (contactAddresses.length >= 1) {
                 AddContactAddressesToForm(return_label_address_forms, contactAddresses);
                 AddContactAddressesToForm(outgoing_address_forms, contactAddresses);
                 SetAddressFormsFromForm(contactAddresses[0], return_label_address_forms);
@@ -1009,26 +993,24 @@ $(function () {
             }
         });
 
-        function ResetThings(form)
-        {
+        function ResetThings(form) {
             HideSpinner(form);
-            upsDialog.find('#loader, #service_form, #candidate_container, #confirm_shipment_button').css('display','none');
+            upsDialog.find('#loader, #service_form, #candidate_container, #confirm_shipment_button').css('display', 'none');
 
         }
-        function ShowSpinner(form)
-        {
+
+        function ShowSpinner(form) {
             form.find('#loader').css('display', 'block');
         }
-        function HideSpinner(form)
-        {
+
+        function HideSpinner(form) {
             form.find('#loader').css('display', 'none');
         }
-        function JsonAddrToString(json)
-        {
+
+        function JsonAddrToString(json) {
             var result = '';
             var Address = json['AddressKeyFormat'];
-            if ('AddressLine' in Address)
-            {
+            if ('AddressLine' in Address) {
                 result += 'Street: ' + Address['AddressLine'] + '\n';
                 result += 'City: ' + Address['PoliticalDivision2'] + '\n';
                 result += 'State: ' + Address['PoliticalDivision1'] + '\n';
@@ -1060,17 +1042,14 @@ $(function () {
         // Verify outgoing address
         outgoing_address_forms.find('#verify_button').click(() => {
             var shipTo;
-            if ($('#client_radio').prop('checked') == true)  // Selected custom address
+            if ($('#client_radio').prop('checked') == true) // Selected custom address
             {
                 shipTo = GetCurrentAddressFromForm(outgoing_address_forms);
-            }
-            else
-            {
+            } else {
                 shipTo = lab_dict[$('#to_lab_select').val()];
             }
             var shipFrom = lab_dict[outgoing_address_forms.find('#from_lab_select').val()];
-            VerifyAddressFromForm(outgoing_address_forms, shipTo, () =>
-            {
+            VerifyAddressFromForm(outgoing_address_forms, shipTo, () => {
                 RateFromForm(outgoing_address_forms, shipTo, shipFrom, false);
             });
         });
@@ -1078,12 +1057,10 @@ $(function () {
         // Outgoing SEND LABEL
         outgoing_address_forms.find('#confirm_shipment_button').click(() => {
             var shipTo;
-            if ($('#client_radio').prop('checked') == true)  // Selected custom address
+            if ($('#client_radio').prop('checked') == true) // Selected custom address
             {
                 shipTo = GetCurrentAddressFromForm(outgoing_address_forms);
-            }
-            else
-            {
+            } else {
                 shipTo = lab_dict[$('#to_lab_select').val()];
             }
             var shipFrom = lab_dict[outgoing_address_forms.find('#from_lab_select').val()];
@@ -1092,13 +1069,11 @@ $(function () {
 
 
         // Confirm label - generic
-        function SendLabelFromForm(form, shipFrom, shipTo, isReturn)
-        {
+        function SendLabelFromForm(form, shipFrom, shipTo, isReturn) {
             ShowSpinner(form);
-            ConfirmLabel(shipFrom, shipTo, form.find('#service_form').val(), isReturn, (json) =>{
+            ConfirmLabel(shipFrom, shipTo, form.find('#service_form').val(), isReturn, (json) => {
                 HideSpinner(form);
-                if ('Fault' in json)
-                {
+                if ('Fault' in json) {
                     form.find('#label_result').css('display', 'block');
                     form.find('#label_result').text(json['Fault']['detail']['Errors']['ErrorDetail']['PrimaryErrorCode']['Description']);
                     return;
@@ -1106,44 +1081,38 @@ $(function () {
 
                 ShipmentResponse = json['ShipmentResponse'];
                 tracking_number = ShipmentResponse['ShipmentResults']['ShipmentIdentificationNumber'];
-                
+
                 form.find('#label_result').css('display', 'block');
                 form.find('#label_result').text('Success!\n' + tracking_number);
-                if (isReturn)
-                {
+                if (isReturn) {
                     $('#submitNoteNewNote').val(tracking_number + ' emailed to ' + form.find('#email_form').val());
                     $('#submitNotePrivate').trigger('click');
-                }
-                else
-                {
+                } else {
                     zpl = json['ShipmentResponse']['ShipmentResults']['PackageResults']['ShippingLabel']['GraphicImage']; //Base64
-                    data = [
-                        {
-                            type: 'raw',
-                            format: 'base64',
-                            data: zpl
-                        }
-                    ];
-                    qz.websocket.connect().then(function() 
-                    { 
-                        return qz.printers.find("zebra")               // Pass the printer name into the next Promise
-                    }).then(function(printer) 
-                    {
-                        var config = qz.configs.create(printer);       // Create a default config for the found printer
+                    data = [{
+                        type: 'raw',
+                        format: 'base64',
+                        data: zpl
+                    }];
+                    qz.websocket.connect().then(function () {
+                        return qz.printers.find("zebra") // Pass the printer name into the next Promise
+                    }).then(function (printer) {
+                        var config = qz.configs.create(printer); // Create a default config for the found printer
                         return qz.print(config, data);
-                    }).catch(function(e) { console.error(e); });
+                    }).catch(function (e) {
+                        console.error(e);
+                    });
                 }
             });
         }
 
 
         // Verify address - generic
-        function VerifyAddressFromForm(form, addressToValidate, OnSuccess){
+        function VerifyAddressFromForm(form, addressToValidate, OnSuccess) {
             ResetThings(form);
-            form.find('#loader').css('display','block');
-            VerifyAddress(addressToValidate, function(json){
-                if ('Fault' in json)
-                {
+            form.find('#loader').css('display', 'block');
+            VerifyAddress(addressToValidate, function (json) {
+                if ('Fault' in json) {
                     console.log("Error!!!");
                     err = (json['Fault']['detail']['Errors']['ErrorDetail']['PrimaryErrorCode']['Description']);
                     form.find('#verify_status').text(err);
@@ -1152,64 +1121,55 @@ $(function () {
                     return;
                 }
                 json = json['XAVResponse'];
-                if ('ValidAddressIndicator' in json)
-                {
+                if ('ValidAddressIndicator' in json) {
                     console.log('Address is valid!');
                     form.find('#verify_status').text('Address is valid!');
                     form.find('#verify_status').css('color', 'green');
                     OnSuccess();
                     return;
-                }
-                else if ('AmbiguousAddressIndicator' in json)
-                {
+                } else if ('AmbiguousAddressIndicator' in json) {
                     ResetThings(form);
                     form.find('#verify_status').text('Address is ambiguous.');
                     form.find('#verify_status').css('color', 'orange');
-                    form.find('#candidate_container').css('display','block');
+                    form.find('#candidate_container').css('display', 'block');
                     candidates = json['Candidate'];
                     //Populate candidates list
                     form.find('#candidate_list').empty();
-                    if (candidates.constructor !== Array)  // Did we get more than one candidate?
+                    if (candidates.constructor !== Array) // Did we get more than one candidate?
                     {
-                       candidates = [candidates]; 
+                        candidates = [candidates];
                     }
-                    for (i in candidates)
-                    {
+                    for (i in candidates) {
                         candidate = candidates[i];
                         form.find('#candidate_list').append($(`<li>`, {
-                            text:JsonAddrToString(candidate),
-                            display:'block'
+                            text: JsonAddrToString(candidate),
+                            display: 'block'
                         }));
                     }
                     return;
-                }
-                else if ('NoCandidatesIndicator' in json)
-                {
+                } else if ('NoCandidatesIndicator' in json) {
                     form.find('#verify_status').text('Could not find a valid match.');
                     form.find('#verify_status').css('color', 'red');
                     HideSpinner(form);
-                    return false; 
+                    return false;
                 }
             });
         }
-        function RateFromForm(form, shipTo, shipFrom, isReturn)
-        {
+
+        function RateFromForm(form, shipTo, shipFrom, isReturn) {
             //Address is valid; get rates
-            Rate(shipTo, shipFrom, isReturn, function(json){
-                if ('Fault' in json)
-                {
+            Rate(shipTo, shipFrom, isReturn, function (json) {
+                if ('Fault' in json) {
                     console.log("Error!!!");
                     allErrStr = '';
                     errorList = json['Fault']['detail']['Errors']['ErrorDetail'];
-                    if (errorList.constructor !== Array)
-                    {
+                    if (errorList.constructor !== Array) {
                         errorList = [errorList];
                     }
-                    for (i in errorList)
-                        {
-                            allErrStr += errorList[i]['PrimaryErrorCode']['Description'];
-                            allErrStr += '\n';
-                        }
+                    for (i in errorList) {
+                        allErrStr += errorList[i]['PrimaryErrorCode']['Description'];
+                        allErrStr += '\n';
+                    }
                     form.find('#verify_status').text(allErrStr);
                     form.find('#verify_status').css('color', 'red');
                     ResetThings(form);
@@ -1223,15 +1183,13 @@ $(function () {
 
                 //Empty and show the services dropdown
                 form.find('#service_form').empty();
-                form.find('#service_form').css('display','block');
+                form.find('#service_form').css('display', 'block');
                 // Enable return label button
                 form.find('#confirm_shipment_button').removeAttr('disabled');
                 form.find('#confirm_shipment_button').css('display', 'block');
-                for (i in Rates)
-                {
+                for (i in Rates) {
                     rate = Rates[i];
-                    if (rate['NegotiatedRateCharges'] == undefined)
-                    {
+                    if (rate['NegotiatedRateCharges'] == undefined) {
                         ResetThings(form);
                         form.find('#verify_status').text("Couln't get negotiated rates.\nIs your account number correct?");
                         form.find('#verify_status').css('color', 'red');
@@ -1242,11 +1200,11 @@ $(function () {
                     serviceDesription = service_codes[service_code];
                     form.find('#service_form').append($('<option>', {
                         value: service_code,
-                        text:serviceDesription + ' ($' + cost +')'
+                        text: serviceDesription + ' ($' + cost + ')'
                     }));
                     form.find('#loader').css('display', 'none');
                 }
-            }); 
+            });
         }
 
     } else if (path.indexOf("vc_shipin_call") != -1) // Ship in call page
@@ -1323,30 +1281,27 @@ $(function () {
         ids = ['ups_username', 'ups_password', 'ups_account_number', 'ups_api_key'];
 
         optionsList.append(upsOptions);
-        for (i in ids)
-        {
+        for (i in ids) {
             id = ids[i];
-            if (GM_getValue(id) == undefined)
-            {
+            if (GM_getValue(id) == undefined) {
                 GM_setValue(id, '');
             }
             $('#' + id).val(GM_getValue(id));
         }
 
-        $('#save_button').click(function(){
-            for (i in ids)
-            {
+        $('#save_button').click(function () {
+            for (i in ids) {
                 id = ids[i];
                 textVal = $('#' + id).val();
-                if (textVal != '')  // Only update the value if the form isn't empty
+                if (textVal != '') // Only update the value if the form isn't empty
                 {
                     GM_setValue(id, textVal);
                 }
             }
             window.location.href = '/';
         });
-        
-        
+
+
     }
 
     //  Case Watcher
