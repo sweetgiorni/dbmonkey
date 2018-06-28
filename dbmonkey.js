@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.23
+// @version      0.24
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -422,7 +422,9 @@ $(function () {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Added UPS return label functionality</li>
+                    <li>Added contact address collection and autofill</li>
+                    <li>Added outgoing shipment capabilities</li>
+                    <li>UPS link now 70% less sensitive</li>
                 </ul>
             </div>`);
             dialog.dialog({
@@ -995,7 +997,7 @@ $(function () {
             form.find('#verify_status').css('color', 'red')
         }
 
-        upsLink.click((e) => {
+        $('#ups_link').click((e) => {
             e.preventDefault();
             upsDialog.dialog('open');
             if (contactAddresses.length >= 1)
