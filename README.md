@@ -63,11 +63,6 @@ This adds pre-alpha support for sending UPS labels from the database. You'll fin
 US only - I'll add support for Canada if Justin switches over from FedEx. I probably won't be adding support for international shipping since it's a huge pain to implement and we rarely use it.
 This script is public at the moment, so you'll have to put in the account information manually. On the homepage, clicks the 'Options' link. You'll see four new inputs: username, password, api key, and account number. The username and password is the login you normally use on UPS.com. The account number can be found on the UPS website or Ben's company directory cheat-sheet. If you don't have the api key already, message me for it. Needless to say, this is all sensitive information and shouldn't be shared.
 
-The script will automatically collect all CONTACT addresses from the database. If you enter a client location but no contact address, it will not auto-fill for you!
-If there's no contact address, here are two easy ways to add it from the client location:
-1. On the view contact page, next to "Contact addresses", click "add". Check the box that says, "Check box to copy location above". It will copy the client location into a new contact address. OR
-2. Just add return shipping info. It gets added as a contact address, so whatever you put in the return shipping form will be available for autofill.
-
 <b>Printing Outgoing Labels</b>
 It only supports Zebra thermal printers at the moment. It you are using something else, let me know.
 You need to install this program on your PC for printing to work:
