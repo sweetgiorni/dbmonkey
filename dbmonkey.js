@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.25
+// @version      0.26
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -476,10 +476,8 @@ $(function () {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Return labels are now ship in calls</li>
-                    <li>Return label notes are more detailed</li>
-                    <li>Added templates for US and Canada CC auth forms</li>
-                    <li>The UPS form now collects addresses from the client location</li>
+                    <li>Fixed template emails not redirecting to ship in call page</li>
+                    <li>Sending return labels now redirects to ship in call page
                 </ul>
             </div>`);
             dialog.dialog({
@@ -736,7 +734,6 @@ $(function () {
                     emailButtonCopy = $("#email_button").clone();
                     href = emailButtonCopy.attr('href');
                     emailBodyEncoded = encodeURIComponent(emailBody);
-                    //href += "body=" + emailBody;
                     href += `&body=` + emailBodyEncoded;
                     emailButtonCopy.attr('href', href);
                     if (href.length > 2000) // Too long for mailto?
@@ -747,10 +744,10 @@ $(function () {
                     } else {
                         $(location).attr('href', href);
                     }
-                    if (queue == "Q1") {
+                    if (templates['Q1'].includes(e.data.currentTemplate)) {  // Was a Q1 template clicked on?
                         // Save values for ship in email page
                         GM_setValue("shipInEmail", true);
-                        GM_setValue("shipInEmailType", currentTemplate[0]);
+                        GM_setValue("note", 'Sent ' + currentTemplate[0].toLowerCase());
                         sleep(500).then(() => {
                             window.location.href = ("/vc_shipin_call.jsp?case_id=" + caseNumber);
                         });
@@ -1172,7 +1169,12 @@ $(function () {
                 form.find('#label_result').text('Success!\n' + tracking_number);
                 if (isReturn) {
                     var note = "Return label: " + service_codes[form.find('#service_form').val()] + ' to ' + shipTo['Address']['StateProvinceCode'] + '\n' + tracking_number + ' emailed to ' + form.find('#email_form').val(); 
-                    ShipInCall(case_id, note);
+                    // Save values for ship in email page
+                    GM_setValue("shipInEmail", true);
+                    GM_setValue("note", note);
+                    sleep(500).then(() => {
+                        window.location.href = ("/vc_shipin_call.jsp?case_id=" + caseNumber);
+                    });
                 } else {
                     zpl = json['ShipmentResponse']['ShipmentResults']['PackageResults']['ShippingLabel']['GraphicImage']; //Base64
                     data = [{
@@ -1297,9 +1299,9 @@ $(function () {
     {
         if (GM_getValue("shipInEmail") == true) {
             GM_setValue("shipInEmail", false);
-            shipInEmailType = GM_getValue("shipInEmailType");
-            $("#com_method").val(2).trigger("change");
-            $("#call_note").val("Sent " + shipInEmailType);
+            note = GM_getValue("note");
+            $("#com_method").val(1).trigger("change");
+            $("#call_note").val(note);
             $('#send_ship_in_email_checkbox').prop('checked', false);
         }
     } else if (path.indexOf("r_user_flags") != -1) // Flagged cases page ////////////////////////////
