@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.26
+// @version      0.27
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -476,8 +476,7 @@ $(function () {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Fixed template emails not redirecting to ship in call page</li>
-                    <li>Sending return labels now redirects to ship in call page
+                    <li>Fixed addAddrCCServlet bug</li>
                 </ul>
             </div>`);
             dialog.dialog({
@@ -828,44 +827,20 @@ $(function () {
         </style>`).appendTo($('head'))
 
         // Get addresses from location
-        
-        //First, get client_loc_id
-        //client_id = client_id.slice(client_id.indexOf('client_id') + 10, client_id.length);
-
-        // TODO: Replace with addAddrCCServlet call once Mike adds client_loc_id to view_case
-        // For now, grab it from the view case page
-        var client_loc_id = '';
-        var viewContactURL = 'https://db.datarecovery.com/' + $('#nav1_case > table > tbody > tr > td:nth-of-type(3) > a').attr('href');
+        var addType = '11';
+        var xmlPostUrl = "https://db.datarecovery.com/addAddrCCServlet?addType=" + addType + "&client_loc_id=" + client_loc_id;
         var xhr = new GM_xmlhttpRequest({
-            method: 'GET',
-            url: viewContactURL,
+            method: 'POST',
+            url: xmlPostUrl,
             onload: (res) => {
-
-                //Now that we have client_loc_id, we can get the actual location
-                response = res.responseText;
-                var idx = response.indexOf("client_loc_id = '")
-                client_loc_id = response.slice(idx + 17, response.indexOf("'", idx + 17));
-
-                var addType = '11';
-                var xmlPostUrl = "https://db.datarecovery.com/addAddrCCServlet?addType=" + addType + "&client_loc_id=" + client_loc_id;
-                var xhr = new GM_xmlhttpRequest({
-                    method: 'POST',
-                    url: xmlPostUrl,
-                    onload: (res) => {
-                        ParseAddressResponse(res.responseXML);
-                    }
-                });
+                ParseAddressResponse(res.responseXML);
             }
         });
 
-
-        
-
-        addType = '4';
         contactAddresses = [];
         contactID = $('input[name="client_contact_id"]').attr('value');
         clientName = $('#name_f').text() + ' ' + $('#name_l').text();
-        var addType = '1'; //denotes we are changing an existing client_contact_cc
+        var addType = '4'; //denotes we are changing an existing client_contact_cc
         xmlPostUrl = "https://db.datarecovery.com/addAddrCCServlet?addType=" + addType + "&client_contact_id=" + contactID;
         var xhr = new GM_xmlhttpRequest({
             method: 'GET',
