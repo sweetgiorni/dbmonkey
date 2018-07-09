@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.27
+// @version      0.28
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -476,7 +476,7 @@ $(function () {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Fixed addAddrCCServlet bug</li>
+                    <li>Templated email ship in calls are now marked as emails</li>
                 </ul>
             </div>`);
             dialog.dialog({
@@ -1275,7 +1275,8 @@ $(function () {
         if (GM_getValue("shipInEmail") == true) {
             GM_setValue("shipInEmail", false);
             note = GM_getValue("note");
-            $("#com_method").val(1).trigger("change");
+            //$("#com_method").val(1).trigger("change");  // Phone
+            $("#com_method").val(2).trigger("change");  // Email
             $("#call_note").val(note);
             $('#send_ship_in_email_checkbox').prop('checked', false);
         }
