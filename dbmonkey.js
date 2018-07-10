@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.28
+// @version      0.29
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -476,7 +476,7 @@ $(function () {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Templated email ship in calls are now marked as emails</li>
+                    <li>UPS notes are now marked as calls</li>
                 </ul>
             </div>`);
             dialog.dialog({
@@ -745,7 +745,7 @@ $(function () {
                     }
                     if (templates['Q1'].includes(e.data.currentTemplate)) {  // Was a Q1 template clicked on?
                         // Save values for ship in email page
-                        GM_setValue("shipInEmail", true);
+                        GM_setValue("shipInMessage", true);
                         GM_setValue("note", 'Sent ' + currentTemplate[0].toLowerCase());
                         sleep(500).then(() => {
                             window.location.href = ("/vc_shipin_call.jsp?case_id=" + caseNumber);
@@ -1145,7 +1145,8 @@ $(function () {
                 if (isReturn) {
                     var note = "Return label: " + service_codes[form.find('#service_form').val()] + ' to ' + shipTo['Address']['StateProvinceCode'] + '\n' + tracking_number + ' emailed to ' + form.find('#email_form').val(); 
                     // Save values for ship in email page
-                    GM_setValue("shipInEmail", true);
+                    GM_setValue("shipInMessage", true);
+                    GM_setValue("shipInPhone", true);  // Should it be marked as a phone call
                     GM_setValue("note", note);
                     sleep(500).then(() => {
                         window.location.href = ("/vc_shipin_call.jsp?case_id=" + caseNumber);
@@ -1272,11 +1273,18 @@ $(function () {
 
     } else if (path.indexOf("vc_shipin_call") != -1) // Ship in call page
     {
-        if (GM_getValue("shipInEmail") == true) {
-            GM_setValue("shipInEmail", false);
+        if (GM_getValue("shipInMessage") == true) {
+            GM_setValue("shipInMessage", false);
             note = GM_getValue("note");
-            //$("#com_method").val(1).trigger("change");  // Phone
-            $("#com_method").val(2).trigger("change");  // Email
+            if (GM_getValue("shipInPhone") == true)  // Should it be marked as a phone call
+            {
+                GM_setValue("shipInPhone", false);
+                $("#com_method").val(1).trigger("change");  // Phone
+            }
+            else  // Make it an email by default
+            {
+                $("#com_method").val(2).trigger("change");  // Email
+            }
             $("#call_note").val(note);
             $('#send_ship_in_email_checkbox').prop('checked', false);
         }
