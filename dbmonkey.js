@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.29
+// @version      0.30
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -47,7 +47,7 @@ We received your online data recovery request, and I'm here to answer your quest
             
 You should have received a case setup letter, which includes a case ID number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS.
             
-After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote. Data recovery costs start around $400, but vary considerably depending on the complexity of the case. For our Western Digital customers, single disk recoveries have a maximum price of $990. 
+After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote. Data recovery costs start around $400, but vary considerably depending on the complexity of the case. For our Western Digital customers, single disk recoveries have a maximum price of $1350. 
             
 As a referral from Western Digital, you'll receive free shipping both ways and a 10% discount off the recovery quote.
             
@@ -61,7 +61,7 @@ Best regards,`],
 
         ["Label receipt follow up letter", `Hey {FIRST_NAME}, 
 
-I just wanted to thank you for opening a case with us recently. Please confirm receipt of the UPS shipping label. If you have any questions or concerns, please don’t hesitate to reach out. You can reply to this email or give us a call at 800-237-4200.
+I just wanted to thank you for opening a case with us recently. Please confirm receipt of the shipping label that was emailed over. If you have any questions or concerns, please don’t hesitate to reach out. You can reply to this email or give us a call at 800-237-4200.
 
 Best Regards, `],
 
@@ -123,7 +123,29 @@ We received the credit card approval and our engineers are beginning the work to
 https://datarecovery.com/wp-content/uploads/2018/06/Credit-Card-Authorization-Form-CANADA-20160906.pdf
                         
 Thank you,`]
-    ]  // End of Billing
+    ],  // End of Billing
+    "Q4":[
+        ['HDD update - Week 1 (Phone call)', `Hello {FIRST_NAME},
+
+We have placed an order for a donor drive to use for working parts. 
+Engineers are awaiting the arrival of the donor drive, once it is received we will begin the internal transplant work into your failed device.`], 
+['HDD update - Week 2', `Hello {FIRST_NAME},
+
+Just wanted to let you know we received the donor drive and engineers are now working the internal transplant on the failed drive. I will have some more news for you next week and be in contact.
+
+Best regards,`],['HDD update - Week 3 (Phone call)', `Hello {FIRST_NAME},
+
+The donor drive arrived and your engineer transplanted the working disk heads into your failed device. 
+Unfortunately, the disk heads degraded and failed once transplanted into your drive. 
+This is most likely due to the media damage. 
+
+This is not the best news, although we still believe a recovery is possible. 
+We have placed an order for two additional donor drives and we are awaiting their arrival.`],['HDD update - Week 4', `Hello Travis,
+
+The two additional donor drives arrived and your engineer is now working with the physical transplant work on the device. We hope to get the drive cloning and have a result soon. I will be in contact with any news or updates, thank you for your continued patience.
+
+Best regards,`]
+    ] //End of Q4
 };
 
 function ShipInCall(caseNumber, note)
@@ -476,7 +498,7 @@ $(function () {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>UPS notes are now marked as calls</li>
+                    <li>Email template updates</li>
                 </ul>
             </div>`);
             dialog.dialog({
@@ -735,14 +757,9 @@ $(function () {
                     emailBodyEncoded = encodeURIComponent(emailBody);
                     href += `&body=` + emailBodyEncoded;
                     emailButtonCopy.attr('href', href);
-                    if (href.length > 2000) // Too long for mailto?
-                    {
-                        CopyToClipboard(emailBody);
-                        $("#submitNoteNewNote").blur();
-                        $(location).attr('href', $("#email_button").attr("href"));
-                    } else {
-                        $(location).attr('href', href);
-                    }
+
+                    //Special cases go here 
+
                     if (templates['Q1'].includes(e.data.currentTemplate)) {  // Was a Q1 template clicked on?
                         // Save values for ship in email page
                         GM_setValue("shipInMessage", true);
@@ -750,6 +767,27 @@ $(function () {
                         sleep(500).then(() => {
                             window.location.href = ("/vc_shipin_call.jsp?case_id=" + caseNumber);
                         });
+                    }
+                    // Did they click a template that's actually a phone call? If so, open a dialog instead of email
+                    if (currentTemplate[0].indexOf('(Phone call)') != -1)  
+                    {
+                        scriptDialog = $(`<div id='templateDialog' style='white-space: pre-wrap'>` + emailBody + `</div>`).dialog({
+                            'width':'auto',
+                            'height':'auto',
+                            'title':currentTemplate[0]
+                        });
+                        (scriptDialog.parent().find('button')).blur();  // Deselect the stupid 'X' button
+                        return;
+                    }
+
+                    // End of special cases; open template
+                    if (href.length > 2000) // Too long for mailto?
+                    {
+                        CopyToClipboard(emailBody);
+                        $("#submitNoteNewNote").blur();
+                        $(location).attr('href', $("#email_button").attr("href"));
+                    } else {
+                        $(location).attr('href', href);
                     }
                 });
                 templateList.append(newTemplate);
@@ -840,7 +878,7 @@ $(function () {
         contactAddresses = [];
         contactID = $('input[name="client_contact_id"]').attr('value');
         clientName = $('#name_f').text() + ' ' + $('#name_l').text();
-        var addType = '4'; //denotes we are changing an existing client_contact_cc
+        var addType = '4'; 
         xmlPostUrl = "https://db.datarecovery.com/addAddrCCServlet?addType=" + addType + "&client_contact_id=" + contactID;
         var xhr = new GM_xmlhttpRequest({
             method: 'GET',
