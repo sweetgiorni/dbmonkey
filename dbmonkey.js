@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.30
+// @version      0.31
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -31,7 +31,7 @@ templates = {
 
 We received your online data recovery request, and I'm here to answer your questions and guide you through our process. The next step is to ship your device to our laboratory for a free evaluation. If you're within driving distance, you can also drop off your case in person. 
             
-You should have received a case setup letter, which includes a case ID number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS.
+You should have received a case setup letter, which includes a case ID number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS or FedEx.
             
 After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote. Data recovery costs start around $400, but vary considerably depending on the complexity of the case. 
             
@@ -41,11 +41,11 @@ To finalize your case setup, please email me at this address or call me at the n
             
 Best regards,`],
 
-        ["Initial contact letter (WD variation)", `Dear {FIRST_NAME},
+        ["Initial contact letter (WD variation - $1350)", `Dear {FIRST_NAME},
 
 We received your online data recovery request, and I'm here to answer your questions and guide you through our process. The next step is to ship your device to our laboratory for a free evaluation. If you're within driving distance, you can also drop off your case in person. 
             
-You should have received a case setup letter, which includes a case ID number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS.
+You should have received a case setup letter, which includes a case ID number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS or FedEx.
             
 After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote. Data recovery costs start around $400, but vary considerably depending on the complexity of the case. For our Western Digital customers, single disk recoveries have a maximum price of $1350. 
             
@@ -129,9 +129,9 @@ Thank you,`]
 
 We have placed an order for a donor drive to use for working parts. 
 Engineers are awaiting the arrival of the donor drive, once it is received we will begin the internal transplant work into your failed device.`], 
-['HDD update - Week 2', `Hello {FIRST_NAME},
+['HDD update - Week 2 (email)', `Hello {FIRST_NAME},
 
-Just wanted to let you know we received the donor drive and engineers are now working the internal transplant on the failed drive. I will have some more news for you next week and be in contact.
+Just wanted to let you know we received the donor drive and engineers are now working to complete the internal transplant on the failed drive. I will have some more news for you next week and be in contact.
 
 Best regards,`],['HDD update - Week 3 (Phone call)', `Hello {FIRST_NAME},
 
@@ -140,11 +140,19 @@ Unfortunately, the disk heads degraded and failed once transplanted into your dr
 This is most likely due to the media damage. 
 
 This is not the best news, although we still believe a recovery is possible. 
-We have placed an order for two additional donor drives and we are awaiting their arrival.`],['HDD update - Week 4', `Hello Travis,
+We have placed an order for two additional donor drives and we are awaiting their arrival.`],['HDD update - Week 4 (email)', `Hello Travis,
 
 The two additional donor drives arrived and your engineer is now working with the physical transplant work on the device. We hope to get the drive cloning and have a result soon. I will be in contact with any news or updates, thank you for your continued patience.
 
-Best regards,`]
+Best regards,`],
+['HDD Update - Week 5 (email)', `Dear {FIRST_NAME}, 
+
+Your engineer was able to get a pair of disk heads transplanted into the drive and stabilize the readers. We are currently reading each platter surface one by one, and each surface has a variable amount of media damage. We have all the readers turned off except for one as we read each platter surface individually. This process is time consuming and we anticipate it could take up to two more weeks to completely read all the surfaces. We are only reading platter surface zero currently, the other platter surfaces may have more damage and be impossible to read. If any platter surface is not able to the read the data will be not recoverable. 
+
+Thank you for your continued patience as we proceed with the recovery attempt.
+
+ Best Regards,`],
+ ['Week 6 (President letter)','']
     ] //End of Q4
 };
 
@@ -777,6 +785,11 @@ $(function () {
                             'title':currentTemplate[0]
                         });
                         (scriptDialog.parent().find('button')).blur();  // Deselect the stupid 'X' button
+                        return;
+                    }
+                    else if (currentTemplate[0].indexOf('(President letter)') != -1)  // Did they click the president letter link in Q4?
+                    {
+                        $(location).attr('href', 'https://db.datarecovery.com/vc_president_letter_c1.jsp?case_id=' + case_id);
                         return;
                     }
 
