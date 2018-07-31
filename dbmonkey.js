@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.31
+// @version      0.32
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -140,7 +140,7 @@ Unfortunately, the disk heads degraded and failed once transplanted into your dr
 This is most likely due to the media damage. 
 
 This is not the best news, although we still believe a recovery is possible. 
-We have placed an order for two additional donor drives and we are awaiting their arrival.`],['HDD update - Week 4 (email)', `Hello Travis,
+We have placed an order for two additional donor drives and we are awaiting their arrival.`],['HDD update - Week 4 (email)', `Hello {FIRST_NAME},
 
 The two additional donor drives arrived and your engineer is now working with the physical transplant work on the device. We hope to get the drive cloning and have a result soon. I will be in contact with any news or updates, thank you for your continued patience.
 
