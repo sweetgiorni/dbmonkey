@@ -75,13 +75,13 @@ Please feel free to contact me if you have any questions.
 Best Regards,`],
 
 
-        ["Generic follow up letter", `Dear {FIRST_NAME},
+        ["Generic follow up letter", `Hello {FIRST_NAME},
 
-We received your request, and once we receive your device, we'll provide a free evaluation to give you a price quote, turnaround estimate, and recoverability assessment. Please follow the shipping instructions in your case setup letter to get started.
+Please provide your full shipping address and phone number, I will email you a free shipping label. Can you also please provide some more details on the failure. What happened, power surge, drive was dropped, just stopped working, etc. Please provide a list of folder names and locations that contain the most critical files to be recovered. This is to ensure you will only be charged if we recover what you really need, although we always attempt a full complete recovery.
 
-If you have any questions or concerns regarding your recovery, please give me a call or an email. If you would not like to proceed with the recovery, let me know and I'll close the ticket. 
+Please feel free to contact me if you have any questions.
 
-Best regards,`],
+Best Regards,`],
 
         ["Closing next week letter", `Hello {FIRST_NAME}, 
         
