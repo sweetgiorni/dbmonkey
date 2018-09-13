@@ -504,7 +504,7 @@ $(function () {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Updated client consulatation letter to satisfy Andrian's whims</li>
+                    <li>Updated client consultation letter to satisfy Andrian's whims</li>
                 </ul>
             </div>`);
             dialog.dialog({
