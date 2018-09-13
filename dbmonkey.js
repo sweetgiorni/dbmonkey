@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.32
+// @version      0.33
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -66,22 +66,20 @@ I just wanted to thank you for opening a case with us recently. Please confirm r
 Best Regards, `],
 
 
-        ["Client consultation follow up", `Hello {FIRST_NAME}, 
+        ["Client consultation follow up", `Hello {FIRST_NAME},
 
-Please provide your full shipping address and phone number, I will email you a free shipping label. Can you also please provide some more details on the failure. What happened, power surge, drive was dropped, just stopped working, etc. Also, please provide a list of critical files to be recovered, example – word, excel, pdf, pictures, videos, etc.
-
-Please feel free to contact me if you have any questions.
+Please provide your full shipping address and phone number so I can email you a free shipping label. Would you also provide some more details on the failure? A power surge, the drive was dropped, it just stopped working, etc. In addition, please provide a list of folder names and locations that contain the most critical files to be recovered. This is to ensure you will only be charged if we recover what you really need, although we will always attempt to get a complete recovery.
 
 Best Regards,`],
 
 
-        ["Generic follow up letter", `Hello {FIRST_NAME},
+        ["Generic follow up letter", `Dear {FIRST_NAME},
 
-Please provide your full shipping address and phone number, I will email you a free shipping label. Can you also please provide some more details on the failure. What happened, power surge, drive was dropped, just stopped working, etc. Please provide a list of folder names and locations that contain the most critical files to be recovered. This is to ensure you will only be charged if we recover what you really need, although we always attempt a full complete recovery.
+We received your request, and once we receive your device, we'll provide a free evaluation to give you a price quote, turnaround estimate, and recoverability assessment. Please follow the shipping instructions in your case setup letter to get started.
 
-Please feel free to contact me if you have any questions.
+If you have any questions or concerns regarding your recovery, please give me a call or an email. If you would not like to proceed with the recovery, let me know and I'll close the ticket. 
 
-Best Regards,`],
+Best regards,`],
 
         ["Closing next week letter", `Hello {FIRST_NAME}, 
         
@@ -506,7 +504,7 @@ $(function () {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Email template updates</li>
+                    <li>Updated client consulatation letter to satisfy Andrian's whims</li>
                 </ul>
             </div>`);
             dialog.dialog({
