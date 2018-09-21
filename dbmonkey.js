@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.33
+// @version      0.34
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -504,7 +504,7 @@ $(function () {
             GM_setValue("lastVersion", GM_info.script.version);
             dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
                 <ul>
-                    <li>Updated client consultation letter to satisfy Andrian's whims</li>
+                    <li>Removed enhancements to new case screens (quick service buttons, some defaults on select boxes). Those were moved to main CasesDB code.</li>
                 </ul>
             </div>`);
             dialog.dialog({
@@ -549,6 +549,8 @@ $(function () {
         }
     } else if (path.indexOf("new_case") != -1) //Add case page OR process new case
     {
+        /*
+        //BELOW STUFF ALL ADDED TO MAIN CASESDB CODE
         newCasePage = !(path.indexOf("process_new_case") != -1); // True if on new case page, false if on process new online case
 
 
@@ -615,7 +617,7 @@ $(function () {
         $("#operating_system_id").val("Unknown").trigger("change"); // Change the OS to Uknown
         $("#return_media_id").val("Client Will Decide Later").trigger("change"); // Change RM  
 
-
+        */
 
 
     } else if (path.indexOf("view_case") != -1) // View case page
