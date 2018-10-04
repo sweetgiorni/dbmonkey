@@ -197,12 +197,12 @@ function UpdateFlag(user, caseId, newFlagColor) {
     var dataString = "" +
         "action_type=" + action_type +
         "&case_id=" + caseId +
-        "&user=" + user +
+        "&user_id=" + user +
         "&new_flag_color=" + newFlagColor +
         "&new_flag_user=" + user;
     $.ajax({
         type: "GET",
-        url: "flagChangeServlet",
+        url: "FlagChangeServlet",
         data: dataString,
         dataType: "xml",
         success: function (returnedData) {
