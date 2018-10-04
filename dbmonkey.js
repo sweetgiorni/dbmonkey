@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.34
+// @version      0.35
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -19,6 +19,13 @@
 // @connect onlinetools.ups.com
 
 // ==/UserScript==
+
+
+var versionUpdateInfo = ""+
+        "<ul>"+
+        "    <li>Made adjustments related to flagging to match changes in the FlagChangeServlet and re-enable flag functions in this script.</li>"+
+        "</ul>";
+
 
 var emailInquiry = {};
 var path = "";
@@ -502,11 +509,7 @@ $(function () {
         if (lastVersion == undefined || lastVersion != GM_info.script.version) // Fresh update; show the changelog modal
         {
             GM_setValue("lastVersion", GM_info.script.version);
-            dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">
-                <ul>
-                    <li>Removed enhancements to new case screens (quick service buttons, some defaults on select boxes). Those were moved to main CasesDB code.</li>
-                </ul>
-            </div>`);
+            dialog = $(`<div id="dialog" title="dbMonkey Update - Version ` + GM_info.script.version + `">` + versionUpdateInfo + `</div>`);
             dialog.dialog({
                 modal: true,
                 width: "450px"
