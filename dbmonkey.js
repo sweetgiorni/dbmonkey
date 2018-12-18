@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.35
+// @version      0.36
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Made adjustments related to flagging to match changes in the FlagChangeServlet and re-enable flag functions in this script.</li>"+
+        "    <li>Adjusted all Q4 HDD Updates, Week 1-5</li>"+
         "</ul>";
 
 
@@ -130,34 +130,61 @@ https://datarecovery.com/wp-content/uploads/2018/06/Credit-Card-Authorization-Fo
 Thank you,`]
     ],  // End of Billing
     "Q4":[
-        ['HDD update - Week 1 (Phone call)', `Hello {FIRST_NAME},
 
-We have placed an order for a donor drive to use for working parts. 
-Engineers are awaiting the arrival of the donor drive, once it is received we will begin the internal transplant work into your failed device.`], 
-['HDD update - Week 2 (email)', `Hello {FIRST_NAME},
+['HDD update - Week 1 (Phone call)', `Hello {FIRST_NAME},
 
-Just wanted to let you know we received the donor drive and engineers are now working to complete the internal transplant on the failed drive. I will have some more news for you next week and be in contact.
+We're working hard to recover your data. The engineer assigned to your case has indicated that the process may be more complicated than originally thought, but this does not affect our anticipated final outcome. The downside is that the process will likely take longer than anticipated. As part of our policy, we will not bill you for the additional time required to complete the recovery. I'll try to get back to you within a few days as I receive more information. Please be rest assured that we are working hard on your case and please don't hesitate to reach out if you have concerns or questions.
 
-Best regards,`],['HDD update - Week 3 (Phone call)', `Hello {FIRST_NAME},
+Best,`], 
 
-The donor drive arrived and your engineer transplanted the working disk heads into your failed device. 
-Unfortunately, the disk heads degraded and failed once transplanted into your drive. 
-This is most likely due to the media damage. 
 
-This is not the best news, although we still believe a recovery is possible. 
-We have placed an order for two additional donor drives and we are awaiting their arrival.`],['HDD update - Week 4 (email)', `Hello {FIRST_NAME},
+['HDD update - Week 2 (email)', `Hi {FIRST_NAME},
+    
+Now that I have more information, I wanted to give you an update. As discussed before, the damage is a little worse than we were able to see from the evaluation.
 
-The two additional donor drives arrived and your engineer is now working with the physical transplant work on the device. We hope to get the drive cloning and have a result soon. I will be in contact with any news or updates, thank you for your continued patience.
+The engineers are working hard to piece the data back together by pulling data from each platter side. The next step is reassembling the data back into a single volume, preserving all of your folders and files. At first we didn't realize the extent of the damage, which is why we initially estimated a turnaround window of 3-7 business days. Unfortunately, cases like this can take 30 days or more to complete because the process involves long wait times as our equipment carefully works around the damage. In the end, we expect a full recovery of your data. Since we utilize the latest data recovery equipment and technology in our labs, I can assure you that it is not possible to complete the recovery any faster.
+
+This work involves non-linear data retrieval processes so we can’t predict when we’ll be done or even give you a percentage of completion. By example, let's say that we have 50% of the data -this doesn’t mean that we're 50% complete. It may take several weeks to get the next 50% recovered, or it may be tomorrow. This all depends on how quickly our systems can move through the process. I know this can sound confusing, and it is.
+
+At this point, I can't really offer a more detailed update. Thank you so much for your patience. If you have further questions or concerns, please feel free to reach out to me.
 
 Best regards,`],
-['HDD Update - Week 5 (email)', `Dear {FIRST_NAME}, 
+        
+        
+['HDD update - Week 3 (Phone call)', `Hello {FIRST_NAME},
 
-Your engineer was able to get a pair of disk heads transplanted into the drive and stabilize the readers. We are currently reading each platter surface one by one, and each surface has a variable amount of media damage. We have all the readers turned off except for one as we read each platter surface individually. This process is time consuming and we anticipate it could take up to two more weeks to completely read all the surfaces. We are only reading platter surface zero currently, the other platter surfaces may have more damage and be impossible to read. If any platter surface is not able to the read the data will be not recoverable. 
+I wanted to reach back out to let you know that we are still working through the same process that I explained in our previous discussion. I did talk to the engineer and he was adamant that he feels compelled to continue working through the damage despite the tremendous amount of time that this job is taking.
 
-Thank you for your continued patience as we proceed with the recovery attempt.
+A little more detail -I asked the engineer if we can just stop and see what's been recovered. He explained that this can't be done because the data is not stored sequentially on each platter side. The final piece is to put back together everything that has been recovered. This part takes less than a day of work. When we get to this point, I will definitely let you know.
 
- Best Regards,`],
- ['Week 6 (President letter)','']
+Again, please don't hesitate to reach out to discuss further. I know it can be frustrating not knowing a definitive completion date -but it would be wrong to give you any sort of timeline. Fewer than 10% of cases take this long, and as more time goes by, that percentage get smaller and smaller. Thanks again for your patience. 
+
+Best regards,`],
+        
+        
+['HDD update - Week 4 (email)', `Hello again {FIRST_NAME},
+
+I wanted to let you know that I checked with the engineer again today, and we've seen significant progress since my last update. We anticipate completion soon. If anything changes, I will let you know right away. Please feel free to reach out if you have questions. 
+
+Best regards,`],
+
+
+['HDD Update - Week 5 (email)', `Hi {FIRST_NAME}, 
+
+With the last update, I informed you that I thought we'd be finished soon. Obviously we're not quite there yet.
+
+Most of our cases do not take this long, and I'm very sorry that we did not anticipate these issues from the beginning. While we'd definitely like to keep working on your case, it would be understandable if you need to cancel work. In that case, there will be no charge and we can ship your device back in its original condition. Just let me know by email and I can expedite the return.
+
+Hopefully you don't want to cancel though, because we're now at a point where less than 1% of cases take so long to recover. Few of our competitors will work on a single case for more than a two weeks, so I feel that this is your very best chance of recovery.
+
+As discussed previously, we don't charge a dime for the extra labor that's involved in these situations. In addition, I've talked with management and have gotten them to provide a free 4TB portable hard drive for data return.
+
+As always, please feel free to reach out if you'd like to discuss or have any questions at all. Thanks again for your amazing patience. I will be in touch the moment I am able to find out more.
+
+Best,`],
+ 
+        
+['Week 6 (President letter)','']
     ] //End of Q4
 };
 
