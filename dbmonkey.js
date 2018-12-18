@@ -139,7 +139,7 @@ Best,`],
 
 
 ['HDD update - Week 2 (email)', `Hi {FIRST_NAME},
-    
+
 Now that I have more information, I wanted to give you an update. As discussed before, the damage is a little worse than we were able to see from the evaluation.
 
 The engineers are working hard to piece the data back together by pulling data from each platter side. The next step is reassembling the data back into a single volume, preserving all of your folders and files. At first we didn't realize the extent of the damage, which is why we initially estimated a turnaround window of 3-7 business days. Unfortunately, cases like this can take 30 days or more to complete because the process involves long wait times as our equipment carefully works around the damage. In the end, we expect a full recovery of your data. Since we utilize the latest data recovery equipment and technology in our labs, I can assure you that it is not possible to complete the recovery any faster.
