@@ -135,7 +135,7 @@ Thank you,`]
 
 We're working hard to recover your data. The engineer assigned to your case has indicated that the process may be more complicated than originally thought, but this does not affect our anticipated final outcome. The downside is that the process will likely take longer than anticipated. As part of our policy, we will not bill you for the additional time required to complete the recovery. I'll try to get back to you within a few days as I receive more information. Please be rest assured that we are working hard on your case and please don't hesitate to reach out if you have concerns or questions.
 
-Best,`], 
+Best,`],
 
 
 ['HDD update - Week 2 (email)', `Hi {FIRST_NAME},
@@ -149,8 +149,8 @@ This work involves non-linear data retrieval processes so we can’t predict when 
 At this point, I can't really offer a more detailed update. Thank you so much for your patience. If you have further questions or concerns, please feel free to reach out to me.
 
 Best regards,`],
-        
-        
+
+
 ['HDD update - Week 3 (Phone call)', `Hello {FIRST_NAME},
 
 I wanted to reach back out to let you know that we are still working through the same process that I explained in our previous discussion. I did talk to the engineer and he was adamant that he feels compelled to continue working through the damage despite the tremendous amount of time that this job is taking.
