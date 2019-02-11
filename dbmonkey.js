@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.37
+// @version      0.38
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Adjusted all Q4 HDD Updates, Week 1-5 (first refinement of earlier big change)</li>"+
+        "    <li>Adjusted quote range, free shipping wording</li>"+
         "</ul>";
 
 
@@ -40,7 +40,7 @@ We received your online data recovery request, and I'm here to answer your quest
             
 You should have received a case setup letter, which includes a case ID number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS or FedEx.
             
-After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote. Data recovery costs start around $400, but vary considerably depending on the complexity of the case. 
+After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote. Data recovery costs start around $200, but vary considerably depending on the complexity of the case. 
             
 You're under no obligation to proceed with recovery after receiving the quote. If you decline our recovery services, we will ship back your drive at our expense. If you approve our quote, you will only pay if the recovery is successful. 
             
@@ -48,13 +48,13 @@ To finalize your case setup, please email me at this address or call me at the n
             
 Best regards,`],
 
-        ["Initial contact letter (WD variation - $1350)", `Dear {FIRST_NAME},
+        ["Initial contact letter (WD variation - NO CAP)", `Dear {FIRST_NAME},
 
 We received your online data recovery request, and I'm here to answer your questions and guide you through our process. The next step is to ship your device to our laboratory for a free evaluation. If you're within driving distance, you can also drop off your case in person. 
             
 You should have received a case setup letter, which includes a case ID number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS or FedEx.
             
-After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote. Data recovery costs start around $400, but vary considerably depending on the complexity of the case. For our Western Digital customers, single disk recoveries have a maximum price of $1350. 
+After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote. Data recovery costs start around $200, but vary considerably depending on the complexity of the case. 
             
 As a referral from Western Digital, you'll receive free shipping both ways and a 10% discount off the recovery quote.
             
