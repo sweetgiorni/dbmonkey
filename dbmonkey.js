@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.38
+// @version      0.39
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Adjusted quote range, free shipping wording</li>"+
+        "    <li>Adjustment to client consultation follow up email</li>"+
         "</ul>";
 
 
@@ -75,7 +75,7 @@ Best Regards, `],
 
         ["Client consultation follow up", `Hello {FIRST_NAME},
 
-Please provide your full shipping address and phone number so I can email you a free shipping label. Would you also provide some more details on the failure? A power surge, the drive was dropped, it just stopped working, etc. In addition, please provide a list of folder names and locations that contain the most critical files to be recovered. This is to ensure you will only be charged if we recover what you really need, although we will always attempt to get a complete recovery.
+Please provide your full shipping address and phone number so I can email you a free shipping label. Would you also provide some more details on the failure, what happened? A power surge, the device was dropped, it just stopped working, etc. Was the failed device used within a Mac or Windows environment? In addition, please provide a list of folder names and locations that contain the most critical files to be recovered. This is to ensure you will only be charged if we recover what you really need, although we will always attempt to get a complete recovery.
 
 Best Regards,`],
 
