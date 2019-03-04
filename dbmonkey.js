@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.39
+// @version      0.40
 // @description  DB quality of life improvements!
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Adjustment to client consultation follow up email</li>"+
+        "    <li>2 Ransomware emails added</li>"+
         "</ul>";
 
 
@@ -191,7 +191,24 @@ Best,`],
  
         
 ['Week 6 (President letter)','']
-    ] //End of Q4
+    ], //End of Q4
+    'Ransomware': [
+['Initial Ransomware Email', `Hello {FIRST_NAME},
+
+We can assist with the recovery of your data without paying the ransom. We first need to get the disk into our lab. Are you able to ship the original system disk? There is an evaluation which includes full assessment of the media, how the system was penetrated, encryption method and determining a method for full 100% decryption of the device without paying the ransom.
+
+The evaluation fee is $2500 and the standard evaluation time frame is 48-72 hours.
+
+Please let me know how you wish to proceed I will need to collect some additional information from you to finalize your case.
+
+Best Regards,`],
+
+['Followup Ransomware Email', `Hello {FIRST_NAME},
+
+I understand that a ransomware attack can be a very stressful time. I wanted to reach out and assure you we can recovery the data without paying the ransom in most cases. Please contact me, I can answer any questions you have about the case process or our recovery capabilities.
+
+Best,`]
+    ]  // End of Ransomware
 };
 
 function ShipInCall(caseNumber, note)
