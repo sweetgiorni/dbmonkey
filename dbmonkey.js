@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.40
-// @description  DB quality of life improvements!
+// @version      0.41
+// @description  DB quality of life improvements! https://github.com/sweetgiorni/dbmonkey
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
 // @updateUrl    https://raw.githubusercontent.com/sweetgiorni/dbmonkey/master/dbmonkey.js
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>2 Ransomware emails added</li>"+
+        "    <li>Initial Ransomware Email adjusted</li>"+
         "</ul>";
 
 
@@ -195,11 +195,11 @@ Best,`],
     'Ransomware': [
 ['Initial Ransomware Email', `Hello {FIRST_NAME},
 
-We can assist with the recovery of your data without paying the ransom. We first need to get the disk into our lab. Are you able to ship the original system disk? There is an evaluation which includes full assessment of the media, how the system was penetrated, encryption method and determining a method for full 100% decryption of the device without paying the ransom.
+We can assist with the recovery of your data without paying the ransom. We first need to get the drive(s) into our lab. Are you able to ship the original system drive? Our evaluation will include full assessment of the media, how the system was penetrated, encryption method and it will determine a method for full 100% decryption of the device without paying the ransom.
 
-The evaluation fee is $2500 and the standard evaluation time frame is 48-72 hours.
+The evaluation fee is $2500 and the standard evaluation time frame is 48-72 business hours. Once the evaluation is complete you will be emailed the report which includes a recovery cost quote and timeframe. The $2500 evaluation fee will be applied towards the final quoted price. The evaluation fee will be refunded if the ransomware recovery team declares it to be non-recoverable, although we are able to decrypt roughly 90% of all ransomware infections.
 
-Please let me know how you wish to proceed I will need to collect some additional information from you to finalize your case.
+Please let me know how you wish to proceed. I will need to collect some additional information from you to complete your case setup. We can also provide free express overnight shipping into our nearest lab, if shipping from within the US or Canada.
 
 Best Regards,`],
 
