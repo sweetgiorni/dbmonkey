@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.42
+// @version      0.43
 // @description  DB quality of life improvements! https://github.com/sweetgiorni/dbmonkey
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Adjusted discount to 30% in WD initial contact letter, added text about free 2TB drive to both initial contact letters</li>"+
+        "    <li>Fixed infinite looping on View Case screen if contact phone number not present</li>"+
         "</ul>";
 
 
@@ -673,40 +673,58 @@ $(function () {
         */
 
 
-    } else if (path.indexOf("view_case") != -1) // View case page
+    } else if (path.indexOf("view_case") !== -1) // View case page
     {
         var caseNumber = $('#nav1_case > table > tbody > tr > td:nth-child(1) > a').text().replace(/\s/g, '');
 
         // SIP click to call
+        var havePhone = false;
         contactHtml = $("#client_loc_info").parent().html();
-        phoneStart = contactHtml.indexOf('Phone') + 8;
-        phoneEnd = phoneStart
-        while (contactHtml[phoneEnd] != 'P') {
-            phoneEnd++;
+        if (contactHtml.indexOf('Phone') !== -1){
+            //should have a phone number
+            
+            phoneStart = contactHtml.indexOf('Phone') + 8;
+            phoneEnd = phoneStart
+            while (contactHtml[phoneEnd] !== 'P') {
+                phoneEnd++;
+            }
+            phoneEnd--;
+            
+            if (phoneEnd > phoneStart){
+                //should have a number
+            
+                phoneNumber = contactHtml.slice(phoneStart, phoneEnd);
+                contactHtml = contactHtml.slice(9, phoneStart) + "<a href='sip://" + phoneNumber + "'>" + phoneNumber + "</a>" + contactHtml.slice(phoneEnd, contactHtml.length);
+                $("#client_loc_info").parent().html(contactHtml);
+
+                copyPhoneButton = $(`
+                <div style="display: inline-block; vertical-align: middle; margin: 0px 3px" class="ui-state-default ui-corner-all">
+                    <span class="ui-icon ui-icon-copy"></span>
+                </div>
+                `);
+
+                $("[href='sip://" + phoneNumber + "']").after(copyPhoneButton);
+
+                copyPhoneButton.hover(function (e) {
+                    copyPhoneButton.addClass("ui-state-hover");
+
+                }, function (e) {
+                    copyPhoneButton.removeClass("ui-state-hover");
+                });
+
+                copyPhoneButton.click(function () {
+                    CopyToClipboard(phoneNumber);
+                });
+            }
+            
         }
-        phoneEnd--;
-        phoneNumber = contactHtml.slice(phoneStart, phoneEnd);
-        contactHtml = contactHtml.slice(9, phoneStart) + "<a href='sip://" + phoneNumber + "'>" + phoneNumber + "</a>" + contactHtml.slice(phoneEnd, contactHtml.length);
-        $("#client_loc_info").parent().html(contactHtml);
-
-        copyPhoneButton = $(`
-        <div style="display: inline-block; vertical-align: middle; margin: 0px 3px" class="ui-state-default ui-corner-all">
-            <span class="ui-icon ui-icon-copy"></span>
-        </div>
-        `);
-
-        $("[href='sip://" + phoneNumber + "']").after(copyPhoneButton);
-
-        copyPhoneButton.hover(function (e) {
-            copyPhoneButton.addClass("ui-state-hover");
-
-        }, function (e) {
-            copyPhoneButton.removeClass("ui-state-hover");
-        });
-
-        copyPhoneButton.click(function () {
-            CopyToClipboard(phoneNumber);
-        });
+        
+        
+        
+        
+        
+        
+        
         watchCaseButton = $(`
         <div>
             <button type="button" style="">Watch this case</button>
