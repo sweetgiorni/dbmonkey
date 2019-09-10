@@ -99,7 +99,7 @@ Best regards,
 
         ["Final Closing Letter", `Dear {FIRST_NAME},
 
-I haven't been able to get a hold if you, so I'll close your case for now. 
+I haven't been able to get a hold of you, so I'll close your case for now. 
 
 However, if you decide to go through with the data recovery process, I can easily reopen your case. Send me an email or call me at the number below, and I'll import your information so you don't have to fill out any more forms. 
 
