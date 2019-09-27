@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.43
+// @version      0.44
 // @description  DB quality of life improvements! https://github.com/sweetgiorni/dbmonkey
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Fixed infinite looping on View Case screen if contact phone number not present</li>"+
+        "    <li>Spelling correction</li>"+
         "</ul>";
 
 
