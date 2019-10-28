@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.44
+// @version      0.45
 // @description  DB quality of life improvements! https://github.com/sweetgiorni/dbmonkey
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,8 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Spelling correction</li>"+
+        "    <li>Added new Email - Label Sent + Need Client Consultation</li>"+
+        "    <li>Adjustment to Email - Initial Ransomware</li>"+
         "</ul>";
 
 
@@ -65,10 +66,18 @@ To finalize your case setup, please email me at this address or call me at the n
             
 Best regards,`],
 
+        ["Label Sent + Need Client Consultation", `Hello {FIRST_NAME},
+
+We just sent over a free express shipping label via email. Please package the device in a box with lots of padding. Print the label, tape it to the box, and drop it off at the nearest pickup point. Once we receive the device, we will complete a free evaluation for you and get you a quote for recovery. You can then decide if you wish to proceed or not. 
+
+Would you also provide some more details on the failure, what happened? (A power surge, the device was dropped, it just stopped working, etc.) Was the failed device used within a Mac or Windows environment? In addition, please provide a list of folder names and locations that contain the most critical files to be recovered. This is to ensure you will only be charged if we recover what you really need, although we will always attempt to get a complete recovery.  
+
+Best regards,`],
+
 
         ["Label receipt follow up letter", `Hey {FIRST_NAME}, 
 
-I just wanted to thank you for opening a case with us recently. Please confirm receipt of the shipping label that was emailed over. If you have any questions or concerns, please don’t hesitate to reach out. You can reply to this email or give us a call at 800-237-4200.
+I just wanted to thank you for opening a case with us recently. Please confirm you have received the shipping label that was emailed over. If you have any questions or concerns, please don’t hesitate to reach out. You can reply to this email or give us a call at 800-237-4200.
 
 Best Regards, `],
 
@@ -195,11 +204,15 @@ Best,`],
     'Ransomware': [
 ['Initial Ransomware Email', `Hello {FIRST_NAME},
 
-We can assist with the recovery of your data without paying the ransom. We first need to get the drive(s) into our lab. Are you able to ship the original system drive? Our evaluation will include full assessment of the media, how the system was penetrated, encryption method and it will determine a method for full 100% decryption of the device without paying the ransom.
+We can assist with the recovery of your data without paying the ransom. We first need to get the drive(s) into our lab. Are you able to ship the original system drive? Our evaluation will include full assessment of the media, how the system was penetrated, encryption method, and it will determine a method for full 100% decryption of the device without paying the ransom.
 
-The evaluation fee is $2500 and the standard evaluation time frame is 48-72 business hours. Once the evaluation is complete you will be emailed the report which includes a recovery cost quote and timeframe. The $2500 evaluation fee will be applied towards the final quoted price. The evaluation fee will be refunded if the ransomware recovery team declares it to be non-recoverable, although we are able to decrypt roughly 90% of all ransomware infections.
+The evaluation fee is $2500 and the standard evaluation time frame is 48-72 business hours. Once the evaluation is complete you will be emailed the report which includes a recovery cost quote and timeframe. The $2500 evaluation fee will be applied towards the final quoted price. We are able to decrypt roughly 80% of all ransomware infections.
 
-Please let me know how you wish to proceed. I will need to collect some additional information from you to complete your case setup. We can also provide free express overnight shipping into our nearest lab, if shipping from within the US or Canada.
+Please let me know how you wish to proceed. I will need to collect some additional information from you to complete your case setup. We can also provide free express overnight shipping to our nearest lab, if you are shipping from the US or Canada.
+
+Below are links to a couple reference letters from previous ransomware customers.
+https://datarecovery.com/reviews/3p-computer-services/
+https://datarecovery.com/reviews/fsg-lawyers/
 
 Best Regards,`],
 
