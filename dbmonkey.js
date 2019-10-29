@@ -190,7 +190,7 @@ With the last update, I informed you that I thought we'd be finished soon. Obvio
 
 Most of our cases do not take this long, and I'm very sorry that we did not anticipate these issues from the beginning. While we'd definitely like to keep working on your case, it would be understandable if you need to cancel work. In that case, there will be no recovery charge and we can ship your device back in its original condition. Just let me know by email and I can expedite the return.
 
-Hopefully you don't want to cancel, though, because we're now at a point in the timeline that fewer than 1% of cases reach. Few of our competitors will work on a single case for more than a two weeks, so I still believe that this is your very best chance of recovery..
+Hopefully you don't want to cancel, though, because we're now at a point in the timeline that fewer than 1% of cases reach. Few of our competitors will work on a single case for more than a two weeks, so I still believe that this is your very best chance of recovery.
 
 As discussed previously, we don't charge a dime for the extra labor that's involved in these situations. In addition, I've talked with management and have gotten them to provide a free 4TB portable hard drive for data return.
 
