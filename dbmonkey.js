@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.45
+// @version      0.46
 // @description  DB quality of life improvements! https://github.com/sweetgiorni/dbmonkey
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,8 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Added new Email - Label Sent + Need Client Consultation</li>"+
-        "    <li>Adjustment to Email - Initial Ransomware</li>"+
+        "    <li>Adjustment to Initial contact letters</li>"+
         "</ul>";
 
 
@@ -41,7 +40,7 @@ We received your online data recovery request, and I'm here to answer your quest
             
 You should have received a case setup letter, which includes a case ID number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS or FedEx.
             
-After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote. Data recovery costs start around $200 but vary considerably depending on the complexity of the case. 
+After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote. 
             
 You're under no obligation to proceed with recovery after receiving the quote. If you decline our recovery services, we will ship back your drive at our expense. If you approve our quote, you will only pay if the recovery is successful. Also, we currently offer a free 2TB external drive with a successful recovery. 
             
@@ -55,7 +54,7 @@ We received your online data recovery request, and I'm here to answer your quest
             
 You should have received a case setup letter, which includes a case ID number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS or FedEx.
             
-After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote. Data recovery costs start around $200, but vary considerably depending on the complexity of the case. 
+After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote. 
             
 As a referral from Western Digital, you'll receive free shipping both ways, a free 2TB external drive with a successful recovery, and a 30% discount off the recovery quote.
             
