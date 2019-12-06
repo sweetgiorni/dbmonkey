@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.51
+// @version      0.52
 // @description  DB quality of life improvements! https://github.com/sweetgiorni/dbmonkey
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Letter spacing adjustments 2</li>"+
+        "    <li>Letter spacing adjustments 3</li>"+
         "</ul>";
 
 
@@ -55,8 +55,8 @@ We received your online data recovery request, and I'm here to answer your quest
 You should have received a case setup letter, which includes a case ID number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS or FedEx.
 
 After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote.
- 
-As a referral from Western Digital, you'll receive free shipping both ways and a 30 percent discount off the recovery quote.
+
+As a referral from Western Digital, you'll receive free shipping both ways and a 30% discount off the recovery quote.
 
 You're under no obligation to proceed with recovery after receiving the quote. If you decline our recovery services, we will ship back your drive at our expense. If you approve our quote, you will only pay if the recovery is successful.
 
@@ -96,7 +96,7 @@ If you have any questions or concerns regarding your recovery, please give me a 
 Best regards,`],
 
         ["Closing next week letter", `Hello {FIRST_NAME}, 
-        
+
 Just following up one last time here before closing your case. I'm happy to answer any questions you have regarding recoverability or price — alternately, if you've decided not to recover your data, I can close out the ticket so you don't get any more of these messages. 
 
 Please contact me via email or phone if you've made a decision or if you have any questions. 
@@ -124,16 +124,16 @@ Best regards,`]
             ['CC Authorization Form (US)', `Hello {FIRST_NAME},
 
 We received the credit card approval and our engineers are beginning the work to recover the data today. Due to the fact that the name and/or location on the credit card are different from your own name and shipping address, we need this credit card authorization form filled out before we can ship back. Please download the form using the link below, scan in the required documents, fill out the form, scan it and send it back.
-            
+
 https://datarecovery.com/wp-content/uploads/2018/06/Credit-Card-Authorization-Form-USA-20160906.pdf
-            
+
 Thank you,`],
             ['CC Authorization Form (Canada)', `Hello {FIRST_NAME},
 
 We received the credit card approval and our engineers are beginning the work to recover the data today. Due to the fact that the name and/or location on the credit card are different from your own name and shipping address, we need this credit card authorization form filled out before we can ship back. Please download the form using the link below, scan in the required documents, fill out the form, scan it and send it back.
-                        
+
 https://datarecovery.com/wp-content/uploads/2018/06/Credit-Card-Authorization-Form-CANADA-20160906.pdf
-                        
+
 Thank you,`]
     ],  // End of Billing
     "Q4":[
