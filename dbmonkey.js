@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.52
+// @version      0.53
 // @description  DB quality of life improvements! https://github.com/sweetgiorni/dbmonkey
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Letter spacing adjustments 3</li>"+
+        "    <li>Adjustment to letter Label Sent + Need Client Consultation</li>"+
         "</ul>";
 
 
@@ -66,9 +66,11 @@ Best regards,`],
 
         ["Label Sent + Need Client Consultation", `Hello {FIRST_NAME},
 
-We just sent over a free express shipping label via email. Please package the device in a box with lots of padding. Print the label, tape it to the box, and drop it off at the nearest pickup point. Once we receive the device, we will complete a free evaluation for you and get you a quote for recovery. You can then decide if you wish to proceed or not. 
+We look forward to helping with your data recovery needs. We just sent over a free express shipping label via email. Please package the device in a box with lots of padding. Print the label, tape it to the box, and drop it off at the nearest pickup point. Once we receive the device, we will complete a free evaluation for you and get you a quote for recovery. You can then decide if you wish to proceed or not. 
 
 Would you also provide some more details on the failure, what happened? (A power surge, the device was dropped, it just stopped working, etc.) Was the failed device used within a Mac or Windows environment? In addition, please provide a list of folder names and locations that contain the most critical files to be recovered. This is to ensure you will only be charged if we recover what you really need, although we will always attempt to get a complete recovery.  
+
+And lastly, may I ask how you heard about our services?
 
 Best regards,`],
 
