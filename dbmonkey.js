@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.53
+// @version      0.54
 // @description  DB quality of life improvements! https://github.com/sweetgiorni/dbmonkey
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Adjustment to letter Label Sent + Need Client Consultation</li>"+
+        "    <li>Removed free shipping on decline sentence from initial contact letters</li>"+
         "</ul>";
 
 
@@ -42,7 +42,7 @@ You should have received a case setup letter, which includes a case ID number, s
 
 After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote.
 
-You're under no obligation to proceed with recovery after receiving the quote. If you decline our recovery services, we will ship back your drive at our expense. If you approve our quote, you will only pay if the recovery is successful.
+You're under no obligation to proceed with recovery after receiving the quote. If you approve our quote, you will only pay if the recovery is successful.
 
 To finalize your case setup, please email me at this address or call me at the number listed below to provide some more information. I can also answer any questions you have about the case process or our recovery capabilities.
 
@@ -58,7 +58,7 @@ After we receive and evaluate your case, we'll provide a detailed analysis with 
 
 As a referral from Western Digital, you'll receive free shipping both ways and a 30% discount off the recovery quote.
 
-You're under no obligation to proceed with recovery after receiving the quote. If you decline our recovery services, we will ship back your drive at our expense. If you approve our quote, you will only pay if the recovery is successful.
+You're under no obligation to proceed with recovery after receiving the quote. If you approve our quote, you will only pay if the recovery is successful.
 
 To finalize your case setup, please email me at this address or call me at the number listed below to provide some more information. I can also answer any questions you have about the case process or our recovery capabilities.
 
