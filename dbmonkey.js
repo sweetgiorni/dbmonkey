@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.54
+// @version      0.55
 // @description  DB quality of life improvements! https://github.com/sweetgiorni/dbmonkey
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Removed free shipping on decline sentence from initial contact letters</li>"+
+        "    <li>Adjusted letters, $75 recovery credit for WD-referred</li>"+
         "</ul>";
 
 
@@ -38,9 +38,9 @@ templates = {
 
 We received your online data recovery request, and I'm here to answer your questions and guide you through our process. The next step is to ship your device to our laboratory for a free evaluation. If you're within driving distance, you can also drop off your case in person.
 
-You should have received a case setup letter, which includes a case ID number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS or FedEx.
+You should have received a case setup letter, which includes a ticket number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS or FedEx.
 
-After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote.
+After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time and a price quote.
 
 You're under no obligation to proceed with recovery after receiving the quote. If you approve our quote, you will only pay for recovery if successful.
 
@@ -52,11 +52,11 @@ Best regards,`],
 
 We received your online data recovery request, and I'm here to answer your questions and guide you through our process. The next step is to ship your device to our laboratory for a free evaluation. If you're within driving distance, you can also drop off your case in person.
 
-You should have received a case setup letter, which includes a case ID number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS or FedEx.
+You should have received a case setup letter, which includes a ticket number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS or FedEx.
 
-After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time, chance of recovery, and a price quote.
+After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time and a price quote.
 
-As a referral from Western Digital, you'll receive free shipping both ways and a 30% discount off the recovery quote.
+As a referral from Western Digital, you'll receive free shipping both ways and a $75 credit toward the recovery.
 
 You're under no obligation to proceed with recovery after receiving the quote. If you approve our quote, you will only pay for recovery if successful.
 
@@ -77,7 +77,7 @@ Best regards,`],
 
         ["Label receipt follow up letter", `Hey {FIRST_NAME}, 
 
-I just wanted to thank you for opening a case with us recently. Please confirm you have received the shipping label that was emailed over. If you have any questions or concerns, please don’t hesitate to reach out. You can reply to this email or give us a call at 800-237-4200.
+I just wanted to thank you for opening a case with us recently. Please confirm you have received the shipping label that was emailed over. If you have any questions or concerns, please don't hesitate to reach out. You can reply to this email or give us a call at 800-237-4200.
 
 Best Regards, `],
 
@@ -99,7 +99,7 @@ Best regards,`],
 
         ["Closing next week letter", `Hello {FIRST_NAME}, 
 
-Just following up one last time here before closing your case. I'm happy to answer any questions you have regarding recoverability or price — alternately, if you've decided not to recover your data, I can close out the ticket so you don't get any more of these messages. 
+Just following up one last time here before closing your case. I'm happy to answer any questions you have regarding recoverability or price. Alternately, if you've decided not to recover your data, I can close out the ticket so you don't get any more of these messages. 
 
 Please contact me via email or phone if you've made a decision or if you have any questions. 
 
@@ -110,13 +110,11 @@ Best regards,
 
 I haven't been able to get a hold of you, so I'll close your case for now. 
 
-However, if you decide to go through with the data recovery process, I can easily reopen your case. Send me an email or call me at the number below, and I'll import your information so you don't have to fill out any more forms. 
+However, if you decide to go through with the data recovery process, I can easily reopen your case. Send me an email or call me at the number below, and I'll import your information so you don't have to redo any form. 
 
-Alternately, you can ship your device to the laboratory listed on your case setup letter. Clearly label the package with your case number, and we'll automatically re-open your ticket. 
+Alternately, you can ship your device to the laboratory listed on your case setup letter. Clearly label the package with your case number, and we'll automatically reopen your ticket. 
 
-I hope you've regained access to your data, but if you're still assessing your options, please feel free to give me a call. I can explain our recovery capabilities or consult with an engineer regarding your case. To reach our general customer service line, call 1-800-237-4200.
-
-https://datarecovery.com/submit.php
+I hope you've regained access to your data, but if you're still assessing your options, please feel free to give me a call. I can explain our recovery capabilities or consult with an engineer regarding your case. To reach our customer service line, call 1-800-237-4200.
 
 Thank you again, and please let me know if I can be of assistance. 
 
@@ -208,7 +206,7 @@ We can assist with the recovery of your data without paying the ransom. We first
 
 The evaluation fee is $2500 and the standard evaluation time frame is 48-72 business hours. Once the evaluation is complete you will be emailed the report which includes a recovery cost quote and timeframe. The $2500 evaluation fee will be applied towards the final quoted price. We are able to decrypt roughly 80% of all ransomware infections.
 
-Please let me know how you wish to proceed. I will need to collect some additional information from you to complete your case setup. We can also provide free express overnight shipping to our nearest lab, if you are shipping from the US or Canada.
+Please let me know how you wish to proceed. I will need to collect some additional information from you to complete your case setup. We can also provide free expedited shipping to our nearest lab, if you are shipping from the US or Canada.
 
 Below are links to a couple reference letters from previous ransomware customers.
 https://datarecovery.com/reviews/3p-computer-services/
