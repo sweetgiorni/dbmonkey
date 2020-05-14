@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.55
+// @version      0.56
 // @description  DB quality of life improvements! https://github.com/sweetgiorni/dbmonkey
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Adjusted letters, $75 recovery credit for WD-referred</li>"+
+        "    <li>Adjusted free shipping sentence in WD initial contact letter. Removed Blue Yourself function.</li>"+
         "</ul>";
 
 
@@ -56,7 +56,7 @@ You should have received a case setup letter, which includes a ticket number, sh
 
 After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time and a price quote.
 
-As a referral from Western Digital, you'll receive free shipping both ways and a $75 credit toward the recovery.
+As a referral from Western Digital, you'll receive free shipping to our lab and a $75 credit toward the recovery.
 
 You're under no obligation to proceed with recovery after receiving the quote. If you approve our quote, you will only pay for recovery if successful.
 
@@ -1420,30 +1420,6 @@ $(function () {
             }
             $("#call_note").val(note);
             $('#send_ship_in_email_checkbox').prop('checked', false);
-        }
-    } else if (path.indexOf("r_user_flags") != -1) // Flagged cases page ////////////////////////////
-    {
-        // Get username
-        user = $('#nav1 > table > tbody > tr > td.nav1right > span:nth-child(1) > b').text();
-        if (String(window.location).endsWith(user)) // Check if we're looking at the current user's cases
-        {
-            blueMeButton = $(`<button style='margin-top: 10px' type='button'>Blue yourself!</button>`);
-            table = $(".qt1 tbody").children();
-            table.parent().parent().after(blueMeButton);
-
-            blueMeButton.click(async function () {
-                for (i = 0; i < table.length; i++) {
-                    clss = $(table[i]).attr('class');
-                    if (clss != undefined && clss.startsWith("flag4")) // Is this case flagged blue?
-                    {
-                        caseNumber = $(table[i]).children(':eq(1)').children(':first').text();
-                        UpdateFlag(user, caseNumber, "1")
-                    }
-                }
-                await sleep(1000);
-                location.reload();
-            })
-
         }
     } else if (path.indexOf('vc_billing') != -1) // Billing page //////////////////////////////
     {
