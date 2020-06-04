@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.56
+// @version      0.57
 // @description  DB quality of life improvements! https://github.com/sweetgiorni/dbmonkey
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Adjusted free shipping sentence in WD initial contact letter. Removed Blue Yourself function.</li>"+
+        "    <li>Fix for mechanism querying address data</li>"+
         "</ul>";
 
 
@@ -227,7 +227,7 @@ function ShipInCall(caseNumber, note)
     shipInCallURL = 'https://db.datarecovery.com/vc_shipin_call.jsp?case_id=' + caseNumber;
 
     postNoteURL = 'https://db.datarecovery.com/vc_gen.jsp';
-    var xhr = new GM_xmlhttpRequest({
+    var xhr1 = GM_xmlhttpRequest({
         method: 'GET',
         url: shipInCallURL,
         onload: (res) => {
@@ -246,7 +246,7 @@ function ShipInCall(caseNumber, note)
 
                 postString += k + '=' + v + '&'; 
             });
-            new GM_xmlhttpRequest({
+            var xhr2 = GM_xmlhttpRequest({
                 method: 'POST',
                 data: postString,
                 url: postNoteURL,
@@ -962,7 +962,7 @@ $(function () {
         // Get addresses from location
         var addType = '11';
         var xmlPostUrl = "https://db.datarecovery.com/addAddrCCServlet?addType=" + addType + "&client_loc_id=" + client_loc_id;
-        var xhr = new GM_xmlhttpRequest({
+        var xhr1 = GM_xmlhttpRequest({
             method: 'POST',
             url: xmlPostUrl,
             onload: (res) => {
@@ -975,7 +975,7 @@ $(function () {
         clientName = $('#name_f').text() + ' ' + $('#name_l').text();
         var addType = '4'; 
         xmlPostUrl = "https://db.datarecovery.com/addAddrCCServlet?addType=" + addType + "&client_contact_id=" + contactID;
-        var xhr = new GM_xmlhttpRequest({
+        var xhr2 = GM_xmlhttpRequest({
             method: 'GET',
             url: xmlPostUrl,
             onload: (res) => {
