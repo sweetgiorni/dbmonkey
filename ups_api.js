@@ -168,7 +168,7 @@ function VerifyAddress(address, callback) {
             "CountryCode": address['CountryCode']
         };
     }
-    var xhr = new GM_xmlhttpRequest({
+    var xhr = GM_xmlhttpRequest({
         method: 'POST',
         url: apiurl,
         data: JSON.stringify(postdata),
@@ -238,7 +238,7 @@ function Rate(shipTo, shipFrom, isReturn, callback) {
     } else {
         postdata['RateRequest']['Shipment']['Shipper'] = shipFrom;
     }
-    var xhr = new GM_xmlhttpRequest({
+    var xhr = GM_xmlhttpRequest({
         method: 'POST',
         url: apiurl,
         data: JSON.stringify(postdata),
@@ -318,7 +318,7 @@ function ConfirmLabel(shipFrom, shipTo, serviceCode, isReturn, callback) {
     }
     //var apiurl = "https://wwwcie.ups.com/rest/Ship";
     var apiurl = 'https://onlinetools.ups.com/rest/Ship';
-    var xhr = new GM_xmlhttpRequest({
+    var xhr = GM_xmlhttpRequest({
         method: 'POST',
         url: apiurl,
         data: JSON.stringify(shipRequest),
