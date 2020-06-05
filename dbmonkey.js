@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.57
+// @version      0.58
 // @description  DB quality of life improvements! https://github.com/sweetgiorni/dbmonkey
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Fix for mechanism querying address data</li>"+
+        "    <li>Fix for mechanism querying address data2</li>"+
         "</ul>";
 
 
