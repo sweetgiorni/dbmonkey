@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.58
+// @version      0.59
 // @description  DB quality of life improvements! https://github.com/sweetgiorni/dbmonkey
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Fix for mechanism querying address data2</li>"+
+        "    <li>Fix changes how case number is found on View Case screen</li>"+
         "</ul>";
 
 
@@ -613,81 +613,13 @@ $(function () {
         }
     } else if (path.indexOf("new_case") != -1) //Add case page OR process new case
     {
-        /*
-        //BELOW STUFF ALL ADDED TO MAIN CASESDB CODE
-        newCasePage = !(path.indexOf("process_new_case") != -1); // True if on new case page, false if on process new online case
-
-
-
-        function Reset() {
-            $("#serv_pick_attr1").val("").trigger("change");
-            $("#serv_pick_attr2").val("").trigger("change");
-            $("#serv_pick_price_structure").val("").trigger("change");
-            $("#serv_pick_priority").val("").trigger("change");
-            $("#service_id").val("").trigger("change");
-        }
-        async function setService(service_id) {
-            Reset();
-            await sleep(200); // This is needed to let the page update the values from the server
-            $("#service_id").val(service_id).trigger("change");
-            return;
-        }
-
-        function setServiceHardDrive() {
-            setService("1");
-        }
-
-        function setServiceThumbDrive() {
-            setService("51");
-        }
-
-        function setServicePhone() {
-            setService("70");
-        }
-
-        //Service type shortcut buttons
-        shortcuts = $(`
-                <tr >
-                    <th style="display: flex; justify-content: space-between;">
-                        <button type="button" id="hardDriveButton">Single Hard Drive</button>
-                        <button type="button" id="thumbDriveButton">Thumb Drive</button>
-                        <button type="button" id="phoneButton">Mobile Phone</button>
-                    </th>
-                </tr>
-        `);
-
-        if (newCasePage == true) // Only for standard new case page
-        {
-            $("#new_case_form > table > tbody > tr:nth-child(1) > td > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(1)").after(shortcuts);
-        } else // Online case processing
-        {
-            // TODO: Get Mike to add an id to the tables so this selector doesn't need to be stupid long
-            $("body > div.main > div.add_client_1 > div:nth-child(2) > fieldset > div > form > table > tbody > tr:nth-child(1) > td > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(1)").after(shortcuts);
-        }
-        $("#hardDriveButton").on("click", setServiceHardDrive);
-        $("#thumbDriveButton").on("click", setServiceThumbDrive);
-        $("#phoneButton").on("click", setServicePhone);
-
-        //////////////////////
-        //  Anything past this point is ONLY for the standard new case page
-        //
-        //
-        if (newCasePage != true) {
-            return;
-        }
-        //////////////////////
-
-        $("#case_setup_method").val("phone").trigger("change"); // Change the setup method
-        $("#operating_system_id").val("Unknown").trigger("change"); // Change the OS to Uknown
-        $("#return_media_id").val("Client Will Decide Later").trigger("change"); // Change RM  
-
-        */
-
+        //FUNCTIONALITY PREVIOUSLY HERE HAS BEEN ADDED TO MAIN CASESDB CODE
 
     } else if (path.indexOf("view_case") !== -1) // View case page
     {
-        var caseNumber = $('#nav1_case > table > tbody > tr > td:nth-child(1) > a').text().replace(/\s/g, '');
-
+        //var caseNumber = $('#nav1_case > table > tbody > tr > td:nth-child(1) > a').text().replace(/\s/g, '');
+        var caseNumber = case_id;
+        
         // SIP click to call
         var havePhone = false;
         contactHtml = $("#client_loc_info").parent().html();
