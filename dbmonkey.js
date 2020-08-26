@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DB Monkey
 // @namespace    https://db.datarecovery.com
-// @version      0.59
+// @version      0.60
 // @description  DB quality of life improvements! https://github.com/sweetgiorni/dbmonkey
 // @author       Alex Sweet
 // @match        https://db.datarecovery.com/*
@@ -23,7 +23,7 @@
 
 var versionUpdateInfo = ""+
         "<ul>"+
-        "    <li>Fix changes how case number is found on View Case screen</li>"+
+        "    <li>Letter adjustments</li>"+
         "</ul>";
 
 
@@ -38,11 +38,11 @@ templates = {
 
 We received your online data recovery request, and I'm here to answer your questions and guide you through our process. The next step is to ship your device to our laboratory for a free evaluation. If you're within driving distance, you can also drop off your case in person.
 
-You should have received a case setup letter, which includes a ticket number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS or FedEx.
+You should have received a case setup letter, which includes a ticket number, shipping instructions, and our contact information. Note that if you are within the US/Canada, we can provide a free expedited shipping label to get your device here quickly. This label will come in a separate email from UPS or FedEx.
 
 After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time and a price quote.
 
-You're under no obligation to proceed with recovery after receiving the quote. If you approve our quote, you will only pay for recovery if successful.
+You're under no obligation to proceed with recovery after receiving the quote. If you approve our quote, you will only pay for recovery if successful. If you decline there is a $20 return shipping fee, otherwise we cover that cost.
 
 To finalize your case setup, please email me at this address or call me at the number listed below to provide some more information. I can also answer any questions you have about the case process or our recovery capabilities.
 
@@ -52,13 +52,13 @@ Best regards,`],
 
 We received your online data recovery request, and I'm here to answer your questions and guide you through our process. The next step is to ship your device to our laboratory for a free evaluation. If you're within driving distance, you can also drop off your case in person.
 
-You should have received a case setup letter, which includes a ticket number, shipping instructions, and our contact information. Note that we provide free expedited shipping labels to get your case here quickly. This label will come in a separate email from UPS or FedEx.
+You should have received a case setup letter, which includes a ticket number, shipping instructions, and our contact information. Note that if you are within the US/Canada, we can provide a free expedited shipping label to get your device here quickly. This label will come in a separate email from UPS or FedEx.
 
 After we receive and evaluate your case, we'll provide a detailed analysis with an estimated turnaround time and a price quote.
 
 As a referral from Western Digital, you'll receive free shipping to our lab and a $75 credit toward the recovery.
 
-You're under no obligation to proceed with recovery after receiving the quote. If you approve our quote, you will only pay for recovery if successful.
+You're under no obligation to proceed with recovery after receiving the quote. If you approve our quote, you will only pay for recovery if successful. If you decline there is a $20 return shipping fee, otherwise we cover that cost.
 
 To finalize your case setup, please email me at this address or call me at the number listed below to provide some more information. I can also answer any questions you have about the case process or our recovery capabilities.
 
@@ -66,9 +66,9 @@ Best regards,`],
 
         ["Label Sent + Need Client Consultation", `Hello {FIRST_NAME},
 
-We look forward to helping with your data recovery needs. We just sent over a free express shipping label via email. Please package the device in a box with lots of padding. Print the label, tape it to the box, and drop it off at the nearest pickup point. Once we receive the device, we will complete a free evaluation for you and get you a quote for recovery. You can then decide if you wish to proceed or not. 
+We look forward to helping with your data recovery needs. We have sent over a free express shipping label via email. Please package the device in a box with lots of padding. Print the label, tape it to the box, and drop it off at the nearest pickup point. Once we receive the device, we will complete a free evaluation for you and get you a quote for recovery. You can then decide if you wish to proceed or not. If you decline there is a $20 return shipping fee, otherwise we cover that cost. 
 
-Would you also provide some more details on the failure, what happened? (A power surge, the device was dropped, it just stopped working, etc.) Was the failed device used within a Mac or Windows environment? In addition, please provide a list of folder names and locations that contain the most critical files to be recovered. This is to ensure you will only be charged if we recover what you really need, although we will always attempt to get a complete recovery.  
+Would you also provide some more details on the failure, what happened? (A power surge, the device was dropped, it just stopped working, etc.) Was the failed device used within a Mac or Windows environment? In addition, please provide a list of folder names and locations that contain the most critical files to be recovered. This is to ensure you will only be charged if we recover what you really need, although we will always attempt to get a complete recovery. 
 
 And lastly, may I ask how you heard about our services?
 
@@ -1355,14 +1355,8 @@ $(function () {
         }
     } else if (path.indexOf('vc_billing') != -1) // Billing page //////////////////////////////
     {
-        name = $('#nav1_case > table > tbody > tr > td:nth-child(3) > a').text().toLowerCase().trim();
-        if (name.startsWith('mr.') || name.startsWith('ms.') || name.startsWith('mrs.')) {
-            name = name.slice(name.indexOf(' ') + 1);
-        }
-        billingName = $('.vc_bill_info tbody :nth-child(2) :nth-child(2)').text().toLowerCase().trim()
-        if (name != billingName) {
-            alert("Name on the first credit card doesn't match the name on the case! Make sure you get a CC auth form.");
-        }
+        //FUNCTIONALITY PREVIOUSLY HERE HAS BEEN ADDED TO MAIN CASESDB CODE
+        
     } else if (path.indexOf('user_options') != -1) // User options page ////////////////////////
     {
         optionsList = $('.home_grid_block6_cell > ul');
